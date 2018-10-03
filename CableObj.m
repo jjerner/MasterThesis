@@ -40,7 +40,7 @@ classdef CableObj
         end
         
         function obj = adittanceCalc(obj, phase)
-            
+        
         end
     end
 end

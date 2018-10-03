@@ -9,13 +9,17 @@ classdef CableObj
         Impedance;                      %% z = R + jwL
         Admittance;                     %% y = G + jwC
     end
+    
+    properties(Dependent)
+        test;
+    end
 
     methods
         
-        function obj = init(obj,l, d, R, G, L, C)
-            if nargin < 7
+        function obj = CableObj(l, d, R, G, L, C)
+            if nargin < 6
                 error('Missing input parameter');
-            elseif nargin > 7
+            elseif nargin > 6
                 error('Too many input parameters');
             else
                 obj.Length = l;                         %% l [m]

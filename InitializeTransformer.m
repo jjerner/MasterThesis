@@ -1,9 +1,9 @@
 %% Parameters
 
-Transformer.V_1         = 11000;    % [V]   märkspänning primär
-Transformer.V_2         = 420;      % [V]   märkspänning sekundär
+Transformer.U_1         = 11000;    % [V]   märkspänning primär
+Transformer.U_2         = 420;      % [V]   märkspänning sekundär
 Transformer.S_tot       = 500e3;    % [VA]  märkeffekt
-Transformer.W_loss      = 4984;     % [W]   belastningsförluster
+Transformer.P_loss      = 4984;     % [W]   belastningsförluster
 
 Transformer.R_2k        = 0.997;    % [%]   kortslutningsresistans, procent av vad?
 Transformer.Z_2k        = 5.730;    % [%]   kortslutningsimpedans, procent av vad?

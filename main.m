@@ -1,4 +1,6 @@
 clear
+
+addpath "PV model"
 %% Initialize parameters
 freq = 50;                      % frequency
 w = 2*pi*freq;                  % omeeeeeeeeeeega

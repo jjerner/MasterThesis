@@ -1,6 +1,8 @@
 %% Parameters
 
+fileToRead = 'asdasd';
 ExampleCable = 1;
+%freq = 50;
 
 if ExampleCable == 1
     % Constant parameters
@@ -21,9 +23,14 @@ if ExampleCable == 1
     cableData(1).beta=imag(cableData(1).gamma);                 % Phase constant [rad/m]
 
     cableData(2) = cableData(1);
-
+    
+    % Från andreas:
+    cableData(1).L = X * 1000 / (2*pi*freq);        %[mH/km]
+    cableData(1).C = Bd / (2*pi*freq);              %[uF/km]
+    
 else
     % Read data from file
+    
     
     %for i = 1:length( /file/ )
         %compare file.name(i) to Ledningsdata.name to get cable index, ID

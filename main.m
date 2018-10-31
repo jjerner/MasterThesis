@@ -1,7 +1,7 @@
 clear
 
 %add paths
-AddPathsToMain
+AddPathsToMain                  % Add external paths to data repositories
 
 %% Initialize parameters
 freq = 50;                      % frequency
@@ -88,5 +88,5 @@ for i = 1:length(Z_grid)
     end
     
     VoltageDrops(i, :) = [Us, Ur];
-    disp(['Sender: ', num2str(round(Us)), ' - Reciever: ', num2str(round(Ur))]);
+    %disp(['Sender: ', num2str(round(Us)), ' - Reciever: ', num2str(round(Ur))]);
 end

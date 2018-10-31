@@ -1,6 +1,8 @@
 clear
 
-addpath "PV model"
+%add paths
+AddPathsToMain
+
 %% Initialize parameters
 freq = 50;                      % frequency
 w = 2*pi*freq;                  % omeeeeeeeeeeega
@@ -8,6 +10,7 @@ j = 1i;
 
 InitializeTransformer;         	% transformer parameters
 InitializeCables;               % cable parameters
+
 %% Calculations
 %% Summarize impedance of circuit
 
@@ -37,11 +40,11 @@ P_tot = sum(P_loads);
 
 %% calculate current needed from transformer
 
-I_input = P_tot / Transformer.U_1;
+I_input = P_tot / Transformer.Uprim;
 
 % something should go here to model transformer i guess
 
-I_2 = P_tot / Transformer.U_2;
+I_2 = P_tot / Transformer.Usec;
 
 I_loads = zeros(length(Z_loads));
 for i = 1:length(Z_loads)
@@ -56,14 +59,14 @@ VoltageDrops = zeros(length(Z_grid), 2);    % Matrix with input and output of ea
 
 for i = 1:length(Z_grid)
     if i == 1
-        Us = Transformer.U_2;               % "voltage on input side"
+        Us = Transformer.Usec;               % "voltage on input side"
         I_in = I_loads(i);                  % current flow through cable
         [Ur, I_out] = cableCalc(Us, I_in, cableData, i);
         %Z_cable = Z_grid(i);                % impedance across cable
         %Ur = Us - (I_in * abs(Z_cable));    % "voltage on reciever side"
     
     else
-        Us = Transformer.U_2;               % "voltage on input side"
+        Us = Transformer.Usec;               % "voltage on input side"
         I_in = I_loads(i);                  % current flow through cable
         [Ur, I_out] = cableCalc(Us, I_in, cableData, i);
         %Z_cable = Z_grid(i);                % impedance across cable

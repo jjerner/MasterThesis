@@ -11,6 +11,20 @@ j = 1i;
 InitializeTransformer;         	% transformer parameters
 InitializeCables;               % cable parameters
 
+
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Below this line, most things are shit.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Calculations
 %% Summarize impedance of circuit
 

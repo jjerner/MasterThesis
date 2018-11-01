@@ -1,7 +1,7 @@
 %% Parameters
 
-fileToRead = 'asdasd';
-ExampleCable = 1;
+fileToRead = 'T317 Amundstorp.xlsx';
+ExampleCable = 0;
 %freq = 50;
 
 if ExampleCable == 1
@@ -21,27 +21,63 @@ if ExampleCable == 1
     cableData(1).gamma=sqrt(cableData(1).y*cableData(1).z);     % Propagation constant [?]
     cableData(1).alpha=real(cableData(1).gamma);                % Attenuation constant [?]
     cableData(1).beta=imag(cableData(1).gamma);                 % Phase constant [rad/m]
-
-    cableData(2) = cableData(1);
     
-    % Från andreas:
-    cableData(1).L = X * 1000 / (2*pi*freq);        %[mH/km]
-    cableData(1).C = Bd / (2*pi*freq);              %[uF/km]
+    nCables = 2;
+    for i = 2:nCables
+        cableData(i) = cableData(1);
+    end
     
 else
+    load Ledningsdata.mat                           % get table of cable data
+    
     % Read data from file
+    data = importdata(fileToRead);
+    data.textdata = data.textdata(4:end, :);        % remove first 3 rows of nonsense in textdata
     
-    
-    %for i = 1:length( /file/ )
-        %compare file.name(i) to Ledningsdata.name to get cable index, ID
-        %cableData(i).l = getlength from file
-        %cableData(i).R = Ledningsdata.R(ID);
-        %cableData(i).R0 = Ledningsdata.R0(ID);
-        %.
-        %.
-        %.
+    for i = 1:length(data.textdata(:,2)) 
+        %compare (find the right cable data)
+        cableFound = false;
+        index = 1;
+        nameToCompare = Ledningsdata.Name{index};
+        
+        if nameToCompare(end-2) == '/'
+            nameToCompare = nameToCompare(1:end-3);
+        end
+        
+        while ~cableFound
+            if length(data.textdata{i,2}) == length(nameToCompare)
+                if data.textdata{i,2} == nameToCompare
+                    
+                    cableFound = true;
+                end
+                index = index + 1;
+            else
+                index = index + 1; 
+            end
+            
+            
+            if index == length(Ledningsdata.Area) + 1
+                disp('Couldnt find cable match!')
+                disp(['Using standard cable at index: ', num2str(i)]);
+                index = 4;  % <-- set appropriate index to "standard cable"
+            end
+        end
+        
+        %get data
+        cableData(i).l      = data.data(i,5);                       % [m]
+        cableData(i).Rpl    = Ledningsdata.R(index);                % [Ohm / km]
+        cableData(i).R0pl   = Ledningsdata.R0(index);               % [Ohm / km]
+        cableData(i).Xpl    = Ledningsdata.X(index);                % [Ohm / km]
+        cableData(i).X0pl   = Ledningsdata.X0(index);               % [Ohm / km]
+        cableData(i).Bdpl   = Ledningsdata.Bd(index);               % [uS / km / fas]
+        cableData(i).Imax   = Ledningsdata.Imax;                    % [A]
+        
+        %formatting
+        cableData(i).R      = (cableData(i).l / 1e3) * cableData(i).Rpl;                        % [Ohm]
+        cableData(i).L      = (cableData(i).l / 1e3) * cableData(i).X * 1000 / (2*pi*freq);     % [mH]
+        cableData(i).C      = (cableData(i).l / 1e3) * (cableData(i).Bd / (2*pi*freq*1e6));     % [F]
         
         
-    %end
+    end
     
 end

@@ -56,10 +56,10 @@ else
             end
             
             
-            if index == length(Ledningsdata.Area) + 1
-                disp('Couldnt find cable match!')
-                disp(['Using standard cable at index: ', num2str(i)]);
+            if index == (length(Ledningsdata.Area) + 1)
+                disp(['Could not find cable match, using standard cable at index: ', num2str(i)]);
                 index = 4;  % <-- set appropriate index to "standard cable"
+                break
             end
         end
         
@@ -74,8 +74,8 @@ else
         
         %formatting
         cableData(i).R      = (cableData(i).l / 1e3) * cableData(i).Rpl;                        % [Ohm]
-        cableData(i).L      = (cableData(i).l / 1e3) * cableData(i).X * 1000 / (2*pi*freq);     % [mH]
-        cableData(i).C      = (cableData(i).l / 1e3) * (cableData(i).Bd / (2*pi*freq*1e6));     % [F]
+        cableData(i).L      = (cableData(i).l / 1e3) * cableData(i).Xpl / (2*pi*freq);          % [H]
+        cableData(i).C      = (cableData(i).l / 1e3) * (cableData(i).Bdpl / (2*pi*freq*1e6));   % [F]
         
         
     end

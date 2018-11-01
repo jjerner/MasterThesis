@@ -1,7 +1,7 @@
 clear
 
 %add paths
-AddPathsToMain                  % Add external paths to data repositories
+AddPathsToMain                  % Add local paths to data repositories & PV model
 
 %% Initialize parameters
 freq = 50;                      % frequency

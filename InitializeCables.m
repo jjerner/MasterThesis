@@ -2,7 +2,10 @@
 
 fileToRead = 'T317 Amundstorp.xlsx';
 ExampleCable = 0;
+j = 1i;
 %freq = 50;
+
+disp('Loading cable data')
 
 if ExampleCable == 1
     % Constant parameters
@@ -28,6 +31,8 @@ if ExampleCable == 1
     end
     
 else
+    disp(['Reading from file: "', fileToRead,'"']);
+    disp(' ');
     load Ledningsdata.mat                           % get table of cable data
     
     % Read data from file
@@ -38,32 +43,33 @@ else
         %compare (find the right cable data)
         cableFound = false;
         index = 1;
-        nameToCompare = Ledningsdata.Name{index};
         
-        if nameToCompare(end-2) == '/'
-            nameToCompare = nameToCompare(1:end-3);
-        end
         
         while ~cableFound
+            nameToCompare = Ledningsdata.Name{index};
+            if nameToCompare(end-2) == '/'
+                nameToCompare = nameToCompare(1:end-3);
+            end
+            
             if length(data.textdata{i,2}) == length(nameToCompare)
                 if data.textdata{i,2} == nameToCompare
-                    
                     cableFound = true;
+                else
+                    index = index + 1;
                 end
-                index = index + 1;
             else
                 index = index + 1; 
             end
             
             
             if index == (length(Ledningsdata.Area) + 1)
-                disp(['Could not find cable match, using standard cable at index: ', num2str(i)]);
+                disp(['Could not find cable match, using standard cable at index ', num2str(i)]);
+                cableFound = true;
                 index = 4;  % <-- set appropriate index to "standard cable"
-                break
             end
         end
         
-        %get data
+        %read data
         cableData(i).l      = data.data(i,5);                       % [m]
         cableData(i).Rpl    = Ledningsdata.R(index);                % [Ohm / km]
         cableData(i).R0pl   = Ledningsdata.R0(index);               % [Ohm / km]
@@ -72,12 +78,20 @@ else
         cableData(i).Bdpl   = Ledningsdata.Bd(index);               % [uS / km / fas]
         cableData(i).Imax   = Ledningsdata.Imax;                    % [A]
         
-        %formatting
+        % assumed data
+        cableData(i).G      = 0;
+        
+        %formatting + calculations
         cableData(i).R      = (cableData(i).l / 1e3) * cableData(i).Rpl;                        % [Ohm]
+        cableData(i).X      = (cableData(i).l / 1e3) * cableData(i).Xpl;                        % [Ohm]
         cableData(i).L      = (cableData(i).l / 1e3) * cableData(i).Xpl / (2*pi*freq);          % [H]
         cableData(i).C      = (cableData(i).l / 1e3) * (cableData(i).Bdpl / (2*pi*freq*1e6));   % [F]
+        cableData(i).Bd     = (cableData(i).l / 1e3) * cableData(i).Bdpl;                       % [S]
         
-        
+        cableData(i).Z=cableData(i).R+j*cableData(i).X;             % Series impedance [ohm]
+        cableData(i).Y=cableData(i).G+j*cableData(i).Bd;            % Shunt admittance [S]
+
+
     end
     
 end

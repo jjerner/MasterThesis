@@ -1,6 +1,7 @@
 %% Parameters
 
 fileToRead = 'T317 Amundstorp.xlsx';
+%fileToRead = 'T085 hallonvagen.xlsx';
 ExampleCable = 0;
 j = 1i;
 %freq = 50;
@@ -31,6 +32,7 @@ if ExampleCable == 1
     end
     
 else
+    
     disp(['Reading from file: "', fileToRead,'"']);
     disp(' ');
     load Ledningsdata.mat                           % get table of cable data

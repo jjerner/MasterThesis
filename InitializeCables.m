@@ -9,25 +9,25 @@ disp('Loading cable data')
 
 if ExampleCable == 1
     % Constant parameters
-    cableData(1).l=1;                % Length [km]         
-    cableData(1).R=0.125;            % Series resistance [ohm/km]
-    cableData(1).L=0.23e-3;          % Series inductance [H/km]
-    cableData(1).G=0;                % Shunt conductance [S/km]
-    cableData(1).C=2e-9;             % Shunt capacitance [F/km]
+    CableData(1).l=1;                % Length [km]         
+    CableData(1).R=0.125;            % Series resistance [ohm/km]
+    CableData(1).L=0.23e-3;          % Series inductance [H/km]
+    CableData(1).G=0;                % Shunt conductance [S/km]
+    CableData(1).C=2e-9;             % Shunt capacitance [F/km]
 
     % Calculated characteristics
-    cableData(1).z=cableData(1).R+j*w*cableData(1).L;           % Series impedance [ohm/km]
-    cableData(1).y=cableData(1).G+j*w*cableData(1).C;           % Shunt admittance [S/km]
-    cableData(1).Z=cableData(1).z*cableData(1).l;               % Total series impedance [ohm/km]
-    cableData(1).Y=cableData(1).y*cableData(1).L;               % Total shunt admittance [S/km]
-    cableData(1).Z_C=sqrt(cableData(1).z/cableData(1).y);       % Characteristic impedance [ohm]
-    cableData(1).gamma=sqrt(cableData(1).y*cableData(1).z);     % Propagation constant [?]
-    cableData(1).alpha=real(cableData(1).gamma);                % Attenuation constant [?]
-    cableData(1).beta=imag(cableData(1).gamma);                 % Phase constant [rad/m]
+    CableData(1).z=CableData(1).R+j*w*CableData(1).L;           % Series impedance [ohm/km]
+    CableData(1).y=CableData(1).G+j*w*CableData(1).C;           % Shunt admittance [S/km]
+    CableData(1).Z=CableData(1).z*CableData(1).l;               % Total series impedance [ohm/km]
+    CableData(1).Y=CableData(1).y*CableData(1).L;               % Total shunt admittance [S/km]
+    CableData(1).Z_C=sqrt(CableData(1).z/CableData(1).y);       % Characteristic impedance [ohm]
+    CableData(1).gamma=sqrt(CableData(1).y*CableData(1).z);     % Propagation constant [?]
+    CableData(1).alpha=real(CableData(1).gamma);                % Attenuation constant [?]
+    CableData(1).beta=imag(CableData(1).gamma);                 % Phase constant [rad/m]
     
     nCables = 2;
     for i = 2:nCables
-        cableData(i) = cableData(1);
+        CableData(i) = CableData(1);
     end
     
 else
@@ -70,26 +70,26 @@ else
         end
         
         %read data
-        cableData(i).l      = data.data(i,5);                       % [m]
-        cableData(i).Rpl    = Ledningsdata.R(index);                % [Ohm / km]
-        cableData(i).R0pl   = Ledningsdata.R0(index);               % [Ohm / km]
-        cableData(i).Xpl    = Ledningsdata.X(index);                % [Ohm / km]
-        cableData(i).X0pl   = Ledningsdata.X0(index);               % [Ohm / km]
-        cableData(i).Bdpl   = Ledningsdata.Bd(index);               % [uS / km / fas]
-        cableData(i).Imax   = Ledningsdata.Imax;                    % [A]
+        CableData(i).l      = data.data(i,5);                       % [m]
+        CableData(i).Rpl    = Ledningsdata.R(index);                % [Ohm / km]
+        CableData(i).R0pl   = Ledningsdata.R0(index);               % [Ohm / km]
+        CableData(i).Xpl    = Ledningsdata.X(index);                % [Ohm / km]
+        CableData(i).X0pl   = Ledningsdata.X0(index);               % [Ohm / km]
+        CableData(i).Bdpl   = Ledningsdata.Bd(index);               % [uS / km / fas]
+        CableData(i).Imax   = Ledningsdata.Imax;                    % [A]
         
         % assumed data
-        cableData(i).G      = 0;
+        CableData(i).G      = 0;
         
         %formatting + calculations
-        cableData(i).R      = (cableData(i).l / 1e3) * cableData(i).Rpl;                        % [Ohm]
-        cableData(i).X      = (cableData(i).l / 1e3) * cableData(i).Xpl;                        % [Ohm]
-        cableData(i).L      = (cableData(i).l / 1e3) * cableData(i).Xpl / (2*pi*freq);          % [H]
-        cableData(i).C      = (cableData(i).l / 1e3) * (cableData(i).Bdpl / (2*pi*freq*1e6));   % [F]
-        cableData(i).Bd     = (cableData(i).l / 1e3) * cableData(i).Bdpl;                       % [S]
+        CableData(i).R      = (CableData(i).l / 1e3) * CableData(i).Rpl;                        % [Ohm]
+        CableData(i).X      = (CableData(i).l / 1e3) * CableData(i).Xpl;                        % [Ohm]
+        CableData(i).L      = (CableData(i).l / 1e3) * CableData(i).Xpl / (2*pi*freq);          % [H]
+        CableData(i).C      = (CableData(i).l / 1e3) * (CableData(i).Bdpl / (2*pi*freq*1e6));   % [F]
+        CableData(i).Bd     = (CableData(i).l / 1e3) * CableData(i).Bdpl;                       % [S]
         
-        cableData(i).Z=cableData(i).R+j*cableData(i).X;             % Series impedance [ohm]
-        cableData(i).Y=cableData(i).G+j*cableData(i).Bd;            % Shunt admittance [S]
+        CableData(i).Z=CableData(i).R+j*CableData(i).X;             % Series impedance [ohm]
+        CableData(i).Y=CableData(i).G+j*CableData(i).Bd;            % Shunt admittance [S]
 
 
     end

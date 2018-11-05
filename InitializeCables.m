@@ -96,4 +96,7 @@ else
 
     end
     
+    % Sort startpoint - endpoint and node types
+    readNodes       % outputs: start2end & nodeType, matrices describing where each cable is connected.
+    
 end

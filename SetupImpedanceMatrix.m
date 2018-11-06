@@ -19,7 +19,7 @@ for iData = 1:length(CableData)
     Y_chg(startnode, endnode) = -CableData(iData).Y;        % Setting non-diagonal elements (negative)
 end
 
-% diagonal elements ( DETTA BLIR Y_bus???? )
+% diagonal elements ( DETTA BLIR Y_bus???? fast impedancen från transformatorn saknas? )
 for iBus = 1:length(Z_line)
     adjacent_impedance = [];
     adjacent_admittance = [];

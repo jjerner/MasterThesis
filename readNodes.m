@@ -63,3 +63,7 @@ for row = 1:length(nodeName)
 end
 
 start2end = [startNodes, endNodes];
+
+%clear some workspace
+clear foundTransformer typeEnd typeStart startNodes endNodes intStart intEnd typeStart typeEnd
+clear currentcell cellsplit row col

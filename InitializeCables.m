@@ -27,8 +27,8 @@ if ExampleCable == 1
     CableData(1).beta=imag(CableData(1).gamma);                 % Phase constant [rad/m]
     
     nCables = 2;
-    for i = 2:nCables
-        CableData(i) = CableData(1);
+    for iCables = 2:nCables
+        CableData(iCables) = CableData(1);
     end
     
 else
@@ -41,7 +41,7 @@ else
     data = importdata(fileToRead);
     data.textdata = data.textdata(4:end, :);        % remove first 3 rows of nonsense in textdata
     
-    for i = 1:length(data.textdata(:,2)) 
+    for iCables = 1:length(data.textdata(:,2)) 
         %compare (find the right cable data)
         cableFound = false;
         index = 1;
@@ -53,8 +53,8 @@ else
                 nameToCompare = nameToCompare(1:end-3);
             end
             
-            if length(data.textdata{i,2}) == length(nameToCompare)
-                if data.textdata{i,2} == nameToCompare
+            if length(data.textdata{iCables,2}) == length(nameToCompare)
+                if data.textdata{iCables,2} == nameToCompare
                     cableFound = true;
                 else
                     index = index + 1;
@@ -65,33 +65,33 @@ else
             
             
             if index == (length(Ledningsdata.Area) + 1)
-                disp(['Could not find cable match, using standard cable at index ', num2str(i)]);
+                disp(['Could not find cable match, using standard cable at index ', num2str(iCables)]);
                 cableFound = true;
                 index = 4;  % <-- set appropriate index to "standard cable"
             end
         end
         
         %read data
-        CableData(i).l      = data.data(i,5);                       % [m]
-        CableData(i).Rpl    = Ledningsdata.R(index);                % [Ohm / km]
-        CableData(i).R0pl   = Ledningsdata.R0(index);               % [Ohm / km]
-        CableData(i).Xpl    = Ledningsdata.X(index);                % [Ohm / km]
-        CableData(i).X0pl   = Ledningsdata.X0(index);               % [Ohm / km]
-        CableData(i).Bdpl   = Ledningsdata.Bd(index);               % [uS / km / fas]
-        CableData(i).Imax   = Ledningsdata.Imax;                    % [A]
+        CableData(iCables).l      = data.data(iCables,5);                 % [m]
+        CableData(iCables).Rpl    = Ledningsdata.R(index);                % [Ohm / km]
+        CableData(iCables).R0pl   = Ledningsdata.R0(index);               % [Ohm / km]
+        CableData(iCables).Xpl    = Ledningsdata.X(index);                % [Ohm / km]
+        CableData(iCables).X0pl   = Ledningsdata.X0(index);               % [Ohm / km]
+        CableData(iCables).Bdpl   = Ledningsdata.Bd(index);               % [uS / km / fas]
+        CableData(iCables).Imax   = Ledningsdata.Imax;                    % [A]
         
         % assumed data
-        CableData(i).G      = 0;
+        CableData(iCables).G      = 0;
         
         %formatting + calculations
-        CableData(i).R      = (CableData(i).l / 1e3) * CableData(i).Rpl;                        % [Ohm]
-        CableData(i).X      = (CableData(i).l / 1e3) * CableData(i).Xpl;                        % [Ohm]
-        CableData(i).L      = (CableData(i).l / 1e3) * CableData(i).Xpl / (2*pi*freq);          % [H]
-        CableData(i).C      = (CableData(i).l / 1e3) * (CableData(i).Bdpl / (2*pi*freq*1e6));   % [F]
-        CableData(i).Bd     = (CableData(i).l / 1e3) * CableData(i).Bdpl;                       % [S]
+        CableData(iCables).R      = (CableData(iCables).l / 1e3) * CableData(iCables).Rpl;                        % [Ohm]
+        CableData(iCables).X      = (CableData(iCables).l / 1e3) * CableData(iCables).Xpl;                        % [Ohm]
+        CableData(iCables).L      = (CableData(iCables).l / 1e3) * CableData(iCables).Xpl / (2*pi*freq);          % [H]
+        CableData(iCables).C      = (CableData(iCables).l / 1e3) * (CableData(iCables).Bdpl / (2*pi*freq*1e6));   % [F]
+        CableData(iCables).Bd     = (CableData(iCables).l / 1e3) * CableData(iCables).Bdpl;                       % [S]
         
-        CableData(i).Z=CableData(i).R+j*CableData(i).X;             % Series impedance [ohm]
-        CableData(i).Y=CableData(i).G+j*CableData(i).Bd;            % Shunt admittance [S]
+        CableData(iCables).Z=CableData(iCables).R+j*CableData(iCables).X;             % Series impedance [ohm]
+        CableData(iCables).Y=CableData(iCables).G+j*CableData(iCables).Bd;            % Shunt admittance [S]
 
 
     end
@@ -100,3 +100,6 @@ else
     readNodes       % outputs: start2end & nodeType, matrices describing where each cable is connected.
     
 end
+
+% clear some workspace
+clear ExampleCable index nameToCompare iCables cableFound

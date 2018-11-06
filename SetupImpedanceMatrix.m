@@ -19,7 +19,7 @@ for iData = 1:length(CableData)
     Y_chg(startnode, endnode) = -CableData(iData).Y;        % Setting non-diagonal elements (negative)
 end
 
-% diagonal elements ( DETTA BLIR Y_bus???? fast impedancen från transformatorn saknas? )
+% diagonal elements ( DETTA BLIR Y_bus???? fast impedancen (+mer) från transformatorn saknas? )
 for iBus = 1:length(Z_line)
     adjacent_impedance = [];
     adjacent_admittance = [];
@@ -33,3 +33,6 @@ for iBus = 1:length(Z_line)
     Z_line(iBus, iBus) = sum(adjacent_impedance);
     Y_chg(iBus, iBus) = sum(adjacent_admittance);
 end
+
+% clear some workspace
+clear startnode endnode iData iBus iSum

@@ -63,6 +63,8 @@ for row = 1:length(nodeName)
 end
 
 start2end = [startNodes, endNodes];
+modifier = min(min(start2end)) - 1;
+start2end_modified = start2end - modifier;      % modified so start point gets index 1
 
 %clear some workspace
 clear foundTransformer typeEnd typeStart startNodes endNodes intStart intEnd typeStart typeEnd

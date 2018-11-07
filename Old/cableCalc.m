@@ -1,4 +1,4 @@
-function [V_S,I_S]=cableCalc(V_R,I_R,CableData,cableID,type)
+function [V_S,I_S]=cableCalc(V_R,I_R,CableData,cableID)
 % Calculates voltage and current at sending end of cable for specified
 % voltage and current at receiving end using lumped parameter pi equivalent
 % model.

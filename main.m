@@ -5,19 +5,19 @@ AddPathsToMain                  % Add local paths to data repositories & PV mode
 
 %% Initialize parameters (CONSTANTS)
 freq = 50;                      % frequency
-w = 2*pi*freq;                  % omeeeeeeeeeeega
+w = 2*pi*freq;                  % OMEGA(LUL)
 j = 1i;
 
 %% Initialize parameters (transformer & cables)
 InitializeTransformer;          % transformer parameters
 InitializeCables;               % cable parameters & connections
-SetupImpedanceMatrix;           % match cable parameters and connections to a matrix
+SetupArrys;                     % match cable parameters and connections to a matrices
 
-%% Calculations
-U_guess = 230;                                  % initial guess voltage across all busses
-U_prev = ones(length(Y_shu),1) .* U_guess;      % voltage vector
+%% Power Flow Calculations
 
-% SomeScriptToSetBusTypes           % Setup PQ - PV - Slack busses
+U_guess = 230;              % initial guess voltage across all busses
+
+SetupProblem;                   % Setup PQ - PV - Slack busses from nodes
 % CalculationsOnPQBusses
 % CalculationsOnPVBusses
 

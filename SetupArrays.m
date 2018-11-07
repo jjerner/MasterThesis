@@ -1,12 +1,16 @@
 
 %{
-    Help file for setting up the impedance matrix with appropriate checks
+    Help file for setting up the impedance & admittance matrices with appropriate checks
     to ensure stability and correct indexes
 %}
 
 if length(CableData) ~= length(start2end_modified)
     disp('Gör om gör rätt!!! REEEEEEEEEEE!')
     error('Mismatch in CableData and nodes!')
+end
+
+if min(min(start2end_modified)) ~= 1
+   error('Cable index does not start at 1, Check "start2end_modified"'); 
 end
 
 Z_ser = zeros(length(CableData)+1);

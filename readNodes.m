@@ -34,9 +34,9 @@ for row = 1:length(data.data)
     else
         currentcell = data.textdata{row,4};
         cellsplit = strsplit(currentcell);
-        intEnd = str2double(cellsplit{1});        % end node
+        intEnd = str2double(cellsplit{1});          % end node
         endNodes(row) = intEnd;
-        typeEnd = cellsplit(2);                    % end node type
+        typeEnd = cellsplit(2);                     % end node type
         nodeName(row,2) = typeEnd;
     end
 
@@ -65,6 +65,7 @@ end
 start2end = [startNodes, endNodes];
 modifier = min(min(start2end)) - 1;
 start2end_modified = start2end - modifier;      % modified so start point gets index 1
+
 
 %clear some workspace
 clear foundTransformer typeEnd typeStart startNodes endNodes intStart intEnd typeStart typeEnd

@@ -14,8 +14,8 @@ InitializeCables;               % cable parameters & connections
 SetupImpedanceMatrix;           % match cable parameters and connections to a matrix
 
 %% Calculations
-U_guess = 230;                          % initial guess voltage across all busses
-U = ones(length(Y_chg),1) .* U_guess;   % voltage vector
+U_guess = 230;                                  % initial guess voltage across all busses
+U_prev = ones(length(Y_shu),1) .* U_guess;      % voltage vector
 
 % SomeScriptToSetBusTypes           % Setup PQ - PV - Slack busses
 % CalculationsOnPQBusses

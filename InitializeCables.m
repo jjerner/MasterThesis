@@ -90,8 +90,8 @@ else
         CableData(iCables).C      = (CableData(iCables).l / 1e3) * (CableData(iCables).Bdpl / (2*pi*freq*1e6));   % [F]
         CableData(iCables).Bd     = (CableData(iCables).l / 1e3) * CableData(iCables).Bdpl;                       % [S]
         
-        CableData(iCables).Z=CableData(iCables).R+j*CableData(iCables).X;             % Series impedance [ohm]
-        CableData(iCables).Y=CableData(iCables).G+j*CableData(iCables).Bd;            % Shunt admittance [S]
+        CableData(iCables).Z_ser=CableData(iCables).R+j*CableData(iCables).X;             % Series impedance [ohm]
+        CableData(iCables).Y_shu=CableData(iCables).G+j*CableData(iCables).Bd;            % Shunt admittance [S]
 
 
     end

@@ -1,7 +1,7 @@
 %% Parameters
 
-fileToRead = 'data/T317 Amundstorp.xlsx';
-%fileToRead = 'data/T085 Hallonvagen.xlsx';
+fileToRead = 'T317 Amundstorp.xlsx';
+%fileToRead = 'T085 Hallonvagen.xlsx';
 ExampleCable = 0;
 j = 1i;
 %freq = 50;

@@ -6,21 +6,21 @@ if fictive_data == 1
     createBusInputs;
 end
 
-U_prev = ones(length(Y_shu),1) .* U_guess;      % voltage vector
+U_prev = ones(length(Y_bus),1) .* U_guess;      % voltage vector
 
-BusType = blanks(length(Z_ser))';               % Bus names as 2 chars [PQ, PV, SL] SL = Slack bus
+BusType = blanks(length(Y_bus))';               % Bus names as 2 chars [PQ, PV, SL] SL = Slack bus
 BusType = repmat(BusType, 1, 2);
 
-P_bus = nan(length(Z_ser),1);                   % Active effect in bus
-Q_bus = nan(length(Z_ser),1);                   % Reactive effect in bus
-theta_bus = zeros(length(Z_ser),1);             % phase shift at bus
-U_bus = nan(length(Z_ser),1);                   % Voltage at bus
+P_bus = nan(length(Y_bus),1);                   % Active effect in bus
+Q_bus = nan(length(Y_bus),1);                   % Reactive effect in bus
+theta_bus = zeros(length(Y_bus),1);             % phase shift at bus
+U_bus = nan(length(Y_bus),1);                   % Voltage at bus
 
 
 % Här blir de stökigt, ha så kul!
 
 firstHighVoltageNodeFound = 0;
-for ibus = 1:length(Z_ser)
+for ibus = 1:length(Y_bus)
     for row = 1:length(start2end_modified)
         for col = 1:2
             if ibus == start2end_modified(row,col) && isspace(BusType(ibus))

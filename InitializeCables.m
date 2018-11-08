@@ -1,7 +1,7 @@
 %% Parameters
 
-fileToRead = 'T317 Amundstorp.xlsx';
-%fileToRead = 'T085 hallonvagen.xlsx';
+fileToRead = 'data/T317 Amundstorp.xlsx';
+%fileToRead = 'data/T085 Hallonvagen.xlsx';
 ExampleCable = 0;
 j = 1i;
 %freq = 50;
@@ -35,7 +35,7 @@ else
     
     disp(['Reading from file: "', fileToRead,'"']);
     disp(' ');
-    load Ledningsdata.mat                           % get table of cable data
+    load('data/Ledningsdata.mat');                           % get table of cable data
     
     % Read data from file
     data = importdata(fileToRead);

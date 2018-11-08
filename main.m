@@ -11,7 +11,7 @@ j = 1i;
 %% Initialize parameters (transformer & cables)
 InitializeTransformer;          % transformer parameters
 InitializeCables;               % cable parameters & connections
-SetupArrys;                     % match cable parameters and connections to a matrices
+SetupArrays;                     % match cable parameters and connections to a matrices
 
 %% Power Flow Calculations
 

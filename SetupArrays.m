@@ -55,4 +55,4 @@ Y_shu_tot = Y_shu_self;             % Total admittance, shunt
 Y_bus     = Y_ser_tot + Y_shu_tot;  % Bus admittance matrix
 
 % clear some workspace
-clear startNode endNode iNode iCable
+clear startNode endNode iNode iCable Z_ser_self_vec Y_shu_self_vec

@@ -81,7 +81,7 @@ else
         CableData(iCables).Imax   = Ledningsdata.Imax;                    % [A]
         
         % assumed data
-        CableData(iCables).G      = 0;
+        CableData(iCables).G      = 0;                                    % Shunt conductance [S]
         
         %formatting + calculations
         CableData(iCables).R      = (CableData(iCables).l / 1e3) * CableData(iCables).Rpl;                        % [Ohm]

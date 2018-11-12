@@ -1,9 +1,14 @@
 % This script takes the previously setup nodes
 
-fictive_data = 1;
+fictive_data = 0;
 
 if fictive_data == 1
     createBusInputs;
+else
+    % inputFile = 'INSERT FILE HERE';
+    % inputdata = importdata(inputFile);
+    disp(' ');
+    disp(['Reading input data from: ', 'INSERT FILE HERE'])
 end
 
 U_prev = ones(length(Y_bus),1) .* U_guess;      % voltage vector
@@ -59,4 +64,4 @@ for ibus = 1:length(Y_bus)
 end
 
 % clear some workspace
-clear firstHighVoltageNodeFound
+clear firstHighVoltageNodeFound row col char ibus

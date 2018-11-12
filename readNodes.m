@@ -70,11 +70,11 @@ end
 
 start2end = [startNodes, endNodes];
 modifier = min(min(start2end)) - 1;
-connectionNodes = start2end - modifier;      % modified so start point gets index 1
+start2end_mod = start2end - modifier;      % modified so start point gets index 1
 
-for iterator = 1:length(connectionNodes)
-    CableData(iterator).StartNode = connectionNodes(iterator,1);
-    CableData(iterator).EndNode = connectionNodes(iterator,2);
+for iterator = 1:length(start2end_mod)
+    CableData(iterator).StartNode = start2end_mod(iterator,1);
+    CableData(iterator).EndNode = start2end_mod(iterator,2);
 end
 
 % add extra internal nodeconnection in the transformer, called 'TT'
@@ -82,9 +82,11 @@ for connection = 1:length(connectionType(1,:))
    
     if all(strcmp(connectionType(connection,:), 'HT'))
         connectionType = [connectionType(1:connection,1:2); 'TT'; connectionType(connection+1:end,1:2)];
-        newStart = [connectionNodes(1:connection,1); connection+1; connectionNodes(connection+1:end,1)+1];
-        newEnd = [connectionNodes(1:connection,2); connection+2; connectionNodes(connection+1:end,2)+1];
+        newStart = [start2end_mod(1:connection,1); connection+1; start2end_mod(connection+1:end,1)+1];
+        newEnd = [start2end_mod(1:connection,2); connection+2; start2end_mod(connection+1:end,2)+1];
         connectionNodes = [newStart, newEnd];
+        
+        addedTransformerNodeAtIndex = [connection+1, connection+2];
     end
     
 end
@@ -92,4 +94,4 @@ end
 
 %clear some workspace
 clear foundTransformer typeEnd typeStart startNodes endNodes intStart intEnd typeStart typeEnd
-clear currentcell cellsplit row col iterator
+clear currentcell cellsplit row col iterator newStart newEnd connection

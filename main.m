@@ -11,7 +11,11 @@ j = 1i;
 %% Initialize parameters (transformer & cables)
 InitializeTransformer;          % transformer parameters
 InitializeCables;               % cable parameters & connections
-SetupArrays;                     % match cable parameters and connections to a matrices
+
+% Sort startpoint - endpoint and node types
+readNodes                       % outputs: start2end & nodeType, matrices describing where each cable is connected.
+
+SetupArrays;                    % match cable parameters and connections to matrices
 
 %% Power Flow Calculations
 

@@ -21,10 +21,10 @@ U_bus = nan(length(Y_bus),1);                   % Voltage at bus
 
 firstHighVoltageNodeFound = 0;
 for ibus = 1:length(Y_bus)
-    for row = 1:length(start2end_modified)
+    for row = 1:length(connectionNodes)
         for col = 1:2
-            if ibus == start2end_modified(row,col) && isspace(BusType(ibus))
-                char = nodeType(row,col);
+            if ibus == connectionNodes(row,col) && isspace(BusType(ibus))
+                char = connectionType(row,col);
                 
                 if char == 'H' && firstHighVoltageNodeFound == 0
                     firstHighVoltageNodeFound = 1;
@@ -57,3 +57,6 @@ for ibus = 1:length(Y_bus)
         end
     end
 end
+
+% clear some workspace
+clear firstHighVoltageNodeFound

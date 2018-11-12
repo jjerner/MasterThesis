@@ -78,7 +78,7 @@ else
         CableData(iCables).Xpl    = Ledningsdata.X(index);                % [Ohm / km]
         CableData(iCables).X0pl   = Ledningsdata.X0(index);               % [Ohm / km]
         CableData(iCables).Bdpl   = Ledningsdata.Bd(index);               % [uS / km / fas]
-        CableData(iCables).Imax   = Ledningsdata.Imax;                    % [A]
+        CableData(iCables).Imax   = Ledningsdata.Imax(index);             % [A]
         
         % assumed data
         CableData(iCables).G      = 0;                                    % Shunt conductance [S]
@@ -95,10 +95,7 @@ else
 
 
     end
-    
-    % Sort startpoint - endpoint and node types
-    readNodes       % outputs: start2end & nodeType, matrices describing where each cable is connected.
-    
+        
 end
 
 % clear some workspace

@@ -4,29 +4,35 @@
     to ensure stability and correct indexes
 %}
 
-if length(CableData) ~= length(start2end_modified)
+if length(CableData) ~= length(connectionNodes)
     disp('Gör om gör rätt!!! REEEEEEEEEEE!')
     error('Mismatch in CableData and nodes!')
 end
 
-if min(min(start2end_modified)) ~= 1
-   error('Cable index does not start at 1, Check "start2end_modified"'); 
+if min(min(connectionNodes)) ~= 1
+   error('Cable index does not start at 1, Check "connectionNodes"'); 
 end
 
+nCables = length(CableData);
+nTransformers = length(TransformerData);
+nNodes = nCables + nTransformers + 1;
+
 % Preallocation 
-Z_ser_self = zeros(length(CableData)+1);    % Self impedance, series
-Z_ser_mutu = zeros(length(CableData)+1);    % Mutual impedance, series
-Y_shu_self = zeros(length(CableData)+1);    % Self admittance, shunt
+Z_ser_self = zeros(nNodes);    % Self impedance, series
+Z_ser_mutu = zeros(nNodes);    % Mutual impedance, series
+Y_shu_self = zeros(nNodes);    % Self admittance, shunt
+
+
 
 
 % Mutual impedance/admittance (non-diagonal elements)
 % Negative of sum of all admittances between node ij
 for iCable = 1:length(CableData)
-    startNode = start2end_modified(iCable,1);
-    endNode = start2end_modified(iCable,2);
-    
-    Z_ser_mutu(startNode,endNode) = -CableData(iCable).Z_ser;
-    Z_ser_mutu(endNode,startNode) = -CableData(iCable).Z_ser;
+        startNode = connectionNodes(iCable,1);
+        endNode = connectionNodes(iCable,2);
+
+        Z_ser_mutu(startNode,endNode) = -CableData(iCable).Z_ser;
+        Z_ser_mutu(endNode,startNode) = -CableData(iCable).Z_ser;
 end
 
 % Self impedance/admittance (diagonal elements)
@@ -34,9 +40,9 @@ end
 for iNode = 1:length(Z_ser_self)
     Z_ser_self_vec = [];
     Y_shu_self_vec = [];
-    for iCable = 1:length(start2end_modified)
-        startNode = start2end_modified(iCable,1);
-        endNode = start2end_modified(iCable,2);
+    for iCable = 1:length(connectionNodes)
+        startNode = connectionNodes(iCable,1);
+        endNode = connectionNodes(iCable,2);
         
         if iNode == startNode || iNode == endNode
             Z_ser_self_vec = [Z_ser_self_vec; CableData(iCable).Z_ser];

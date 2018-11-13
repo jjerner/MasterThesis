@@ -1,14 +1,16 @@
 % This script takes the previously setup nodes
 
 fictive_data = 0;
+solar_data = 0;     % Set solar 
 
 if fictive_data == 1
     createBusInputs;
 else
-    % inputFile = 'INSERT FILE HERE';
-    % inputdata = importdata(inputFile);
     disp(' ');
     disp(['Reading input data from: ', 'INSERT FILE HERE'])
+    
+    % inputFile = 'INSERT FILE HERE';
+    % inputdata = importdata(inputFile);
 end
 
 U_prev = ones(length(Y_bus),1) .* U_guess;      % voltage vector
@@ -20,9 +22,11 @@ P_bus = nan(length(Y_bus),1);                   % Active effect in bus
 Q_bus = nan(length(Y_bus),1);                   % Reactive effect in bus
 theta_bus = zeros(length(Y_bus),1);             % phase shift at bus
 U_bus = nan(length(Y_bus),1);                   % Voltage at bus
+I_bus = nan(length(Y_bus),1);                   % Current at bus
 
 
 % Här blir de stökigt, ha så kul!
+% Need to add known parameter data to bus types.
 
 firstHighVoltageNodeFound = 0;
 for ibus = 1:length(Y_bus)
@@ -34,7 +38,8 @@ for ibus = 1:length(Y_bus)
                 if char == 'H' && firstHighVoltageNodeFound == 0
                     firstHighVoltageNodeFound = 1;
                     BusType(ibus,:) = 'SL';
-                    
+                    U_bus(ibus) = 1;
+                    theta_bus(ibus) = 0;
                     
                 elseif char == 'T'
                     BusType(ibus,:) = 'PQ';

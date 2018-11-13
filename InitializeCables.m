@@ -4,7 +4,10 @@ fileToRead = 'T317 Amundstorp.xlsx';
 %fileToRead = 'T085 Hallonvagen.xlsx';
 ExampleCable = 0;
 j = 1i;
-%freq = 50;
+
+if ~(exist('freq', 'var'))
+    freq = 50;
+end
 
 disp('Loading cable data')
 
@@ -75,15 +78,20 @@ else
         CableData(iCables).l      = data.data(iCables,5);                 % [m]
         CableData(iCables).Rpl    = Ledningsdata.R(index);                % [Ohm / km]
         CableData(iCables).R0pl   = Ledningsdata.R0(index);               % [Ohm / km]
+        CableData(iCables).RNpl   = Ledningsdata.RN(index);               % [Ohm / km]
         CableData(iCables).Xpl    = Ledningsdata.X(index);                % [Ohm / km]
         CableData(iCables).X0pl   = Ledningsdata.X0(index);               % [Ohm / km]
+        CableData(iCables).XNpl   = Ledningsdata.XN(index);               % [Ohm / km]
         CableData(iCables).Bdpl   = Ledningsdata.Bd(index);               % [uS / km / fas]
         CableData(iCables).Imax   = Ledningsdata.Imax(index);             % [A]
         
         % assumed data
         CableData(iCables).G      = 0;                                    % Shunt conductance [S]
         
-        %formatting + calculations
+        %formatting + calculations (NOTE: NOT IN PER-UNIT)
+        % commented version of R is 3-phased cable (possibly better?)
+        %CableData(iCables).R      = (CableData(iCables).l / 1e3) * (2*CableData(iCables).Rpl...
+        %                             + CableData(iCables).R0pl + 3*Cabledata(iCables).RNpl);                     % [Ohm]
         CableData(iCables).R      = (CableData(iCables).l / 1e3) * CableData(iCables).Rpl;                        % [Ohm]
         CableData(iCables).X      = (CableData(iCables).l / 1e3) * CableData(iCables).Xpl;                        % [Ohm]
         CableData(iCables).L      = (CableData(iCables).l / 1e3) * CableData(iCables).Xpl / (2*pi*freq);          % [H]

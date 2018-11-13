@@ -19,7 +19,7 @@ SetupArrays;                    % match cable parameters and connections to matr
 
 %% Power Flow Calculations
 
-U_guess = 230;              % initial guess voltage across all busses
+U_guess = 230;                  % initial guess voltage across all busses
 
 SetupProblem;                   % Setup PQ - PV - Slack busses from nodes
 % CalculationsOnPQBusses

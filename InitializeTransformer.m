@@ -51,9 +51,9 @@ TransformerData.I_prim_base = TransformerData.S_base / TransformerData.U_prim_ba
 TransformerData.I_sec_base = TransformerData.S_base / TransformerData.U_sec_base;
 
 
-TransformerData.Z2k_pu      = TransformerData.R2k;  
-TransformerData.R2k_pu      = TransformerData.Z2k;
+TransformerData.Z2k_pu      = TransformerData.Z2k;  
+TransformerData.R2k_pu      = TransformerData.R2k;
 
 TransformerData.R0_pu       = TransformerData.R0;
-TransformerData.X0_pu       = TransformerData.X0;
+TransformerData.Z0_pu       = TransformerData.Z0;
 

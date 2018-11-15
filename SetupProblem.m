@@ -15,8 +15,8 @@ end
 
 U_prev = ones(length(Y_bus),1) .* U_guess;      % voltage vector
 
-BusType = blanks(length(Y_bus))';               % Bus names as 2 chars [PQ, PV, SL] SL = Slack bus
-BusType = repmat(BusType, 1, 2);
+busType = blanks(length(Y_bus))';               % Bus names as 2 chars [PQ, PV, SL] SL = Slack bus
+busType = repmat(busType, 1, 2);
 
 P_bus = nan(length(Y_bus),1);                   % Active effect in bus
 Q_bus = nan(length(Y_bus),1);                   % Reactive effect in bus
@@ -32,30 +32,30 @@ firstHighVoltageNodeFound = 0;
 for ibus = 1:length(Y_bus)
     for row = 1:length(connectionNodes)
         for col = 1:2
-            if ibus == connectionNodes(row,col) && isspace(BusType(ibus))
+            if ibus == connectionNodes(row,col) && isspace(busType(ibus))
                 char = connectionType(row,col);
                 
                 if char == 'H' && firstHighVoltageNodeFound == 0
                     firstHighVoltageNodeFound = 1;
-                    BusType(ibus,:) = 'SL';
+                    busType(ibus,:) = 'SL';
                     U_bus(ibus) = 1;
                     theta_bus(ibus) = 0;
                     
                 elseif char == 'T'
-                    BusType(ibus,:) = 'PQ';
+                    busType(ibus,:) = 'PQ';
                     
                 elseif char == 'J' || char == 'H'
-                    BusType(ibus,:) = 'PQ';
+                    busType(ibus,:) = 'PQ';
                     P_bus(ibus) = 0;
                     Q_bus(ibus) = 0;
                     
                 elseif char == 'S'
-                    BusType(ibus,:) = 'PQ';
+                    busType(ibus,:) = 'PQ';
                     P_bus(ibus) = 0;
                     Q_bus(ibus) = 0;
                     
                 elseif char == 'L'
-                    BusType(ibus,:) = 'PQ';
+                    busType(ibus,:) = 'PQ';
                     P_bus(ibus) = 1;
                     Q_bus(ibus) = 1;
                     

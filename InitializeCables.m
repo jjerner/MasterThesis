@@ -1,7 +1,12 @@
 %% Parameters
 
-fileToRead = 'T317 Amundstorp.xlsx';
-%fileToRead = 'T085 Hallonvagen.xlsx';
+switch location
+    case 'Amundstorp'
+        fileToRead = 'T317 Amundstorp.xlsx';
+    case 'Hallonvägen'
+        fileToRead = 'T085 Hallonvagen.xlsx';
+end
+
 ExampleCable = 0;
 j = 1i;
 
@@ -9,8 +14,7 @@ if ~(exist('freq', 'var'))
     freq = 50;
 end
 
-disp('Loading cable data')
-
+% fix example cable!!!!! [needs fixing]
 if ExampleCable == 1
     % Constant parameters
     CableData(1).l=1;                % Length [km]         
@@ -36,7 +40,7 @@ if ExampleCable == 1
     
 else
     
-    disp(['Reading from file: "', fileToRead,'"']);
+    disp(['Loading cabledata from: "', fileToRead,'"']);
     disp(' ');
     load('data/Ledningsdata.mat');                           % get table of cable data
     

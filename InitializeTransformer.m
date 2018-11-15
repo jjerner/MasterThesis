@@ -1,21 +1,41 @@
 %% Parameters
 
-% Input parameters from spec
-TransformerData.Uprim      = 11000;         % [V]   märkspänning primär
-TransformerData.Usec       = 420;           % [V]   märkspänning sekundär
-TransformerData.S_tot      = 500e3;         % [VA]  märkeffekt
-TransformerData.P_loss     = 4984;          % [W]   belastningsförluster
+disp(['Loading transformerdata for: ', location]);
+disp(' ');
 
-TransformerData.R2k        = 0.997;         % [%]   kortslutningsresistans, procent av vad?
-TransformerData.Z2k        = 5.730;         % [%]   kortslutningsimpedans, procent av vad?
+switch location
+    case 'Amundstorp'
+        TransformerData.Uprim      = 22000;         % [V]    märkspänning primär
+        TransformerData.Usec       = 420;           % [V]    märkspänning sekundär
+        TransformerData.S_tot      = 50e3;          % [VA]   märkeffekt
+        TransformerData.P_loss     = 948;           % [W]    belastningsförluster
 
-TransformerData.P0         = 446;           % [W]   tomgångsförluster
-TransformerData.Q0         = 0;             % [VAR] tomgångsförluster
-TransformerData.I0         = 0.1;           % [%]   tomgångsström, procent av vad?
-TransformerData.R0         = 1;             % [%]   nollföljdsresistans, procent av vad?
-TransformerData.Z0         = 5.728;         % [%]   nollföljdsimpedans, procent av vad?
+        TransformerData.R2k        = 1.896;         % [pu]   kortslutningsresistans
+        TransformerData.Z2k        = 4.222;         % [pu]   kortslutningsimpedans
 
-% RESHAPED DATA FOR PER-UNIT
+        TransformerData.P0         = 111;           % [W]    tomgångsförluster
+        TransformerData.Q0         = 0;             % [VAR]  tomgångsförluster
+        TransformerData.I0         = 0;             % [pu]   tomgångsström
+        TransformerData.R0         = 0;             % [pu]   nollföljdsresistans
+        TransformerData.Z0         = 0;             % [pu]   nollföljdsimpedans
+        
+    case 'Hallonvägen'
+        TransformerData.Uprim      = 22000;         % [V]    märkspänning primär
+        TransformerData.Usec       = 420;           % [V]    märkspänning sekundär
+        TransformerData.S_tot      = 500e3;         % [VA]   märkeffekt
+        TransformerData.P_loss     = 4704;          % [W]    belastningsförluster
+
+        TransformerData.R2k        = 0.941;         % [pu]   kortslutningsresistans
+        TransformerData.Z2k        = 4.78;          % [pu]   kortslutningsimpedans
+
+        TransformerData.P0         = 847;           % [W]    tomgångsförluster
+        TransformerData.Q0         = 0;             % [VAR]  tomgångsförluster
+        TransformerData.I0         = 0;             % [pu]   tomgångsström
+        TransformerData.R0         = 0;             % [pu]   nollföljdsresistans
+        TransformerData.Z0         = 0;             % [pu]   nollföljdsimpedans
+end
+
+%% RESHAPED DATA FOR [PER-UNIT]
 
 % base power and voltages
 TransformerData.S_base = TransformerData.S_tot;
@@ -27,11 +47,13 @@ TransformerData.Z_prim_base = (TransformerData.U_prim_base^2)/TransformerData.S_
 TransformerData.Z_sec_base  = (TransformerData.U_sec_base^2)/TransformerData.S_base;
 
 % base currents
-TransformerData.I_prim_base = TransformerData.S_base / TransformerData.U_prim_base;  %[A RMS]
-TransformerData.I_sec_base = TransformerData.S_base / TransformerData.U_sec_base;    %[A RMS]
+TransformerData.I_prim_base = TransformerData.S_base / TransformerData.U_prim_base;
+TransformerData.I_sec_base = TransformerData.S_base / TransformerData.U_sec_base;
 
 
 TransformerData.Z2k_pu      = TransformerData.R2k;  
 TransformerData.R2k_pu      = TransformerData.Z2k;
 
-% Z primary side of transformer based on I0, R0, X0
+TransformerData.R0_pu       = TransformerData.R0;
+TransformerData.X0_pu       = TransformerData.X0;
+

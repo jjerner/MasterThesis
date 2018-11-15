@@ -1,6 +1,27 @@
+% Test data
+Y_bus=[-13 5 4 0; 5 -13.5 2.5 2;4 2.5 -9 2.5; 0 2 2.5 -4.5];
+
 % Gauss-Seidel solver
 j=1i;                               % Imaginary unit
+% Check criterias
+fprintf(['Bus admittance matrix Y_bus must fulfil either criteria \n' ...
+    '1. Diagonally dominant\n' ...
+    '2. Symmetric AND positive definite\n']);
 
+% Diagonally dominant (weak)
+isDiagonallyDominant=all(2*abs(diag(Y_bus)) >= sum(abs(Y_bus),2));
+% Symmetricity
+isSymmetric=issymmetric(Y_bus);
+% Positive definite
+isPositiveDefinite=all(eig((Y_bus+Y_bus')/2)>0);
+
+if isDiagonallyDominant
+    disp('OK - Y_bus fulfills criteria 1');
+elseif isSymmetric && isPositiveDefinite
+    disp('OK - Y_bus fulfills criteria 1');
+else
+    warning('Neither criteria 1 nor 2 fulfilled - convergence not guaranteed');
+end
 
 PQbuses=BusType=='PQ';
 PQbuses=PQbuses(:,1);

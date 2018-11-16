@@ -9,11 +9,11 @@ fprintf(['Bus admittance matrix Y_bus must fulfil either criteria \n' ...
     '2. Symmetric AND positive definite\n']);
 
 % Diagonally dominant (weak)
-isDiagonallyDominant=all(2*abs(diag(Y_bus)) >= sum(abs(Y_bus),2));
+isDiagonallyDominant = all(2*abs(diag(Y_bus)) >= sum(abs(Y_bus),2));
 % Symmetricity
-isSymmetric=issymmetric(Y_bus);
+isSymmetric = issymmetric(Y_bus);
 % Positive definite
-isPositiveDefinite=all(eig((Y_bus+Y_bus')/2)>0);
+isPositiveDefinite = all(eig((Y_bus+Y_bus')/2) > 0);
 
 if isDiagonallyDominant
     disp('OK - Y_bus fulfills criteria 1');
@@ -48,14 +48,18 @@ for iLoop=1:100                      % Test
     for iBus = 1:length(Y_bus)
         switch BusType(iBus,:)
             case 'PQ'   % If PQ-bus, find V
-            V_latest(iBus)=(1/Y_bus(iBus,iBus))*((S_inj(iBus)/conj(V_latest(iBus)))...
-                -sum(Y_bus(iBus,:).*V_latest));
+                V_latest(iBus)=(1/Y_bus(iBus,iBus))*((P_latest(iBus)+j*Q_latest(iBus)/conj(V_latest(iBus)))...
+                    -(sum(Y_bus(iBus,:).*V_latest)-Y_bus(iBus,iBus).*V_latest(iBus,iBus)));
             case 'PV'   % If PV-bus, find Q
-            Q_latest(iBus)=real(conj(V_latest(iBus))*V_latest(iBus)...
-                *sum(Y_bus(iBus,:))-sum(Y_bus(iBus,:).*V_latest));
-            case 'SL'   % If slack-bus, find P
-            P_latest(iBus)=-imag(conj(V_latest(iBus))*V_latest(iBus)...
-                *sum(Y_bus(iBus,:))-sum(Y_bus(iBus,:).*V_latest));
+                Q_latest(iBus)=-imag(conj(V_latest(iBus))*sum(Y_bus(iBus,:).*V_latest));
+                % If Q_latest is within limits, then compute updated voltage
+                V_latest(iBus)=(1/Y_bus(iBus,iBus))*((P_latest(iBus)+j*Q_latest(iBus)/conj(V_latest(iBus)))...
+                    -(sum(Y_bus(iBus,:).*V_latest)-Y_bus(iBus,iBus).*V_latest(iBus,iBus)));
+                % Force voltage magnitude to specified value
+                V_latest(iBus)=abs(V_0(iBus))*V_latest(iBus)/abs(V_latest(iBus));
+            case 'SL'   % If slack-bus, find P and Q
+                P_latest(iBus)=real(conj(V_latest(iBus))*sum(Y_bus(iBus,:).*V_latest));
+                Q_latest(iBus)=-imag(conj(V_latest(iBus))*sum(Y_bus(iBus,:).*V_latest));
         end    
     end
     V_hist(iLoop+1,:)=V_latest;

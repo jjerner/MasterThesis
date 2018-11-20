@@ -1,6 +1,6 @@
 %% Parameters
 
-disp(['Loading transformerdata for: ', location]);
+disp(['Loading transformer data for: ', location]);
 disp(' ');
 
 switch location
@@ -38,7 +38,7 @@ end
 %% RESHAPED DATA FOR [PER-UNIT]
 
 % base power and voltages
-TransformerData.S_base = TransformerData.S_tot;
+TransformerData.S_base      = TransformerData.S_tot;
 TransformerData.U_prim_base = TransformerData.Uprim;
 TransformerData.U_sec_base  = TransformerData.Usec;
 
@@ -48,8 +48,7 @@ TransformerData.Z_sec_base  = (TransformerData.U_sec_base^2)/TransformerData.S_b
 
 % base currents
 TransformerData.I_prim_base = TransformerData.S_base / TransformerData.U_prim_base;
-TransformerData.I_sec_base = TransformerData.S_base / TransformerData.U_sec_base;
-
+TransformerData.I_sec_base  = TransformerData.S_base / TransformerData.U_sec_base;
 
 TransformerData.Z2k_pu      = TransformerData.Z2k;  
 TransformerData.R2k_pu      = TransformerData.R2k;

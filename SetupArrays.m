@@ -14,10 +14,6 @@ nCables = length(CableData);
 nTransformers = length(TransformerData);
 nNodes = nCables + nTransformers + 1;
 
-if nCables + nTransformers ~= length(connectionNodes)
-   error('Kaos'); 
-end
-
 % Preallocation 
 Z_ser_self = zeros(nNodes);    % Self impedance, series
 Z_ser_mutu = zeros(nNodes);    % Mutual impedance, series
@@ -28,32 +24,43 @@ Y_shu_self = zeros(nNodes);    % Self admittance, shunt
 
 % Mutual impedance/admittance (non-diagonal elements)
 % Negative of sum of all admittances between node ij
-for iConnection = 1:length(CableData)
+disp(' ')
+disp('Setting non-diagonal elements.')
+for iConnection = 1:length(connectionType)
         startNode = connectionNodes(iConnection,1);
         endNode = connectionNodes(iConnection,2);
+        disp(' ');
+        disp(['At nodes: ', num2str(startNode), ',', num2str(endNode)]);
         
         if iConnection ~= addedTransformerNodeAtIndex(1)                    % if NOT at added trafo-node
             if iConnection < addedTransformerNodeAtIndex(1)
                 Z_ser_mutu(startNode,endNode) = -CableData(iConnection).Z_ser;
                 Z_ser_mutu(endNode,startNode) = -CableData(iConnection).Z_ser;
+                disp(['Series impedance added from Cable ', num2str(iConnection)])
             else
                 Z_ser_mutu(startNode,endNode) = -CableData(iConnection-1).Z_ser;
                 Z_ser_mutu(endNode,startNode) = -CableData(iConnection-1).Z_ser;
+                disp(['Series impedance added from Cable ', num2str(iConnection-1)])
             end
         else
             Z_ser_mutu(startNode,endNode) = 0.0012 + 0.0001i;    % TransformerData.Z_ser;
             Z_ser_mutu(endNode,startNode) = 0.0012 + 0.0001i;    % TransformerData.Z_ser;
+            disp('Series impedance added from transformer');
         end
 end
 
 % Self impedance/admittance (diagonal elements)
 % Sum of elements terminating at node i
+disp(' ')
+disp('Setting diagonal elements.')
 for iNode = 1:nNodes
     Z_ser_self_vec = [];
     Y_shu_self_vec = [];
     for iConnection = 1:length(connectionNodes)
         startNode = connectionNodes(iConnection,1);
         endNode = connectionNodes(iConnection,2);
+        disp(' ');
+        disp(['At nodes: ', num2str(startNode), ',', num2str(endNode)]);
         
         if iNode == startNode || iNode == endNode
             if iConnection ~= addedTransformerNodeAtIndex(1)                % if NOT at added trafo-node

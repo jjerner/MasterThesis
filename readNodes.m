@@ -22,7 +22,7 @@ for row = 1:length(data.data)
     else
         currentcell = data.textdata{row,3};
         cellsplit = strsplit(currentcell);
-        intStart = str2double(cellsplit{1});      % start node
+        intStart = str2double(cellsplit{1});       % start node
         startNodes(row) = intStart;
         typeStart = cellsplit(2);                  % start node type
         nodeName(row,1) = typeStart;
@@ -72,11 +72,6 @@ start2end = [startNodes, endNodes];
 modifier = min(min(start2end)) - 1;
 start2end_mod = start2end - modifier;      % modified so start point gets index 1
 
-for iterator = 1:length(start2end_mod)
-    CableData(iterator).StartNode = start2end_mod(iterator,1);
-    CableData(iterator).EndNode = start2end_mod(iterator,2);
-end
-
 % add extra internal nodeconnection in the transformer, called 'TT'
 for connection = 1:length(connectionType(1,:))
    
@@ -91,7 +86,35 @@ for connection = 1:length(connectionType(1,:))
     
 end
 
+% The following section is to remove any connection previous to the
+% Transformer, so that bus/node 1 is the transformers high voltage side
+removeHighVoltageNodes = true;      % true if all nodes previous to transformer should be ignored
+
+if removeHighVoltageNodes
+    type = connectionType(1, :);
+    while any(type == 'H')
+        CableData(1) = [];          % remove first struct in cable data
+        connectionType(1,:) = [];   % remove first connection type
+        connectionNodes(1,:) = [];  % remove first connection nodes
+        
+        connectionNodes = connectionNodes - 1;
+        addedTransformerNodeAtIndex = addedTransformerNodeAtIndex - 1;
+        
+        type = connectionType(1, :);    % update type
+    end
+end
+
+for iterator = 1:length(CableData)
+    if removeHighVoltageNodes
+        CableData(iterator).StartNode = connectionNodes(iterator,1)+1;
+        CableData(iterator).EndNode = connectionNodes(iterator,2)+1;
+    else
+        CableData(iterator).StartNode = connectionNodes(iterator,1);
+        CableData(iterator).EndNode = connectionNodes(iterator,2);
+    end
+end
+
 
 %clear some workspace
 clear foundTransformer typeEnd typeStart startNodes endNodes intStart intEnd typeStart typeEnd
-clear currentcell cellsplit row col iterator newStart newEnd connection
+clear currentcell cellsplit row col iterator newStart newEnd connection type

@@ -35,7 +35,7 @@ for ibus = 1:length(Y_bus)
             if ibus == connectionNodes(row,col) && isspace(busType(ibus))
                 char = connectionType(row,col);
                 
-                if char == 'H' && firstHighVoltageNodeFound == 0
+                if char == 'H' || char == 'T' && firstHighVoltageNodeFound == 0
                     firstHighVoltageNodeFound = 1;
                     busType(ibus,:) = 'SL';
                     U_bus(ibus) = 1;

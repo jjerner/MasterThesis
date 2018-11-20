@@ -40,7 +40,7 @@ if ExampleCable == 1
     
 else
     
-    disp(['Loading cabledata from: "', fileToRead,'"']);
+    disp(['Loading cable data from: "', fileToRead,'"']);
     disp(' ');
     load('data/Ledningsdata.mat');                           % get table of cable data
     

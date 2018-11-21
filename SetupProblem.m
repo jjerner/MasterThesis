@@ -1,7 +1,7 @@
 % This script takes the previously setup nodes
 
 fictive_data = 0;
-solar_data = 0;     % Set solar 
+solar_data = 0;             % Set solar 
 
 if fictive_data == 1
     createBusInputs;

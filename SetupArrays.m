@@ -53,8 +53,8 @@ end
 % Sum of elements terminating at node i
 disp(' ')
 disp('SETTING DIAGONAL ELEMENTS.')
+disp(' ');
 for iNode = 1:nNodes
-    disp(' ');
     disp(['At node ', num2str(iNode)]);
     Z_ser_self_vec = [];
     Y_shu_self_vec = [];
@@ -69,8 +69,8 @@ for iNode = 1:nNodes
                     Y_shu_self_vec = [Y_shu_self_vec; 0.5*CableData(iConnection).Y_shu/(1/TransformerData.Z_prim_base)];
                     disp(['     - Cable ', num2str(iConnection)]);
                 else
-                    Z_ser_self_vec = [Z_ser_self_vec; CableData(iConnection-1).Z_ser/TransformerData.Z_prim_base];
-                    Y_shu_self_vec = [Y_shu_self_vec; 0.5*CableData(iConnection-1).Y_shu/(1/TransformerData.Z_prim_base)];
+                    Z_ser_self_vec = [Z_ser_self_vec; CableData(iConnection-1).Z_ser/TransformerData.Z_sec_base];
+                    Y_shu_self_vec = [Y_shu_self_vec; 0.5*CableData(iConnection-1).Y_shu/(1/TransformerData.Z_sec_base)];
                     disp(['     - Cable ', num2str(iConnection-1)]);
                 end
             else

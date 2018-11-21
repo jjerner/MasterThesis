@@ -82,9 +82,9 @@ function result=solveGS(Y_bus,nodeTypes,V_0,P_inj,Q_inj,doPlot)
                     %    -(sum(Y_bus(iBus,:).*V_latest)-Y_bus(iBus,iBus).*V_latest(iBus,iBus)));
             end    
         end
-        V_hist(iLoop+1,:)=V_latest;
-        P_hist(iLoop+1,:)=P_latest;
-        Q_hist(iLoop+1,:)=Q_latest;
+        V_hist(iLoop+1,:)=V_latest;     % Add latest voltages to history
+        P_hist(iLoop+1,:)=P_latest;     % Add latest active powers to history
+        Q_hist(iLoop+1,:)=Q_latest;     % Add latest reactive powers to history
         V_diff=V_hist(iLoop+1,:)-V_hist(iLoop,:);   % Voltage difference
         P_diff=V_hist(iLoop+1,:)-V_hist(iLoop,:);   % Active power difference
         Q_diff=V_hist(iLoop+1,:)-V_hist(iLoop,:);   % Reactive power difference

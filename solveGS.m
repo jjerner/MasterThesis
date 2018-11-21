@@ -20,16 +20,16 @@
 %
 % SAMPLE DATA:
 % Y_bus=[-13 5 4 0; 5 -13.5 2.5 2;4 2.5 -9 2.5; 0 2 2.5 -4.5];
-% nodeTypes=['SL';'PQ';'PQ';'PQ'];
-% V_0=[1 1 0.95 0.9];
+% nodeTypes=['SL';'PQ';'PV';'PQ'];
+% V_0=[1 0.95 1 0.9];
 % P_inj=[0 1 1.01 1.5];
-% Q_inj=[0 0.01 0.01 0.01];
+% Q_inj=[0 0.01 0 0.01];
 
 
 function result=solveGS(Y_bus,nodeTypes,V_0,P_inj,Q_inj,doPlot)
 
-    j=1i;                               % Imaginary unit
-    % Check criterias
+    j=1i;   % Imaginary unit
+    % Check criterias for bus admittance matrix
     fprintf(['Bus admittance matrix Y_bus must fulfil either criteria \n' ...
         '1. Diagonally dominant\n' ...
         '2. Symmetric AND positive definite\n']);
@@ -49,28 +49,19 @@ function result=solveGS(Y_bus,nodeTypes,V_0,P_inj,Q_inj,doPlot)
         warning('Neither criteria 1 nor 2 fulfilled - convergence not guaranteed');
     end
 
-    PQbuses=nodeTypes=='PQ';              % Logical vector indentifying PQ buses
-    PQbuses=PQbuses(:,1);
-    PVbuses=nodeTypes=='PV';              % Logical vector indentifying PV buses
-    PVbuses=PQbuses(:,1);
-    SLbuses=nodeTypes=='SL';              % Logical vector indentifying slack bus
-    SLbuses=PQbuses(:,1);
-
-    S_inj=Q_inj+j*Q_inj;     % Apparent power injected at each node [VA]
-
-    V_latest=V_0;
-    P_latest=P_inj;
-    Q_latest=Q_inj;
-    V_hist(1,:)=V_0;
-    P_hist(1,:)=P_inj;
-    Q_hist(1,:)=Q_inj;
+    V_latest=V_0;           % Latest calculated node voltages
+    P_latest=P_inj;         % Latest calculated node powers (active)
+    Q_latest=Q_inj;         % Latest calculated node powers (reactive)
+    V_hist(1,:)=V_0;        % Full history of calculated node voltages
+    P_hist(1,:)=P_inj;      % Full history of calculated node powers (active)
+    Q_hist(1,:)=Q_inj;      % Full history of calculated node powers (reactive)
     iLoop=1;
     V_diff=inf*ones(1,length(Y_bus));   % Initial difference to avoid immediate stop
     P_diff=inf*ones(1,length(Y_bus));
     Q_diff=inf*ones(1,length(Y_bus));
 
 
-    while norm(V_diff,2)>1e-4 && norm(P_diff,2)>1e-4 && norm(Q_diff,2)>1e-4
+    while norm(V_diff,2)>1e-5 && norm(P_diff,2)>1e-5 && norm(Q_diff,2)>1e-5
         for iBus = 1:length(Y_bus)
             switch nodeTypes(iBus,:)
                 case 'PQ'   % If PQ-bus, find V

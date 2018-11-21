@@ -1,5 +1,5 @@
 % Test data
-Y_bus=[-13 5 4 0; 5 -13.5 2.5 2;4 2.5 -9 2.5; 0 2 2.5 -4.5];
+%Y_bus=[-13 5 4 0; 5 -13.5 2.5 2;4 2.5 -9 2.5; 0 2 2.5 -4.5];
 
 % Gauss-Seidel solver
 j=1i;                               % Imaginary unit
@@ -30,7 +30,7 @@ PVbuses=PQbuses(:,1);
 SLbuses=BusType=='SL';
 SLbuses=PQbuses(:,1);
 
-V_0=[1e4 1e4 1e4 ones(1,length(Y_bus)-3)];      % Voltage guess for each node [V]
+V_0=ones(1,length(Y_bus));      % Voltage magnitude guess for each node [V]
 P_inj(PQbuses)=-1000;               % Active power injected at each node [W]
 Q_inj(PQbuses)=-50;                 % Reactive power injected at each node [VAr]
 S_inj=Q_inj+j*Q_inj;                % Apparent power injected at each node [VA]
@@ -57,9 +57,12 @@ for iLoop=1:100                      % Test
                     -(sum(Y_bus(iBus,:).*V_latest)-Y_bus(iBus,iBus).*V_latest(iBus,iBus)));
                 % Force voltage magnitude to specified value
                 V_latest(iBus)=abs(V_0(iBus))*V_latest(iBus)/abs(V_latest(iBus));
-            case 'SL'   % If slack-bus, find P and Q
+            case 'SL'   % If slack-bus, find P and Q ???
                 P_latest(iBus)=real(conj(V_latest(iBus))*sum(Y_bus(iBus,:).*V_latest));
                 Q_latest(iBus)=-imag(conj(V_latest(iBus))*sum(Y_bus(iBus,:).*V_latest));
+                % Compute updated voltage ???
+                %V_latest(iBus)=(1/Y_bus(iBus,iBus))*((P_latest(iBus)+j*Q_latest(iBus)/conj(V_latest(iBus)))...
+                %    -(sum(Y_bus(iBus,:).*V_latest)-Y_bus(iBus,iBus).*V_latest(iBus,iBus)));
         end    
     end
     V_hist(iLoop+1,:)=V_latest;

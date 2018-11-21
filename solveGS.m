@@ -30,7 +30,7 @@ PVbuses=PQbuses(:,1);
 SLbuses=BusType=='SL';
 SLbuses=PQbuses(:,1);
 
-V_0=[1e4 1e4 1e4 ones(1,length(Y_bus)-3)];      % Voltage magnitude guess for each node [V]
+V_0=ones(1,length(Y_bus));      % Voltage magnitude guess for each node [V]
 P_inj(PQbuses)=-1000;               % Active power injected at each node [W]
 Q_inj(PQbuses)=-50;                 % Reactive power injected at each node [VAr]
 S_inj=Q_inj+j*Q_inj;                % Apparent power injected at each node [VA]

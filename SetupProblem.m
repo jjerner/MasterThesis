@@ -16,6 +16,7 @@ else
         switch
     % inputFile = 'INSERT FILE HERE';
     % inputdata = importdata(inputFile);
+    
 end
 
 U_prev = ones(length(Y_bus),1) .* U_guess;      % voltage vector
@@ -23,9 +24,8 @@ U_prev = ones(length(Y_bus),1) .* U_guess;      % voltage vector
 busType = blanks(length(Y_bus))';               % Bus names as 2 chars [PQ, PV, SL] SL = Slack bus
 busType = repmat(busType, 1, 2);
 
-P_bus = nan(length(Y_bus),1);                   % Active effect in bus
-Q_bus = nan(length(Y_bus),1);                   % Reactive effect in bus
-theta_bus = zeros(length(Y_bus),1);             % phase shift at bus
+P_bus = nan(length(Y_bus),1);                   % Active power in bus
+Q_bus = nan(length(Y_bus),1);                   % Reactive power in bus
 U_bus = nan(length(Y_bus),1);                   % Voltage at bus
 I_bus = nan(length(Y_bus),1);                   % Current at bus
 
@@ -34,38 +34,37 @@ I_bus = nan(length(Y_bus),1);                   % Current at bus
 % Need to add known parameter data to bus types.
 
 firstHighVoltageBusFound = 0;
-for ibus = 1:length(Y_bus)
-    for row = 1:length(connectionBuses)
-        for col = 1:2
-            if ibus == connectionBuses(row,col) && isspace(busType(ibus))
-                char = connectionType(row,col);
+for iBus = 1:length(Y_bus)
+    for iRow = 1:length(connectionBuses)
+        for iCol = 1:2
+            if iBus == connectionBuses(iRow,iCol) && isspace(busType(iBus))
+                char = connectionType(iRow,iCol);
                 
                 if char == 'H' || char == 'T' && firstHighVoltageBusFound == 0
                     firstHighVoltageBusFound = 1;
-                    busType(ibus,:) = 'SL';
-                    U_bus(ibus) = 1;
-                    theta_bus(ibus) = 0;
+                    busType(iBus,:) = 'SL';
+                    U_bus(iBus) = 1;
                     
                 elseif char == 'T'
-                    busType(ibus,:) = 'PQ';
+                    busType(iBus,:) = 'PQ';
                     
                 elseif char == 'J' || char == 'H'
-                    busType(ibus,:) = 'PQ';
-                    P_bus(ibus) = 0;
-                    Q_bus(ibus) = 0;
+                    busType(iBus,:) = 'PQ';
+                    P_bus(iBus) = 0;
+                    Q_bus(iBus) = 0;
                     
                 elseif char == 'S'
-                    busType(ibus,:) = 'PQ';
-                    P_bus(ibus) = 0;
-                    Q_bus(ibus) = 0;
+                    busType(iBus,:) = 'PQ';
+                    P_bus(iBus) = 0;
+                    Q_bus(iBus) = 0;
                     
                 elseif char == 'L'
-                    busType(ibus,:) = 'PQ';
-                    P_bus(ibus) = 1;
-                    Q_bus(ibus) = 1;
+                    busType(iBus,:) = 'PQ';
+                    P_bus(iBus) = 1;
+                    Q_bus(iBus) = 1;
                     
                 else
-                    error('Error when sorting Bus data, check "Setup Problem.m"')
+                    error('Error when sorting bus data, check "SetupProblem.m"')
                 end
                 
             end
@@ -74,4 +73,4 @@ for ibus = 1:length(Y_bus)
 end
 
 % clear some workspace
-clear firstHighVoltageBusFound row col char ibus
+clear firstHighVoltageBusFound iRow iCol iBus char

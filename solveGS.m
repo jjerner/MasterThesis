@@ -110,9 +110,9 @@ function result=solveGS(Y_bus,busTypes,V_0,P_inj,Q_inj,accFactor,doPlot)
     
     % Plot
     if doPlot
-        legendLabelsV=[repmat('V_',length(Y_bus),1) num2str(transpose(1:length(Y_bus)))];
-        legendLabelsP=[repmat('P_',length(Y_bus),1) num2str(transpose(1:length(Y_bus)))];
-        legendLabelsQ=[repmat('Q_',length(Y_bus),1) num2str(transpose(1:length(Y_bus)))];
+        legendLabelsV=[repmat('V_{',length(Y_bus),1) num2str(transpose(1:length(Y_bus))) repmat('}',length(Y_bus),1)];
+        legendLabelsP=[repmat('P_{',length(Y_bus),1) num2str(transpose(1:length(Y_bus))) repmat('}',length(Y_bus),1)];
+        legendLabelsQ=[repmat('Q_{',length(Y_bus),1) num2str(transpose(1:length(Y_bus))) repmat('}',length(Y_bus),1)];
         figure;
         plot(abs(V_hist));
         title('Voltage history');

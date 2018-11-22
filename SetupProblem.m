@@ -1,14 +1,19 @@
-% This script takes the previously setup nodes
+% This script takes the previously setup buses
 
 fictive_data = 0;
 solar_data = 0;             % Set solar 
 
 if fictive_data == 1
+    disp(' ')
+    disp('Creating fictional input data.');
+    
     createBusInputs;
 else
     disp(' ');
     disp(['Reading input data from: ', 'INSERT FILE HERE'])
     
+    case location
+        switch
     % inputFile = 'INSERT FILE HERE';
     % inputdata = importdata(inputFile);
 end
@@ -28,15 +33,15 @@ I_bus = nan(length(Y_bus),1);                   % Current at bus
 % Här blir de stökigt, ha så kul!
 % Need to add known parameter data to bus types.
 
-firstHighVoltageNodeFound = 0;
+firstHighVoltageBusFound = 0;
 for ibus = 1:length(Y_bus)
-    for row = 1:length(connectionNodes)
+    for row = 1:length(connectionBuses)
         for col = 1:2
-            if ibus == connectionNodes(row,col) && isspace(busType(ibus))
+            if ibus == connectionBuses(row,col) && isspace(busType(ibus))
                 char = connectionType(row,col);
                 
-                if char == 'H' || char == 'T' && firstHighVoltageNodeFound == 0
-                    firstHighVoltageNodeFound = 1;
+                if char == 'H' || char == 'T' && firstHighVoltageBusFound == 0
+                    firstHighVoltageBusFound = 1;
                     busType(ibus,:) = 'SL';
                     U_bus(ibus) = 1;
                     theta_bus(ibus) = 0;
@@ -69,4 +74,4 @@ for ibus = 1:length(Y_bus)
 end
 
 % clear some workspace
-clear firstHighVoltageNodeFound row col char ibus
+clear firstHighVoltageBusFound row col char ibus

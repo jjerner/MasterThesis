@@ -1,32 +1,32 @@
 % Gauss-Seidel solver for power flow analysis
-% result=solveGS(Y_bus,nodeTypes,V_0,P_inj,Q_inj,accFactor,doPlot)
+% result=solveGS(Y_bus,busTypes,V_0,P_inj,Q_inj,accFactor,doPlot)
 %
 % INPUTS:
 % Y_bus:        Bus admittance matrix (n x n complex double)
-% nodeTypes:    Vector describing node types (n x 2 char)
-% V_0:          Voltage magnitude guess for each node [V] (n x 1 double)
-% P_inj:        Active power injected at each node [W] (n x 1 double)
-% Q_inj:        Reactive power injected at each node [VAr] (n x 1 double)
+% busTypes:    Vector describing bus types (n x 2 char)
+% V_0:          Voltage magnitude guess for each bus [V] (n x 1 double)
+% P_inj:        Active power injected at each bus [W] (n x 1 double)
+% Q_inj:        Reactive power injected at each bus [VAr] (n x 1 double)
 % doPlot:       Switch to produce plots or not (1 x 1 bool)
 %
 % OUTPUTS:
 % result:           Struct containing solver results
-% result.V_hist:    Voltage iteration history per node
-% result.P_hist:    Active power iteration history per node
-% result.Q_hist:    Reactive power iteration history per node
+% result.V_hist:    Voltage iteration history per bus
+% result.P_hist:    Active power iteration history per bus
+% result.Q_hist:    Reactive power iteration history per bus
 % result.V_diff:    Voltage difference between the last two iterations
 % result.P_diff:    Active power difference between the last two iterations
 % result.Q_diff:    Reactive power difference between the last two iterations
 %
 % SAMPLE DATA:
 % Y_bus=[-13 5 4 0; 5 -13.5 2.5 2;4 2.5 -9 2.5; 0 2 2.5 -4.5];
-% nodeTypes=['SL';'PQ';'PV';'PQ'];
+% busTypes=['SL';'PQ';'PV';'PQ'];
 % V_0=[1 0.95 1 0.9];
 % P_inj=[0 1 1.01 1.5];
 % Q_inj=[0 0.01 0 0.01];
 
 
-function result=solveGS(Y_bus,nodeTypes,V_0,P_inj,Q_inj,accFactor,doPlot)
+function result=solveGS(Y_bus,busTypes,V_0,P_inj,Q_inj,accFactor,doPlot)
 
     j=1i;   % Imaginary unit
     % Check criterias for bus admittance matrix
@@ -49,12 +49,12 @@ function result=solveGS(Y_bus,nodeTypes,V_0,P_inj,Q_inj,accFactor,doPlot)
         warning('Neither criteria 1 nor 2 fulfilled - convergence not guaranteed');
     end
 
-    V_latest=V_0;           % Latest calculated node voltages
-    P_latest=P_inj;         % Latest calculated node powers (active)
-    Q_latest=Q_inj;         % Latest calculated node powers (reactive)
-    V_hist(1,:)=V_0;        % Full history of calculated node voltages
-    P_hist(1,:)=P_inj;      % Full history of calculated node powers (active)
-    Q_hist(1,:)=Q_inj;      % Full history of calculated node powers (reactive)
+    V_latest=V_0;           % Latest calculated bus voltages
+    P_latest=P_inj;         % Latest calculated bus powers (active)
+    Q_latest=Q_inj;         % Latest calculated bus powers (reactive)
+    V_hist(1,:)=V_0;        % Full history of calculated bus voltages
+    P_hist(1,:)=P_inj;      % Full history of calculated bus powers (active)
+    Q_hist(1,:)=Q_inj;      % Full history of calculated bus powers (reactive)
     iLoop=1;
     V_diff=inf*ones(1,length(Y_bus));   % Initial difference to avoid immediate stop
     P_diff=inf*ones(1,length(Y_bus));
@@ -63,7 +63,7 @@ function result=solveGS(Y_bus,nodeTypes,V_0,P_inj,Q_inj,accFactor,doPlot)
 
     while norm(V_diff,2)>1e-5 && norm(P_diff,2)>1e-5 && norm(Q_diff,2)>1e-5
         for iBus = 1:length(Y_bus)
-            switch nodeTypes(iBus,:)
+            switch busTypes(iBus,:)
                 case 'PQ'   % If PQ-bus, find V
                     V_latest(iBus)=(1/Y_bus(iBus,iBus))*((P_latest(iBus)+j*Q_latest(iBus)/conj(V_latest(iBus)))...
                         -(sum(Y_bus(iBus,:).*V_latest)-Y_bus(iBus,iBus).*V_latest(iBus)));

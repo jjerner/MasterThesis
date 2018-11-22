@@ -15,15 +15,15 @@ j = 1i;
 InitializeTransformer;          % transformer parameters
 InitializeCables;               % cable parameters & connections
 
-% Sort startpoint - endpoint and node types
-readNodes                       % outputs: start2end & nodeType, matrices describing where each cable is connected.
+% Sort startpoint - endpoint and bus types
+readBuses                       % outputs: start2end & busType, matrices describing where each cable is connected.
 
 SetupArrays;                    % match cable parameters and connections to matrices
 
 %% Power Flow Calculations
 
 U_guess = 230;                  % initial guess voltage across all busses
-SetupProblem;                   % Setup PQ - PV - Slack busses from nodes
+SetupProblem;                   % Setup PQ - PV - Slack busses from buses
 
 
 

@@ -19,14 +19,23 @@
 % result.Q_diff:    Reactive power difference between the last two iterations
 %
 % SAMPLE DATA:
-% Y_bus=[-13 5 4 0; 5 -13.5 2.5 2;4 2.5 -9 2.5; 0 2 2.5 -4.5];
-% busTypes=['SL';'PQ';'PV';'PQ'];
-% V_0=[1 0.95 1 0.9];
-% P_inj=[0 1 1.01 1.5];
-% Q_inj=[0 0.01 0 0.01];
+%  Y_bus=[-13 5 4 0; 5 -13.5 2.5 2;4 2.5 -9 2.5; 0 2 2.5 -4.5];
+%  busTypes=['SL';'PQ';'PV';'PQ'];
+%  V_0=[1 0.95 1 0.9];
+%  P_inj=[0 1 1.01 1.5];
+%  Q_inj=[0 0.01 0 0.01];
 
 
 function result=solveGS(Y_bus,busTypes,V_0,P_inj,Q_inj,accFactor,doPlot)
+
+    if nargin < 5
+        error('Not enough input arguments.')
+    elseif nargin == 5
+        accFactor = 1;
+        doPlot = 0;
+    elseif nargin == 6
+        doPlot = 0;
+    end
 
     j=1i;   % Imaginary unit
     % Check criterias for bus admittance matrix

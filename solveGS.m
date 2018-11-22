@@ -1,5 +1,5 @@
 % Gauss-Seidel solver for power flow analysis
-% result=solveGS(Y_bus,nodeTypes,V_0,P_inj,Q_inj,doPlot)
+% result=solveGS(Y_bus,nodeTypes,V_0,P_inj,Q_inj,accFactor,doPlot)
 %
 % INPUTS:
 % Y_bus:        Bus admittance matrix (n x n complex double)
@@ -26,7 +26,7 @@
 % Q_inj=[0 0.01 0 0.01];
 
 
-function result=solveGS(Y_bus,nodeTypes,V_0,P_inj,Q_inj,doPlot)
+function result=solveGS(Y_bus,nodeTypes,V_0,P_inj,Q_inj,accFactor,doPlot)
 
     j=1i;   % Imaginary unit
     % Check criterias for bus admittance matrix
@@ -67,6 +67,8 @@ function result=solveGS(Y_bus,nodeTypes,V_0,P_inj,Q_inj,doPlot)
                 case 'PQ'   % If PQ-bus, find V
                     V_latest(iBus)=(1/Y_bus(iBus,iBus))*((P_latest(iBus)+j*Q_latest(iBus)/conj(V_latest(iBus)))...
                         -(sum(Y_bus(iBus,:).*V_latest)-Y_bus(iBus,iBus).*V_latest(iBus)));
+                    % Acceleration factor
+                    V_latest(iBus)=accFactor*V_latest(iBus)+(1-accFactor)*V_hist(iLoop,iBus);
                 case 'PV'   % If PV-bus, find Q
                     Q_latest(iBus)=-imag(conj(V_latest(iBus))*sum(Y_bus(iBus,:).*V_latest));
                     % If Q_latest is within limits, then compute updated voltage

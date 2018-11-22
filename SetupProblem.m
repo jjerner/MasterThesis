@@ -12,8 +12,13 @@ else
     disp(' ');
     disp(['Reading input data from: ', 'INSERT FILE HERE'])
     
-    case location
-        switch
+    switch location
+        case 'Amundstorp'
+            filePath = 'asdasd';
+        case 'Hallonvägen'
+            filePath = 'asdad';
+    end
+        
     % inputFile = 'INSERT FILE HERE';
     % inputdata = importdata(inputFile);
 end

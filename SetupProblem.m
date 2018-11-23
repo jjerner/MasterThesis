@@ -14,12 +14,11 @@ else
     
     switch location
         case 'Amundstorp'
-            filePath = 'asdasd';
+            filePath = 'data/Inputs/T317';
         case 'Hallonvägen'
-            filePath = 'asdad';
+            filePath = 'data/Inputs/T085';
     end
-        
-    % inputFile = 'INSERT FILE HERE';
+    
     % inputdata = importdata(inputFile);
     
 end

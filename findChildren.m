@@ -3,7 +3,7 @@
 %
 % INPUTS:
 % connMatrix:   Logical n x n matrix describing node connections using
-%               positive elements. Rows correspond to start nodes and
+%               nonzero elements. Rows correspond to start nodes and
 %               columns to end nodes, i.e. connMatrix(1,3)~=0 denotes a 
 %               connection from node 1 to node 3. Only elements above first
 %               diagonal are considered (connections assumed bi-directional).

@@ -8,7 +8,7 @@ location = 'Hallonvägen';
 
 %% Initialize parameters (CONSTANTS)
 freq = 50;                      % frequency
-w = 2*pi*freq;                  % OMEGA(LUL)
+w = 2*pi*freq;                  % OMEGA(LUL, omegalul Kappa 4Head)
 j = 1i;
 
 %% Initialize parameters (transformer & cables)
@@ -16,16 +16,12 @@ InitializeTransformer;          % transformer parameters
 InitializeCables;               % cable parameters & connections
 
 % Sort startpoint - endpoint and bus types
-readBuses                       % outputs: start2end & busType, matrices describing where each cable is connected.
-
+readBuses                       % outputs: connectionBuses & connectionType, 
+                                %          matrices describing where each bus is connected.
+                                
 SetupArrays;                    % match cable parameters and connections to matrices
 
 %% Power Flow Calculations
-
-U_guess = 230;                  % initial guess voltage across all busses
 SetupProblem;                   % Setup PQ - PV - Slack busses from buses
-
-
-
 
 

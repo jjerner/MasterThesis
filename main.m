@@ -3,8 +3,8 @@ clear
 %add paths
 AddPathsToMain                  % Add local paths to data repositories & PV model
 
-%location = 'Hallonvägen';
-location = 'Amundstorp';
+location = 'Hallonvägen';
+%location = 'Amundstorp';
 
 %% Initialize parameters (CONSTANTS)
 freq = 50;                      % frequency

@@ -18,7 +18,15 @@ connectionType = repmat(connectionType, 1, 2);
 for row = 1:length(data.data)
 % startbus   
     if ~isnan(data.data(row,3))
-        startBuses(row) = data.data(row,3);
+        if data.data(row,3) > 99
+            currentcell = num2str(data.data(row,3));
+            intStart = str2double(currentcell(1:3));
+            startBuses(row) = intStart;
+            typeStart = currentcell(4:end);
+            busName(row,1) = {typeStart};
+        else
+            startBuses(row) = data.data(row,3);
+        end
     else
         currentcell = data.textdata{row,3};
         cellsplit = strsplit(currentcell);
@@ -30,7 +38,16 @@ for row = 1:length(data.data)
     
 % endbus
     if ~isnan(data.data(row,4))
-        endBuses(row) = data.data(row,4);
+        if data.data(row,4) > 99
+            currentcell = num2str(data.data(row,4));
+            intEnd = str2double(currentcell(1:3));
+            endBuses(row) = intEnd;
+            typeEnd = currentcell(4:end);
+            busName(row,2) = {typeEnd};
+            
+        else
+            endBuses(row) = data.data(row,4);
+        end
     else
         currentcell = data.textdata{row,4};
         cellsplit = strsplit(currentcell);

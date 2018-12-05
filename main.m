@@ -22,6 +22,7 @@ readBuses                       % outputs: connectionBuses & connectionType,
 SetupArrays;                    % match cable parameters and connections to matrices
 
 %% Power Flow Calculations
-SetupProblem;                   % Setup PQ - PV - Slack busses from buses
+
+SetupProblem;                   % Setup PQ - PV - Slack busses from buses (reading inputdata)
 
 

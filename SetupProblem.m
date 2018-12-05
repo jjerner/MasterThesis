@@ -10,20 +10,11 @@ if fictive_data == 1
     createBusInputs;
 else
     disp(' ');
-    disp(['Reading input data from: ', 'INSERT FILE HERE'])
+    disp(['Reading input data for ', location]);
     
-    switch location
-        case 'Amundstorp'
-            filePath = 'data/Inputs/T317';
-        case 'Hallonvägen'
-            filePath = 'data/Inputs/T085';
-    end
-    
-    % inputdata = importdata(inputFile);
+    readInput;                                  % Read input data
     
 end
-
-U_prev = ones(length(Y_bus),1) .* U_guess;      % voltage vector
 
 busType = blanks(length(Y_bus))';               % Bus names as 2 chars [PQ, PV, SL] SL = Slack bus
 busType = repmat(busType, 1, 2);

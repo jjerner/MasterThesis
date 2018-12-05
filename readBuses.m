@@ -44,7 +44,6 @@ for row = 1:length(data.data)
             endBuses(row) = intEnd;
             typeEnd = currentcell(4:end);
             busName(row,2) = {typeEnd};
-            
         else
             endBuses(row) = data.data(row,4);
         end
@@ -89,7 +88,7 @@ start2end = [startBuses, endBuses];
 modifier = min(min(start2end)) - 1;
 start2end_mod = start2end - modifier;      % modified so start point gets index 1
 
-% add extra internal busconnection in the transformer, called 'TT'
+% add extra internal busconnection in the transformer, called 'TT' 
 for connection = 1:length(connectionType(1,:))
    
     if all(strcmp(connectionType(connection,:), 'HT'))
@@ -104,12 +103,15 @@ for connection = 1:length(connectionType(1,:))
 end
 
 % The following section is to remove any connection previous to the
-% Transformer, so that bus/bus 1 is the transformers high voltage side
+% Transformer, so that bus 1 is the transformers high voltage side
 removeHighVoltageBuses = true;      % true if all buses previous to transformer should be ignored
 
 if removeHighVoltageBuses
     type = connectionType(1, :);
     while any(type == 'H')
+        if all(type == 'H')
+            busName(1,:) = [];
+        end
         CableData(1) = [];          % remove first struct in cable data
         connectionType(1,:) = [];   % remove first connection type
         connectionBuses(1,:) = [];  % remove first connection buses
@@ -119,12 +121,14 @@ if removeHighVoltageBuses
         
         type = connectionType(1, :);    % update type
     end
+    
 end
 
+% adding start- / end-bus to each cable
 for iterator = 1:length(CableData)
     if removeHighVoltageBuses
-        CableData(iterator).StartBus = connectionBuses(iterator,1)+1;
-        CableData(iterator).EndBus = connectionBuses(iterator,2)+1;
+        CableData(iterator).StartBus = connectionBuses(iterator,1);
+        CableData(iterator).EndBus = connectionBuses(iterator,2);
     else
         CableData(iterator).StartBus = connectionBuses(iterator,1);
         CableData(iterator).EndBus = connectionBuses(iterator,2);

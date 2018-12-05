@@ -34,17 +34,17 @@ for iConnection = 1:length(connectionType)
         
         if iConnection ~= addedTransformerBusAtIndex(1)                    % if NOT at added trafo-bus
             if iConnection < addedTransformerBusAtIndex(1)
-                Z_ser_mutu(startBus,endBus) = -CableData(iConnection).Z_ser / TransformerData.Z_prim_base;
-                Z_ser_mutu(endBus,startBus) = -CableData(iConnection).Z_ser / TransformerData.Z_prim_base;
+                Z_ser_mutu(startBus,endBus) = CableData(iConnection).Z_ser / TransformerData.Z_prim_base;
+                Z_ser_mutu(endBus,startBus) = CableData(iConnection).Z_ser / TransformerData.Z_prim_base;
                 disp(['Series impedance added from Cable ', num2str(iConnection)])
             else
-                Z_ser_mutu(startBus,endBus) = -CableData(iConnection-1).Z_ser / TransformerData.Z_sec_base;
-                Z_ser_mutu(endBus,startBus) = -CableData(iConnection-1).Z_ser / TransformerData.Z_sec_base;
+                Z_ser_mutu(startBus,endBus) = CableData(iConnection-1).Z_ser / TransformerData.Z_sec_base;
+                Z_ser_mutu(endBus,startBus) = CableData(iConnection-1).Z_ser / TransformerData.Z_sec_base;
                 disp(['Series impedance added from Cable ', num2str(iConnection-1)])
             end
         else
-            Z_ser_mutu(startBus,endBus) = -TransformerData.Z2k_pu;
-            Z_ser_mutu(endBus,startBus) = -TransformerData.Z2k_pu;
+            Z_ser_mutu(startBus,endBus) = TransformerData.Z2k_pu;
+            Z_ser_mutu(endBus,startBus) = TransformerData.Z2k_pu;
             disp('Impedance added from transformer');
         end
 end

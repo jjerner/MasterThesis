@@ -74,3 +74,33 @@ for outerLoop = 1:length(filesToRead)             % loop for each file in the di
     fclose(fileID);
 
 end
+
+% Detta kan du testa med sen!!!
+% Tar alla inlästa referenser och jämför med det som vi redan hade
+
+%{
+for k = 1:length(Input)
+    ref(k,1) = Input(k).reference;
+end
+
+loadNames = busName(connectionType == 'L');
+loadNames = str2double(loadNames);
+
+ref = sort(ref);
+loadNames = sort(loadNames);
+
+asd = [ref loadNames];
+
+for l = 1:5
+    if all(ref == loadNames)
+        disp('WOHO HITTADE ALLA ELEMENTJÄVLAR WOOOPWOOOP!!!!!')
+    else
+        disp('Nehe... de här va ju tråkigt, ska du verkligen läsa civ.ing?')
+    end
+end
+%}
+
+
+clear iSet iSet2 iSet3 counter currentFile outerLoop fileID scanData dataEndsAtRow setsBeginAtRow nSets allSets
+clear filesInDir filesToRead fPath fname ext inputDir referenceAtRow valueAtRow referenceFromFile valueFromFile
+clear valueIndex valueString refIndex refString k 

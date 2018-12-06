@@ -9,11 +9,7 @@ if fictive_data == 1
     
     createBusInputs;
 else
-    disp(' ');
-    disp(['Reading input data for ', location]);
-    
     readInput;                                  % Read input data
-    
 end
 
 busType = blanks(length(Y_bus))';               % Bus names as 2 chars [PQ, PV, SL] SL = Slack bus

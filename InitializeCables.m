@@ -8,6 +8,7 @@ switch location
 end
 
 ExampleCable = 0;
+%standardCableUsedAt = [];
 j = 1i;
 
 if ~(exist('freq', 'var'))
@@ -17,12 +18,12 @@ end
 % fix example cable!!!!! [needs fixing]
 if ExampleCable == 1
     % Constant parameters
-    CableData(1).l=1;                % Length [km]         
+    CableData(1).l=1;                % Length [km]
     CableData(1).R=0.125;            % Series resistance [ohm/km]
     CableData(1).L=0.23e-3;          % Series inductance [H/km]
     CableData(1).G=0;                % Shunt conductance [S/km]
     CableData(1).C=2e-9;             % Shunt capacitance [F/km]
-
+    
     % Calculated characteristics
     CableData(1).z=CableData(1).R+j*w*CableData(1).L;           % Series impedance [ohm/km]
     CableData(1).y=CableData(1).G+j*w*CableData(1).C;           % Shunt admittance [S/km]
@@ -48,7 +49,7 @@ else
     data = importdata(fileToRead);
     data.textdata = data.textdata(4:end, :);        % remove first 3 rows of nonsense in textdata
     
-    for iCables = 1:length(data.textdata(:,2)) 
+    for iCables = 1:length(data.textdata(:,2))
         %compare (find the right cable data)
         cableFound = false;
         index = 1;
@@ -67,12 +68,13 @@ else
                     index = index + 1;
                 end
             else
-                index = index + 1; 
+                index = index + 1;
             end
             
             
             if index == (length(Ledningsdata.Area) + 1)
                 disp(['Could not find cable match, using standard cable at index ', num2str(iCables)]);
+                %standardCableUsedAt = [standardCableUsedAt iCables];
                 cableFound = true;
                 index = 4;  % <-- set appropriate index to "standard cable"
             end
@@ -104,10 +106,11 @@ else
         
         CableData(iCables).Z_ser=CableData(iCables).R+j*CableData(iCables).X;             % Series impedance [ohm]
         CableData(iCables).Y_shu=CableData(iCables).G+j*CableData(iCables).Bd;            % Shunt admittance [S]
-
-
-    end
         
+        
+    end
+%disp(['Standard cable used at indexes: ']);
+%disp(standardCableUsedAt)
 end
 
 % clear some workspace

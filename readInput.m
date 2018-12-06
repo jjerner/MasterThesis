@@ -7,6 +7,8 @@ switch location
         inputDir = 'data\Inputs\T317';
 end
 
+disp(' ');
+disp(['Reading input data for ', location, ' from file:']);
 
 filesInDir = dir(inputDir);
 filesToRead = {};
@@ -21,7 +23,7 @@ end
 
 counter = 1 ;
 for outerLoop = 1:length(filesToRead)             % loop for each file in the directory
-    
+    disp(['-      ', filesToRead{outerLoop}])
     currentFile = strcat(inputDir, '\', filesToRead{outerLoop});
     fileID = fopen(currentFile, 'rt');
     %fileID = fopen('data\Inputs\T085\89260957239.txt', 'rt');
@@ -59,8 +61,12 @@ for outerLoop = 1:length(filesToRead)             % loop for each file in the di
 
         % Fix reference numbering
         refIndex = regexp(referenceFromFile{iSet3}, '\.');          % ger index på punkterna (vill läsa det som ligger mellan)
-        refString = referenceFromFile{iSet3}(refIndex(1)+1 : refIndex(2)-1);
-
+        if length(refIndex) == 2
+            refString = referenceFromFile{iSet3}(refIndex(1)+1 : refIndex(2)-1);
+        else
+            warning(['Cant find reference value in ', filesToRead{outerLoop}]);
+        end
+        
         % Creating Input struct with 2 fields
         Input(counter).reference = str2double(refString);
         Input(counter).values = nan(length(valueString), 1);
@@ -103,4 +109,4 @@ end
 
 clear iSet iSet2 iSet3 counter currentFile outerLoop fileID scanData dataEndsAtRow setsBeginAtRow nSets allSets
 clear filesInDir filesToRead fPath fname ext inputDir referenceAtRow valueAtRow referenceFromFile valueFromFile
-clear valueIndex valueString refIndex refString k 
+clear valueIndex valueString refIndex refString k iterator

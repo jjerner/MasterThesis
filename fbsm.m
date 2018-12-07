@@ -19,9 +19,9 @@ function [S_out, U_out] = fbsm(Z_in, S_in, U_in, connections, busType, MAX_ITER,
 if ~exist('MAX_ITER','var'), MAX_ITER = 100; end    % Default value for max no of iterations
 if ~exist('doPlot','var'), doPlot = 0; end    % Create plots is off by default
 
-k = 1;
-S_prev(:,k) = S_in;
-U_prev(:,k) = U_in;
+k = 2;
+S_prev(:,1) = S_in;
+U_prev(:,1) = U_in;
 
 while k<=MAX_ITER && true
     
@@ -31,29 +31,32 @@ if k >= MAX_ITER
 end
 
 % Backward sweep
-S_prev(:,k+1) = S_in;
 for iBack = length(connections):-1:1
     startpoint = connections(iBack, 1);
     endpoint   = connections(iBack, 2);
 
-    S_loop = S_prev(endpoint,k) + S_prev(endpoint,k) * conj(S_prev(endpoint,k))...
-             * Z_in(startpoint,endpoint) / U_prev(endpoint,k)^2;
-    S_prev(startpoint,k+1) = S_prev(startpoint,k+1) + S_loop;
+    S_loop = 0;
+    if isnan(S_in(iBack))
+        S_loop = S_prev(endpoint,k-1) + S_prev(endpoint,k-1) * conj(S_prev(endpoint,k-1))...
+                 * Z_in(startpoint,endpoint) / U_prev(endpoint,k-1)^2;
+    end
+    S_prev(startpoint,k) = S_prev(startpoint,k-1) + S_loop;
 end
 
 
 % Forward sweep
-U_prev(:,k+1) = U_in;
 for iFor = 1:length(connections)
     startpoint = connections(iFor, 1);
     endpoint   = connections(iFor, 2);
     if strcmpi(busType(iFor,:), 'SL') || strcmpi(busType(iFor,:), 'PV')
         continue
     else
-        U_prev(endpoint, k+1) = U_prev(startpoint,k) - ...
-                                ((real(S_prev(startpoint,k))*real(Z_in(startpoint,endpoint)))+...
-                                (imag(S_prev(startpoint,k))*imag(Z_in(startpoint,endpoint)))/...
-                                U_prev(startpoint,k));
+        if isnan(U_in(iBack))
+            U_prev(endpoint, k) = U_prev(startpoint,k-1) - ...
+                                    ((real(S_prev(startpoint,k-1))*real(Z_in(startpoint,endpoint)))+...
+                                    (imag(S_prev(startpoint,k-1))*imag(Z_in(startpoint,endpoint)))/...
+                                    U_prev(startpoint,k-1));
+        end
     end
 end
 

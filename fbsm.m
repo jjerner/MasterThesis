@@ -32,31 +32,27 @@ end
 
 % Backward sweep
 for iBack = length(connections):-1:1
-    startpoint = connections(iBack, 1);
-    endpoint   = connections(iBack, 2);
+    startPoint = connections(iBack, 1);
+    endPoint   = connections(iBack, 2);
 
-    S_loop = 0;
-    if isnan(S_in(iBack))
-        S_loop = S_prev(endpoint,k-1) + S_prev(endpoint,k-1) * conj(S_prev(endpoint,k-1))...
-                 * Z_in(startpoint,endpoint) / U_prev(endpoint,k-1)^2;
-    end
-    S_prev(startpoint,k) = S_prev(startpoint,k-1) + S_loop;
+    S_loop = S_prev(endPoint,k-1) + S_prev(endPoint,k-1) * conj(S_prev(endPoint,k-1))...
+             * Z_in(startPoint,endPoint) / U_prev(endPoint,k-1)^2;
+    % Update startpoints only
+    S_prev(startPoint,k) = S_prev(startPoint,k-1) + S_loop;
 end
 
 
 % Forward sweep
 for iFor = 1:length(connections)
-    startpoint = connections(iFor, 1);
-    endpoint   = connections(iFor, 2);
+    startPoint = connections(iFor, 1);
+    endPoint   = connections(iFor, 2);
     if strcmpi(busType(iFor,:), 'SL') || strcmpi(busType(iFor,:), 'PV')
         continue
     else
-        if isnan(U_in(iBack))
-            U_prev(endpoint, k) = U_prev(startpoint,k-1) - ...
-                                    ((real(S_prev(startpoint,k-1))*real(Z_in(startpoint,endpoint)))+...
-                                    (imag(S_prev(startpoint,k-1))*imag(Z_in(startpoint,endpoint)))/...
-                                    U_prev(startpoint,k-1));
-        end
+        U_prev(endPoint, k) = U_prev(startPoint,k-1) - ...
+                                ((real(S_prev(startPoint,k-1))*real(Z_in(startPoint,endPoint)))+...
+                                (imag(S_prev(startPoint,k-1))*imag(Z_in(startPoint,endPoint)))/...
+                                U_prev(startPoint,k-1));
     end
 end
 

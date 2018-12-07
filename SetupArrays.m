@@ -43,8 +43,8 @@ for iConnection = 1:length(connectionType)
                 disp(['Series impedance added from Cable ', num2str(iConnection-1)])
             end
         else
-            Z_ser_mutu(startBus,endBus) = TransformerData.Z2k_pu;
-            Z_ser_mutu(endBus,startBus) = TransformerData.Z2k_pu;
+            Z_ser_mutu(startBus,endBus) = TransformerData.Z2k_pu*(TransformerData.U_sec_base/TransformerData.U_prim_base)^2;
+            Z_ser_mutu(endBus,startBus) = TransformerData.Z2k_pu*(TransformerData.U_sec_base/TransformerData.U_prim_base)^2;
             disp('Impedance added from transformer');
         end
 end

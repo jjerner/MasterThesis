@@ -3,8 +3,18 @@ clear
 %add paths
 AddPathsToMain                  % Add local paths to data repositories & PV model
 
-%location = 'Hallonvägen';
-location = 'Amundstorp';
+disp('Choose location');
+disp('1. Amundstorp');
+disp('2. Hallonvägen');
+chooseLocation = input('Enter your choice:','s');
+switch chooseLocation
+    case 1
+        location='Amundstorp';
+    case 2
+        location='Hallonvägen';
+    otherwise
+        error('Incorrect choice');
+end     
 
 %% Initialize parameters (CONSTANTS)
 freq = 50;                      % frequency

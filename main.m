@@ -6,11 +6,11 @@ AddPathsToMain                  % Add local paths to data repositories & PV mode
 disp('Choose location');
 disp('1. Amundstorp');
 disp('2. Hallonvägen');
-chooseLocation = input('Enter your choice:','s');
+chooseLocation = input('Enter your choice: ','s');
 switch chooseLocation
-    case 1
+    case '1'
         location='Amundstorp';
-    case 2
+    case '2'
         location='Hallonvägen';
     otherwise
         error('Incorrect choice');

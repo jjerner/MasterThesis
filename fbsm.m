@@ -22,6 +22,7 @@ if ~exist('doPlot','var'), doPlot = 0; end    % Create plots is off by default
 k = 2;
 S_prev(:,1) = S_in;
 U_prev(:,1) = U_in;
+calcDone=zeros(length(connections),1);
 
 while k<=MAX_ITER && true
     
@@ -31,14 +32,24 @@ if k >= MAX_ITER
 end
 
 % Backward sweep
-for iBack = length(connections):-1:1
-    startPoint = connections(iBack, 1);
-    endPoint   = connections(iBack, 2);
-
-    S_loop = S_prev(endPoint,k-1) + S_prev(endPoint,k-1) * conj(S_prev(endPoint,k-1))...
-             * Z_in(startPoint,endPoint) / U_prev(endPoint,k-1)^2;
-    % Update startpoints only
-    S_prev(startPoint,k) = S_prev(startPoint,k-1) + S_loop;
+while ~all(calcDone)
+    for iBack = length(connections):-1:1
+        startPoint = connections(iBack, 1);
+        endPoint   = connections(iBack, 2);
+        
+        existsChildrenDS=[zeros(iBack,1); connections(iBack+1:end,1)] == endPoint;
+        existsChildrenUS=[connections(1:iBack-1,1); zeros(length(connections)-iBack,1)] == endPoint;
+        downstreamCheck=all(calcDone(find(existsChildrenDS)));
+        upstreamCheck=all(calcDone(find(existsChildrenUS)));
+        
+        if upstreamCheck && downstreamCheck
+            S_loop = S_prev(endPoint,k-1) + S_prev(endPoint,k-1) * conj(S_prev(endPoint,k-1))...
+                     * Z_in(startPoint,endPoint) / U_prev(endPoint,k-1)^2;
+            % Update startpoints only
+            S_prev(startPoint,k) = S_prev(startPoint,k-1) + S_loop;
+            calcDone(iBack)=1;
+        end
+    end
 end
 
 

@@ -23,7 +23,7 @@ for row = 1:length(data.data)
             intStart = str2double(currentcell(1:3));
             startBuses(row) = intStart;
             typeStart = currentcell(4:end);
-            busName(row,1) = {typeStart};
+            connectionName(row,1) = {typeStart};
         else
             startBuses(row) = data.data(row,3);
         end
@@ -33,7 +33,7 @@ for row = 1:length(data.data)
         intStart = str2double(cellsplit{1});       % start bus
         startBuses(row) = intStart;
         typeStart = cellsplit(2);                  % start bus type
-        busName(row,1) = typeStart;
+        connectionName(row,1) = typeStart;
     end
     
 % endbus
@@ -43,7 +43,7 @@ for row = 1:length(data.data)
             intEnd = str2double(currentcell(1:3));
             endBuses(row) = intEnd;
             typeEnd = currentcell(4:end);
-            busName(row,2) = {typeEnd};
+            connectionName(row,2) = {typeEnd};
         else
             endBuses(row) = data.data(row,4);
         end
@@ -53,23 +53,23 @@ for row = 1:length(data.data)
         intEnd = str2double(cellsplit{1});          % end bus
         endBuses(row) = intEnd;
         typeEnd = cellsplit(2);                     % end bus type
-        busName(row,2) = typeEnd;
+        connectionName(row,2) = typeEnd;
     end
 
 end
 
 foundTransformer = 0;
-for row = 1:length(busName)
+for row = 1:length(connectionName)
     for col = 1:2
         
-        if isempty(busName{row,col}) && foundTransformer == 0      % First few elements, pre-trafo
+        if isempty(connectionName{row,col}) && foundTransformer == 0      % First few elements, pre-trafo
             connectionType(row,col) = 'H';
-        elseif isempty(busName{row,col}) && foundTransformer == 1  % joint, 2 cables in series
+        elseif isempty(connectionName{row,col}) && foundTransformer == 1  % joint, 2 cables in series
             connectionType(row,col) = 'J';
-        elseif busName{row,col}(1) == 'T'                          % first char = T -> Transformer
+        elseif connectionName{row,col}(1) == 'T'                          % first char = T -> Transformer
             connectionType(row,col) = 'T';
             foundTransformer = 1;
-        elseif length(busName{row,col}) == 4                       % 4 digitname = cablestation
+        elseif length(connectionName{row,col}) == 4                       % 4 digitname = cablestation
             connectionType(row,col) = 'S';
         else
             connectionType(row,col) = 'L';
@@ -110,7 +110,7 @@ if removeHighVoltageBuses
     type = connectionType(1, :);
     while any(type == 'H')
         if all(type == 'H')
-            busName(1,:) = [];
+            connectionName(1,:) = [];
         end
         CableData(1) = [];          % remove first struct in cable data
         connectionType(1,:) = [];   % remove first connection type

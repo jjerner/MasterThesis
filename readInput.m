@@ -67,6 +67,16 @@ for outerLoop = 1:length(filesToRead)             % loop for each file in the di
             warning(['Cant find reference value in ', filesToRead{outerLoop}]);
         end
         
+        if strcmp(referenceFromFile{iSet3}(refIndex(2)+1:end), '2')
+            Input(counter).type = 'active';
+        elseif strcmp(referenceFromFile{iSet3}(refIndex(2)+1:end), '4')
+            Input(counter).type = 'reactive';
+        elseif strcmp(referenceFromFile{iSet3}(refIndex(2)+1:end), '5')
+            Input(counter).type = 'production';
+        else
+            Input(counter).type = ['unknown',referenceFromFile{iSet3}(refIndex(2)+1:end)];
+        end
+        
         % Creating Input struct with 2 fields
         Input(counter).reference = str2double(refString);
         Input(counter).values = nan(length(valueString), 1);

@@ -62,7 +62,7 @@ for iBus = 1:length(Y_bus)
                     end
                     
                     if referenceFound == 0
-                        warning(['Cant find data for load reference: ', num2str(nameOfBus)]); 
+                        warning(['Cannot find data for load reference: ', num2str(nameOfBus)]); 
                         S_bus(iBus,:) = 1;
                     elseif referenceFound == 1
                         S_bus(iBus,:) = Input(iInput).values';

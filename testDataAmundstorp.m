@@ -19,7 +19,7 @@ jan = 1:24*31;
 feb = 1+(24*31):24*(28+31);
 mar = 1+(24*(31+28)):24*(31+28+31);
 
-month = 1:24;
+month = 1:8760;
 
 S_hist = zeros(size(S_bus,1), length(month));
 U_hist = zeros(size(U_bus,1), length(month));
@@ -44,23 +44,23 @@ Q_hist = imag(S_hist);
 
 figure;
 for asd = 1:size(U_hist, 1)
-plot(abs(U_hist(asd,:)))
-title('Voltage')
-ylabel('voltage [pu]')
-xlabel('time [h]')
-hold on
+    plot(abs(U_hist(asd,:)))
+    title('Voltage')
+    ylabel('voltage [pu]')
+    xlabel('time [h]')
+    hold on
 end
 
 figure;
 for asd2 = 1:size(S_hist, 1)
-plot(real(S_hist(asd2,:)))
-title('Active Power')
-hold on
+    plot(real(S_hist(asd2,:)))
+    title('Active Power')
+    hold on
 end
 
 figure;
 for asd3 = 1:size(S_hist, 1)
-plot(imag(S_hist(asd3,:)))
-title('Reactive Power')
-hold on
+    plot(imag(S_hist(asd3,:)))
+    title('Reactive Power')
+    hold on
 end

@@ -19,7 +19,7 @@ jan = 1:24*31;
 feb = 1+(24*31):24*(28+31);
 mar = 1+(24*(31+28)):24*(31+28+31);
 
-month = jan;
+month = 1:24;
 
 S_hist = zeros(size(S_bus,1), length(month));
 U_hist = zeros(size(U_bus,1), length(month));
@@ -29,7 +29,7 @@ for iter = 1:length(month)
             iter, length(month)));
         
     [S_out, U_out] = fbsm(Z_ser_tot, S_bus(:,month(iter)), U_bus(:,month(iter)),...
-                          connectionBuses, busType, 200, 1e-3, 0);
+                          connectionBuses, busType, 1000, 1e-3, 0);
     
     S_hist(:,iter) = S_out;
     U_hist(:,iter) = U_out;
@@ -53,14 +53,14 @@ end
 
 figure;
 for asd2 = 1:size(S_hist, 1)
-plot(real(S_hist(asd2,:)))
+plot(real(S_hist(asd2,:))*TransformerData.S_base)
 title('Active Power')
 hold on
 end
 
 figure;
 for asd3 = 1:size(S_hist, 1)
-plot(imag(S_hist(asd3,:)))
+plot(imag(S_hist(asd3,:))*TransformerData.S_base)
 title('Reactive Power')
 hold on
 end

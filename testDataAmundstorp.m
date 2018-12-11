@@ -53,14 +53,14 @@ end
 
 figure;
 for asd2 = 1:size(S_hist, 1)
-plot(real(S_hist(asd2,:))*TransformerData.S_base)
+plot(real(S_hist(asd2,:)))
 title('Active Power')
 hold on
 end
 
 figure;
 for asd3 = 1:size(S_hist, 1)
-plot(imag(S_hist(asd3,:))*TransformerData.S_base)
+plot(imag(S_hist(asd3,:)))
 title('Reactive Power')
 hold on
 end

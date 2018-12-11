@@ -1,4 +1,4 @@
-function [S_out, U_out] = fbsm(Z_in, S_in, U_in, connections, busType, MAX_ITER, doPlot)
+function [S_out, U_out] = fbsm(Z_in, S_in, U_in, connections, busType, MAX_ITER, eps, doPlot)
 %FBSM, Forward Backward Sweep Method
 %
 %   Inputs:
@@ -9,6 +9,7 @@ function [S_out, U_out] = fbsm(Z_in, S_in, U_in, connections, busType, MAX_ITER,
 %       connections = Front to End of each connection (N-1x2)
 %       busType     = Vector with bus types (Nx1)
 %       MAX_ITER    = Maximum number of iterations, default value = 100
+%       eps         = Convergence criteria, default value = 1e-6
 %       doPlot      = Create plots (1x1 logical). Default off.
 %
 %   Outputs:
@@ -16,7 +17,8 @@ function [S_out, U_out] = fbsm(Z_in, S_in, U_in, connections, busType, MAX_ITER,
 %       U_out    = Voltages of all busses
 
 if ~exist('MAX_ITER','var'), MAX_ITER = 100; end    % Default value for max no of iterations
-if ~exist('doPlot','var'), doPlot = 0; end    % Create plots is off by default
+if ~exist('eps', 'var'), eps = 1e-6; end            % Default convergence  
+if ~exist('doPlot','var'), doPlot = 0; end          % Create plots is off by default 
 
 k = 2;
 S_calc(:,1) = S_in;
@@ -24,13 +26,12 @@ U_calc(:,1) = U_in;
 calcDoneBwd=zeros(length(connections),1);
 calcDoneFwd=zeros(length(connections),1);
 
-while k<=MAX_ITER && true
+while k<=MAX_ITER
     
-    % Convergence
-    if k >= MAX_ITER
-        %warning('No convergence during Forward Backward Sweep');
+    if k == MAX_ITER
+       warning('No convergence before maximal interations was reached!') 
     end
-    
+ 
     % Backward sweep
     while ~all(calcDoneBwd)
         S_calc(:,k) = S_in;
@@ -52,7 +53,6 @@ while k<=MAX_ITER && true
             end
         end
     end
-    
     
     % Forward sweep
     while ~all(calcDoneFwd)
@@ -80,6 +80,17 @@ while k<=MAX_ITER && true
             end
         end
     end
+    
+    % Convergence
+    if k > 2
+        powerConvCrit = max(abs(S_calc(:,k-1) - S_calc(:,k)));
+        voltageConvCrit = max(abs(U_calc(:,k-1) - U_calc(:,k)));
+
+        if powerConvCrit < eps && voltageConvCrit < eps
+            break
+        end
+    end
+    
     calcDoneBwd(:)=0;
     calcDoneFwd(:)=0;
     k = k+1;

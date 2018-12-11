@@ -15,8 +15,8 @@ end
 busType = blanks(length(Y_bus))';               % Bus names as 2 chars [PQ, PV, SL] SL = Slack bus
 busType = repmat(busType, 1, 2);
 
-S_bus = nan(length(Y_bus),length(Input(1).values));   	% Power in bus
-U_bus = nan(length(Y_bus),length(Input(1).values));     % Voltage at bus
+S_bus = zeros(length(Y_bus),length(Input(1).values));   % Power in bus
+U_bus = ones(length(Y_bus),length(Input(1).values));    % Voltage at bus
 
 % Här blir de stökigt, ha så kul!
 % Need to add known parameter data to bus types.

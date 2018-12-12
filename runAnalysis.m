@@ -11,7 +11,8 @@ S_in=P_inj+j*Q_inj;
 %}
 %% Load power factor
 setPowerFactor=true;
-newPowerFactor=0.9;
+newPowerFactor=0.8;
+newPowerFactorLeading=false;
 S_ana=S_bus;            % Powers for analysis set to inputs
 if all(all(S_bus(busIsLoad,:)==real(S_bus(busIsLoad,:))))
     disp('Note: Load input contains only active powers.');
@@ -20,8 +21,11 @@ else
 end
 
 if setPowerFactor
-    S_ana(busIsLoad,:)=createComplexPower(S_ana(busIsLoad,:),newPowerFactor);
-    fprintf('Note: Power factor for all loads changed to %g.\n',newPowerFactor)
+    S_ana(busIsLoad,:)=createComplexPower(S_ana(busIsLoad,:),newPowerFactor,newPowerFactorLeading);
+    fprintf('Note: Power factor for all loads changed to %g',newPowerFactor)
+    if newPowerFactorLeading, fprintf(' leading.\n'); else, fprintf(' lagging.\n'); end
+else
+    disp('Note: Power factor unchanged.');
 end
 
 %% Hallonvägen
@@ -33,36 +37,35 @@ end
 jan = 1:24*31;
 feb = 1+(24*31):24*(28+31);
 mar = 1+(24*(31+28)):24*(31+28+31);
+JFM = [jan feb mar];
 
-month = 1:8760;
+timeLine = JFM;
 
-S_hist = zeros(size(S_bus,1), length(month));
-U_hist = zeros(size(U_bus,1), length(month));
+S_hist = zeros(size(S_bus,1), length(timeLine));
+U_hist = zeros(size(U_bus,1), length(timeLine));
 
 barHandle = waitbar(0, '1', 'Name', 'Sweep calculations');
-for iter = 1:length(month)
-    waitbar(iter/length(month), barHandle, sprintf('Sweep calculations %d/%d',...
-            iter, length(month)));
+for iter = 1:length(timeLine)
+    waitbar(iter/length(timeLine), barHandle, sprintf('Sweep calculations %d/%d',...
+            iter, length(timeLine)));
         
-    [S_out, U_out] = fbsm(Z_ser_tot, S_ana(:,month(iter)), U_bus(:,month(iter)),...
+    [S_out, U_out] = fbsm(Z_ser_tot, S_ana(:,timeLine(iter)), U_bus(:,timeLine(iter)),...
                           connectionBuses, busType, 1000, 1e-3, 0);
     
     S_hist(:,iter) = S_out;
     U_hist(:,iter) = U_out;
 end
 close(barHandle)
+disp('Sweep calculation finished.');
 
 P_hist = real(S_hist);
 Q_hist = imag(S_hist);
 
-clear busIsLoadMatrix S_ana
-
-
 %% plots
 
 figure;
-for asd = 1:size(U_hist, 1)
-    plot(abs(U_hist(asd,:)))
+for iPlotU = 1:size(U_hist(busIsLoad,:), 1)
+    plot(abs(U_hist(iPlotU,:)))
     title('Voltage')
     ylabel('voltage [pu]')
     xlabel('time [h]')
@@ -70,15 +73,39 @@ for asd = 1:size(U_hist, 1)
 end
 
 figure;
-for asd2 = 1:size(S_hist, 1)
-    plot(real(S_hist(asd2,:)))
+for iPlotP = 1:size(S_hist, 1)
+    plot(real(S_hist(iPlotP,:)))
     title('Active Power')
     hold on
 end
 
 figure;
-for asd3 = 1:size(S_hist, 1)
-    plot(imag(S_hist(asd3,:)))
+for iPlotQ = 1:size(S_hist, 1)
+    plot(imag(S_hist(iPlotQ,:)))
     title('Reactive Power')
     hold on
 end
+
+%% Analyze loads
+
+figure;
+plot(timeLine,abs(U_hist(busIsLoad,:)));
+title('Voltage (loads)');
+
+figure;
+plot(timeLine,P_hist(busIsLoad,:));
+title('Active power (loads)');
+
+figure;
+plot(timeLine,Q_hist(busIsLoad,:));
+title('Reactive power (loads)');
+
+minLoadVoltage=min(min(abs(U_hist(busIsLoad,:))));
+maxLoadVoltage=max(max(abs(U_hist(busIsLoad,:))));
+minLoadVdiff=min(max(abs(U_hist(busIsLoad,:)),[],2)-min(abs(U_hist(busIsLoad,:)),[],2));
+maxLoadVdiff=max(max(abs(U_hist(busIsLoad,:)),[],2)-min(abs(U_hist(busIsLoad,:)),[],2));
+
+fprintf('Minimum load voltage: %g\n',minLoadVoltage);
+fprintf('Maximum load voltage: %g\n',maxLoadVoltage);
+fprintf('Minimum load voltage difference: %g\n',minLoadVdiff);
+fprintf('Maximum load voltage difference: %g\n',maxLoadVdiff);

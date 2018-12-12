@@ -17,7 +17,7 @@ busType = repmat(busType, 1, 2);
 
 S_bus = zeros(length(Y_bus),length(Input(1).values));   % Power in bus
 U_bus = ones(length(Y_bus),length(Input(1).values));    % Voltage at bus
-busIsLoad = zeros(length(Y_bus), 1);
+busIsLoad = false(length(Y_bus),1);
 
 % Här blir de stökigt, ha så kul!
 % Need to add known parameter data to bus types.
@@ -51,7 +51,7 @@ for iBus = 1:length(Y_bus)
                 elseif char == 'L'
                     busType(iBus,:) = 'PQ';
                     U_bus(iBus,:) = 1;
-                    busIsLoad(iBus) = 1;
+                    busIsLoad(iBus) = true;
                     nameOfBus = connectionName{iRow, iCol};
                     nameOfBus = str2double(nameOfBus);
                     

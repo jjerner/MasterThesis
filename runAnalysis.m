@@ -9,6 +9,21 @@ S_in=P_inj+j*Q_inj;
 [S_out,U_out]=fbsm(Z_ser_tot,S_in,V_0,connectionBuses,busType,50,1e-3,1)
 
 %}
+%% Load power factor
+setPowerFactor=true;
+newPowerFactor=0.9;
+S_ana=S_bus;            % Powers for analysis set to inputs
+if all(all(S_bus(busIsLoad,:)==real(S_bus(busIsLoad,:))))
+    disp('Note: Load input contains only active powers.');
+else
+    disp('Note: Load input contains both active and reactive powers.');
+end
+
+if setPowerFactor
+    S_ana(busIsLoad,:)=createComplexPower(S_ana(busIsLoad,:),newPowerFactor);
+    fprintf('Note: Power factor for all loads changed to %g.\n',newPowerFactor)
+end
+
 %% Hallonvägen
 
 %main
@@ -23,12 +38,13 @@ month = 1:8760;
 
 S_hist = zeros(size(S_bus,1), length(month));
 U_hist = zeros(size(U_bus,1), length(month));
+
 barHandle = waitbar(0, '1', 'Name', 'Sweep calculations');
 for iter = 1:length(month)
     waitbar(iter/length(month), barHandle, sprintf('Sweep calculations %d/%d',...
             iter, length(month)));
         
-    [S_out, U_out] = fbsm(Z_ser_tot, S_bus(:,month(iter)), U_bus(:,month(iter)),...
+    [S_out, U_out] = fbsm(Z_ser_tot, S_ana(:,month(iter)), U_bus(:,month(iter)),...
                           connectionBuses, busType, 1000, 1e-3, 0);
     
     S_hist(:,iter) = S_out;
@@ -38,6 +54,8 @@ close(barHandle)
 
 P_hist = real(S_hist);
 Q_hist = imag(S_hist);
+
+clear busIsLoadMatrix S_ana
 
 
 %% plots

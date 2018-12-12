@@ -11,6 +11,7 @@
 
 function S = createComplexPower(S_abs,cosPhi)
     j=1i;
+    S_abs=abs(S_abs);                % Make sure S_abs is magnitude
     P=S_abs.*cosPhi;                 % Active power
     Q=S_abs.*sin(acos(cosPhi));      % Reactive power
     S=P+j.*Q;                        % Complex power

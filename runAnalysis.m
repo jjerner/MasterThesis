@@ -10,7 +10,7 @@ S_in=P_inj+j*Q_inj;
 
 %}
 %% Load power factor
-setPowerFactor=true;
+setPowerFactor=false;
 newPowerFactor=0.8;
 newPowerFactorLeading=false;
 S_ana=S_bus;            % Powers for analysis set to inputs
@@ -63,30 +63,30 @@ Q_hist = imag(S_hist);
 
 %% plots
 
-figure;
-for iPlotU = 1:size(U_hist(busIsLoad,:), 1)
-    plot(abs(U_hist(iPlotU,:)))
-    title('Voltage')
-    ylabel('voltage [pu]')
-    xlabel('time [h]')
-    hold on
-end
+% figure;
+% for iPlotU = 1:size(U_hist(busIsLoad,:), 1)
+%     plot(abs(U_hist(iPlotU,:)))
+%     title('Voltage')
+%     ylabel('voltage [pu]')
+%     xlabel('time [h]')
+%     hold on
+% end
+% 
+% figure;
+% for iPlotP = 1:size(S_hist, 1)
+%     plot(real(S_hist(iPlotP,:)))
+%     title('Active Power')
+%     hold on
+% end
+% 
+% figure;
+% for iPlotQ = 1:size(S_hist, 1)
+%     plot(imag(S_hist(iPlotQ,:)))
+%     title('Reactive Power')
+%     hold on
+% end
 
-figure;
-for iPlotP = 1:size(S_hist, 1)
-    plot(real(S_hist(iPlotP,:)))
-    title('Active Power')
-    hold on
-end
-
-figure;
-for iPlotQ = 1:size(S_hist, 1)
-    plot(imag(S_hist(iPlotQ,:)))
-    title('Reactive Power')
-    hold on
-end
-
-%% Analyze loads
+%% Plot
 
 figure;
 plot(timeLine,abs(U_hist(busIsLoad,:)));
@@ -100,12 +100,32 @@ figure;
 plot(timeLine,Q_hist(busIsLoad,:));
 title('Reactive power (loads)');
 
-minLoadVoltage=min(min(abs(U_hist(busIsLoad,:))));
-maxLoadVoltage=max(max(abs(U_hist(busIsLoad,:))));
-minLoadVdiff=min(max(abs(U_hist(busIsLoad,:)),[],2)-min(abs(U_hist(busIsLoad,:)),[],2));
-maxLoadVdiff=max(max(abs(U_hist(busIsLoad,:)),[],2)-min(abs(U_hist(busIsLoad,:)),[],2));
+%% Analyze voltages
 
-fprintf('Minimum load voltage: %g\n',minLoadVoltage);
-fprintf('Maximum load voltage: %g\n',maxLoadVoltage);
-fprintf('Minimum load voltage difference: %g\n',minLoadVdiff);
-fprintf('Maximum load voltage difference: %g\n',maxLoadVdiff);
+[maxVoltageVec,maxVoltageTimeVec]=max(abs(U_hist),[],2);   % Max voltage for each bus
+[minVoltageVec,minVoltageTimeVec]=min(abs(U_hist),[],2);   % Min voltage for each bus
+
+[maxVoltage,maxVoltageBusNr]=max(maxVoltageVec);           % Max voltage and bus number
+[minVoltage,minVoltageBusNr]=min(minVoltageVec);           % Min voltage and bus number
+
+[maxLoadVoltage,maxLoadVoltageBusNr]=max(maxVoltageVec(busIsLoad));   % Max load voltage and bus number*
+[minLoadVoltage,minLoadVoltageBusNr]=min(minVoltageVec(busIsLoad));   % Min load voltage and bus number*
+% *=numbered according to load buses only
+
+allBusNrVec=1:nBuses;
+loadBusNrVec=allBusNrVec(busIsLoad);
+maxLoadVoltageBusNr=loadBusNrVec(maxLoadVoltageBusNr);     % Change to global bus numbering
+minLoadVoltageBusNr=loadBusNrVec(minLoadVoltageBusNr);     % Change to global bus numbering
+
+maxVoltageTimeStep=maxVoltageTimeVec(maxVoltageBusNr);     % Time (col) for max voltage
+minVoltageTimeStep=minVoltageTimeVec(minVoltageBusNr);     % Time (col) for min voltage
+maxLoadVoltageTimeStep=maxVoltageTimeVec(maxLoadVoltageBusNr);     % Time (col) for max load voltage
+minLoadVoltageTimeStep=minVoltageTimeVec(minLoadVoltageBusNr);     % Time (col) for min load voltage
+
+fprintf('Maximum voltage: %g at (%d,%d)\n',maxVoltage,maxVoltageBusNr,maxVoltageTimeStep);
+fprintf('Minimum voltage: %g at (%d,%d)\n',minVoltage,minVoltageBusNr,minVoltageTimeStep);
+fprintf('Maximum load voltage: %g at (%d,%d)\n',maxLoadVoltage,maxLoadVoltageBusNr,maxLoadVoltageTimeStep);
+fprintf('Minimum load voltage: %g at (%d,%d)\n',minLoadVoltage,minLoadVoltageBusNr,minLoadVoltageTimeStep);
+
+% fprintf('Minimum voltage difference: %g\n',minLoadVdiff);
+% fprintf('Maximum voltage difference: %g\n',maxLoadVdiff);

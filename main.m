@@ -26,7 +26,7 @@ InitializeTransformer;          % transformer parameters
 InitializeCables;               % cable parameters & connections
 
 % Sort startpoint - endpoint and bus types
-readBuses                       % outputs: connectionBuses & connectionType, 
+readBuses;                      % outputs: connectionBuses & connectionType, 
                                 %          matrices describing where each bus is connected.
                                 
 SetupArrays;                    % match cable parameters and connections to matrices

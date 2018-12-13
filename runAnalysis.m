@@ -86,7 +86,21 @@ Q_hist = imag(S_hist);
 %     hold on
 % end
 
-%% Plot
+%% Plot all
+
+figure;
+plot(timeLine,abs(U_hist));
+title('Voltage (loads)');
+
+figure;
+plot(timeLine,P_hist);
+title('Active power (loads)');
+
+figure;
+plot(timeLine,Q_hist);
+title('Reactive power (loads)');
+
+%% Plot loads only
 
 figure;
 plot(timeLine,abs(U_hist(busIsLoad,:)));

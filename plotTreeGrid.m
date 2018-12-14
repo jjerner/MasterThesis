@@ -11,5 +11,5 @@ treeplot(busParents);
 treeXpos = treeXpos';
 treeYpos = treeYpos';
 text(treeXpos(:,1),treeYpos(:,1),cellstr(num2str((1:size(busParents,2))')), 'VerticalAlignment','bottom','HorizontalAlignment','right')
-title('Grid plot');
+title(['Grid plot of ' location]);
 clear treeXpos treeYpos

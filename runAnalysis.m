@@ -1,41 +1,36 @@
-%{
-j=1i;
-busTypes=['SL';'PQ';'PQ';'PQ';'PQ';'PQ';'PQ';'PQ';'PQ';'PQ';'PQ';'PQ';'PQ';'PQ'];
-V_0=ones(length(busTypes),1);
-P_inj=[NaN NaN NaN NaN 1 1.05 NaN 1 1.1 0 0.9 1 1.05 0.8];
-Q_inj=[NaN NaN NaN NaN 0.1 0 NaN 0 0 0 0 0.1 0 0];
-S_in=P_inj+j*Q_inj;
-%gsres=solveGS(Y_bus,busTypes,V_0,P_inj,Q_inj,1,1)
-[S_out,U_out]=fbsm(Z_ser_tot,S_in,V_0,connectionBuses,busType,50,1e-3,1)
+%% Reset power to input
+S_ana=S_bus;
+disp('All bus powers reset to input values.');
 
-%}
 %% Change power factor
 setPowerFactor=false;
 newPowerFactor=0.8;
 newPowerFactorLeading=false;
 if ~exist('S_ana','var'), S_ana = S_bus; end            % Powers for analysis set to inputs
 if all(all(S_bus(busIsLoad,:)==real(S_bus(busIsLoad,:))))
-    disp('Note: Load input contains only active powers.');
+    disp('Load input contains only active powers.');
 else
-    disp('Note: Load input contains both active and reactive powers.');
+    disp('Load input contains both active and reactive powers.');
 end
 
 if setPowerFactor
     S_ana(busIsLoad,:)=createComplexPower(S_ana(busIsLoad,:),newPowerFactor,newPowerFactorLeading);
-    fprintf('Note: Power factor for all loads changed to %g',newPowerFactor)
+    fprintf('Power factor for all loads changed to %g',newPowerFactor)
     if newPowerFactorLeading, fprintf(' leading.\n'); else, fprintf(' lagging.\n'); end
 else
-    disp('Note: Power factor unchanged.');
+    disp('Power factor unchanged.');
 end
 
 %% Add DG power
 
 if ~exist('S_ana','var'), S_ana = S_bus; end
-setProductionAtNode=[119;120];    % Node nr to add production to
-productionPower=[1e-2;2e-2];       % Power [p.u.]
+productionAtBus=[118;120];          % Bus nr to add production to
+productionAtTime=70:170;            % Time interval for production
+productionPower=[1e-3;1e-2];        % Power [p.u.]
 
-S_ana(setProductionAtNode,:)=S_ana(setProductionAtNode,:)-productionPower;
-fprintf('Note: Added %g p.u. production at node %d\n',[productionPower setProductionAtNode]');
+S_ana(productionAtBus,productionAtTime)=S_ana(productionAtBus,productionAtTime)...
+    -productionPower;
+fprintf('Added %g p.u. production at node %d\n',[productionPower productionAtBus]');
 
 %% Run sweep calculation
 
@@ -48,7 +43,7 @@ tMar = 1+(24*(31+28)):24*(31+28+31);
 tJFM = [tJan tFeb tMar];
 tAll = 1:length(Input(1).values);
 
-timeLine = tJFM;
+timeLine = tJan;
 
 S_hist = zeros(size(S_bus,1), length(timeLine));
 U_hist = zeros(size(U_bus,1), length(timeLine));

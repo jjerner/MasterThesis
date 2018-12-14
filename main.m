@@ -13,7 +13,7 @@ switch chooseLocation
     case '2'
         location='Hallonvägen';
     otherwise
-        error('Incorrect choice');
+        error('Invalid choice');
 end     
 
 %% Initialize parameters (CONSTANTS)

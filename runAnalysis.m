@@ -9,11 +9,11 @@ S_in=P_inj+j*Q_inj;
 [S_out,U_out]=fbsm(Z_ser_tot,S_in,V_0,connectionBuses,busType,50,1e-3,1)
 
 %}
-%% Load power factor
+%% Change power factor
 setPowerFactor=false;
 newPowerFactor=0.8;
 newPowerFactorLeading=false;
-S_ana=S_bus;            % Powers for analysis set to inputs
+if ~exist('S_ana','var'), S_ana = S_bus; end            % Powers for analysis set to inputs
 if all(all(S_bus(busIsLoad,:)==real(S_bus(busIsLoad,:))))
     disp('Note: Load input contains only active powers.');
 else
@@ -28,18 +28,27 @@ else
     disp('Note: Power factor unchanged.');
 end
 
-%% Hallonvägen
+%% Add DG power
 
-%main
-%[S_out2,U_out2]=fbsm(Z_ser_tot, S_bus(:,1), U_bus(:,1), connectionBuses, busType, 100, 1e-3, 1)
+if ~exist('S_ana','var'), S_ana = S_bus; end
+setProductionAtNode=[119;120];    % Node nr to add production to
+productionPower=[1e-2;2e-2];       % Power [p.u.]
 
-%month
-jan = 1:24*31;
-feb = 1+(24*31):24*(28+31);
-mar = 1+(24*(31+28)):24*(31+28+31);
-JFM = [jan feb mar];
+S_ana(setProductionAtNode,:)=S_ana(setProductionAtNode,:)-productionPower;
+fprintf('Note: Added %g p.u. production at node %d\n',[productionPower setProductionAtNode]');
 
-timeLine = JFM;
+%% Run sweep calculation
+
+if ~exist('S_ana','var'), S_ana = S_bus; end
+
+% Set timeline
+tJan = 1:24*31;
+tFeb = 1+(24*31):24*(28+31);
+tMar = 1+(24*(31+28)):24*(31+28+31);
+tJFM = [tJan tFeb tMar];
+tAll = 1:length(Input(1).values);
+
+timeLine = tJFM;
 
 S_hist = zeros(size(S_bus,1), length(timeLine));
 U_hist = zeros(size(U_bus,1), length(timeLine));
@@ -90,15 +99,15 @@ Q_hist = imag(S_hist);
 
 figure;
 plot(timeLine,abs(U_hist));
-title('Voltage (loads)');
+title('Voltage (all)');
 
 figure;
 plot(timeLine,P_hist);
-title('Active power (loads)');
+title('Active power (all)');
 
 figure;
 plot(timeLine,Q_hist);
-title('Reactive power (loads)');
+title('Reactive power (all)');
 
 %% Plot loads only
 

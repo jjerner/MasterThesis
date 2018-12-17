@@ -6,6 +6,7 @@ for iBus=1:nBuses
         busParents(iBus)=connectionBuses(find(connectionBuses(:,2)==iBus),1);
     end
 end
+figure;
 treeplot(busParents);
 [treeXpos,treeYpos] = treelayout(busParents);
 treeXpos = treeXpos';

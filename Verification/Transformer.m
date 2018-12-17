@@ -36,7 +36,7 @@ TransformerData.Z2k_pu      = TransformerData.Z2k;
 TransformerData.R2k_pu      = TransformerData.R2k;
 
 % TransformerData.R0_pu       = TransformerData.R0;
-% TransformerData.Z0_pu       = TransformerData.Z0;
+TransformerData.Z0_pu       = 0;
 
 % Recalculation of impedances for both HV and LV sides (These might not be needed)
 TransformerData.Z2_pu       = TransformerData.Z2k_pu/2;       % half on LV side

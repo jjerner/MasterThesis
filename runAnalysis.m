@@ -5,14 +5,15 @@ while loopAnalysis
     fprintf('\nANALYSIS MENU\n');
     disp('Choose an option');
     disp('1. Set power to input');
-    disp('2. Change power factor');
-    disp('3. Add power production');
+    disp('2. Change power factor (BETA)');
+    disp('3. Add power production (BETA)');
     disp('4. Run sweep calculation');
     disp('5. Plot all results');
     disp('6. Plot load results only');
     disp('7. Analyze voltages');
-    disp('8. Plot grid map');
-    disp('9. Cancel analysis');
+    disp('8. Plot grid tree map');
+    disp('9. Plot voltage histogram (ALPHA)');
+    disp('X. Cancel analysis');
     analysisCase = input('Enter your choice: ','s');
     fprintf('\n');
     
@@ -28,15 +29,13 @@ while loopAnalysis
             end
         case '2'
             % Change power factor
-            newPowerFactor = input('Enter new power factor: ','s');
-            newPowerFactorLeading = input('Lagging/inductive (0) or leading/capacitive (1)? ','s');
+            histogramNodeNumber = input('Enter new power factor: ');
+            newPowerFactorLeading = input('Lagging/inductive (0) or leading/capacitive (1)? ');
             fprintf('\n');
-            newPowerFactor=str2num(newPowerFactor);
-            newPowerFactorLeading=str2num(newPowerFactorLeading);
             if ~exist('S_ana','var'), S_ana = S_bus; end            % Powers for analysis set to inputs
 
-            S_ana(busIsLoad,:)=createComplexPower(S_ana(busIsLoad,:),newPowerFactor,newPowerFactorLeading);
-            fprintf('Power factor for all loads changed to %g',newPowerFactor)
+            S_ana(busIsLoad,:)=createComplexPower(S_ana(busIsLoad,:),histogramNodeNumber,newPowerFactorLeading);
+            fprintf('Power factor for all loads changed to %g',histogramNodeNumber)
             if newPowerFactorLeading, fprintf(' leading.\n'); else, fprintf(' lagging.\n'); end
 
         case '3'
@@ -60,9 +59,9 @@ while loopAnalysis
             tFeb = 1+(24*31):24*(28+31);
             tMar = 1+(24*(31+28)):24*(31+28+31);
             tJFM = [tJan tFeb tMar];
-            tAll = 1:length(Input(1).values);
+            tYear = 1:length(Input(1).values);
 
-            timeLine = tJan;
+            timeLine = tYear;
 
             S_hist = zeros(size(S_bus,1), length(timeLine));
             U_hist = zeros(size(U_bus,1), length(timeLine));
@@ -145,9 +144,29 @@ while loopAnalysis
             % fprintf('Minimum voltage difference: %g\n',minLoadVdiff);
             % fprintf('Maximum voltage difference: %g\n',maxLoadVdiff);
         case '8'
+            % Plot grid tree map
             plotTreeGrid;
-        
         case '9'
+            % Plot voltage histogram
+            histogramNodeNumber = input('Enter node number for histogram: ');
+            fprintf('\n');
+            figure;
+            %hist3([timeLine' abs(U_hist(histogramNodeNumber,:))'],...
+            %    'Nbins',[12 10],'CDataMode','auto','FaceColor','interp');
+            months = 1:720:8761;
+            Vintv = 0.975:0.001:1.005;
+            for ii = 1:12
+                Vhist = hist(U_hist(histogramNodeNumber, timeLine < months(ii+1) & months(ii) < timeLine), Vintv);
+                Vhist(Vhist == 0) = NaN;
+                %plot3(ii*ones(numel(Vintv),1), Vintv, Vhist/720, 'LineWidth', 2);hold on;
+                plot(Vintv, Vhist/720*4 + ii*ones(numel(Vintv),1).', 'LineWidth', 2, 'Color', 'k');hold on;
+            end
+            set(gca,'Xtick',0.975:0.001:1.005, 'Ytick',1:0.5:12.5, 'YTickLabel', {'Januari', '', 'Februari', '', 'Mars', '', 'April', '', 'Maj', '', 'Juni', '', 'Juli', '', 'Augusti', '', 'September', '', 'Oktober', '', 'November', '', 'December', ''});
+            
+            line(0.975*[1 1],[0 13], 'Color', 'r');
+            line(1.00*[1 1],[0 13], 'Color', 'r');
+            grid on;
+        case {'X','x'}
             % Cancel analysis
             loopAnalysis=false;
 

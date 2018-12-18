@@ -1,7 +1,6 @@
 
-load('Loads.mat')
+load('Loads.mat')       % NOTE: category "yearly" refers to the load shape measured for that particular load
 load('LoadShapes.mat')
-
 
 % Setup "connectionType"
 connectionType = repmat(' ', length(connectionBuses), 2);   % pre-allocate
@@ -24,6 +23,8 @@ for iCon = 1:length(connectionBuses)
     if isspace(connectionType(iCon, 2))
         if iCon == nextLoadBus
             connectionType(iCon, 2) = 'L';
+            
+            % update index
             indexLoad = indexLoad + 1;
             nextLoadBus = Loads.Bus(indexLoad);
         else
@@ -42,4 +43,4 @@ end
 % add the transformer to the connection matrix
 
 connectionBuses = [addedTransformerBusAtIndex; connectionBuses+1];
-connectionType = ['HT'; connectionType];
+connectionType = ['TT'; connectionType];

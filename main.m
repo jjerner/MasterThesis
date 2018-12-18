@@ -18,7 +18,7 @@ end
 
 %% Initialize parameters (CONSTANTS)
 freq = 50;                      % frequency
-w = 2*pi*freq;                  % OMEGA(LUL, omegalul Kappa 4Head)
+w = 2*pi*freq;                  % OMEGA
 j = 1i;
 
 %% Initialize parameters (transformer & cables)

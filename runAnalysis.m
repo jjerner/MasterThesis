@@ -148,24 +148,8 @@ while loopAnalysis
             plotTreeGrid;
         case '9'
             % Plot voltage histogram
-            histogramNodeNumber = input('Enter node number for histogram: ');
-            fprintf('\n');
-            figure;
-            %hist3([timeLine' abs(U_hist(histogramNodeNumber,:))'],...
-            %    'Nbins',[12 10],'CDataMode','auto','FaceColor','interp');
-            months = 1:720:8761;
-            Vintv = 0.975:0.001:1.005;
-            for ii = 1:12
-                Vhist = hist(U_hist(histogramNodeNumber, timeLine < months(ii+1) & months(ii) < timeLine), Vintv);
-                Vhist(Vhist == 0) = NaN;
-                %plot3(ii*ones(numel(Vintv),1), Vintv, Vhist/720, 'LineWidth', 2);hold on;
-                plot(Vintv, Vhist/720*4 + ii*ones(numel(Vintv),1).', 'LineWidth', 2, 'Color', 'k');hold on;
-            end
-            set(gca,'Xtick',0.975:0.001:1.005, 'Ytick',1:0.5:12.5, 'YTickLabel', {'Januari', '', 'Februari', '', 'Mars', '', 'April', '', 'Maj', '', 'Juni', '', 'Juli', '', 'Augusti', '', 'September', '', 'Oktober', '', 'November', '', 'December', ''});
+            plotVoltageHistogram;
             
-            line(0.975*[1 1],[0 13], 'Color', 'r');
-            line(1.00*[1 1],[0 13], 'Color', 'r');
-            grid on;
         case {'X','x'}
             % Cancel analysis
             loopAnalysis=false;

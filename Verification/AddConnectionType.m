@@ -9,30 +9,21 @@ indexLoad = 1;
 nextLoadBus = Loads.Bus(indexLoad);
 
 for iCon = 1:length(connectionBuses)
+    conLog = connectionBuses == iCon;
     
-    if isspace(connectionType(iCon, 1))
-        if any(connectionBuses(iCon, 1) == connectionBuses(1:iCon-1, 1)) || any(connectionBuses(iCon, 1) == connectionBuses(iCon+1:end, 1))
-            connectionType(iCon,1) = 'S';
-        elseif connectionBuses(iCon, 1) == 1
-            connectionType(iCon,1) = 'T';
-        else
-            connectionType(iCon,1) = 'J';
-        end
+    if iCon==1
+        connectionType(conLog) = 'T';
+    elseif iCon == nextLoadBus
+        connectionType(conLog) = 'L';
+        
+        indexLoad = indexLoad + 1;
+        nextLoadBus = Loads.Bus(indexLoad);
+    else
+        connectionType(conLog) = 'J';
     end
-    
-    if isspace(connectionType(iCon, 2))
-        if iCon == nextLoadBus
-            connectionType(iCon, 2) = 'L';
-            
-            % update index
-            indexLoad = indexLoad + 1;
-            nextLoadBus = Loads.Bus(indexLoad);
-        else
-            connectionType(iCon, 2) = 'J';
-        end
-    end
-    
 end
+connectionType(end,2) = 'L';
+
 
 if indexLoad < height(Loads)
     error('All loads have not been found!!')

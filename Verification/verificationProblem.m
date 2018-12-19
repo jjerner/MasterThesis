@@ -38,12 +38,11 @@ for iBus = 1:length(Y_bus)
                     busType(iBus,:) = 'PQ';
                     U_bus(iBus,:) = 1;
                     busIsLoad(iBus) = true;
-                    nameOfBus = connectionName{iRow, iCol};
-                    nameOfBus = str2double(nameOfBus);
+                    nameOfBus = iBus;
                     
                     referenceFound = 0;
                     for iInput = 1:length(Input)
-                        if nameOfBus == Input(iInput).reference
+                        if nameOfBus == Input(iInput).name
                             referenceFound = 1;
                             break
                         end

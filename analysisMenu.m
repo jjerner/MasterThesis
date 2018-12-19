@@ -62,26 +62,9 @@ while loopAnalysis
             tYear = 1:length(Input(1).values);
 
             timeLine = tYear;
-
-            S_hist = zeros(size(S_bus,1), length(timeLine));
-            U_hist = zeros(size(U_bus,1), length(timeLine));
-
-            barHandle = waitbar(0, '1', 'Name', 'Sweep calculations');
-            for iter = 1:length(timeLine)
-                waitbar(iter/length(timeLine), barHandle, sprintf('Sweep calculations %d/%d',...
-                        iter, length(timeLine)));
-
-                [S_out, U_out] = fbsm(Z_ser_tot, S_ana(:,timeLine(iter)), U_bus(:,timeLine(iter)),...
-                                      connectionBuses, busType, 1000, 1e-3, 0);
-
-                S_hist(:,iter) = S_out;
-                U_hist(:,iter) = U_out;
-            end
-            close(barHandle)
-            disp('Sweep calculation finished.');
-
-            P_hist = real(S_hist);
-            Q_hist = imag(S_hist);
+            
+            [U_hist,S_hist]=doSweepCalcs(Z_ser_tot,S_ana,U_bus,timeLine);
+            
 
         case '5'
             % Plot all

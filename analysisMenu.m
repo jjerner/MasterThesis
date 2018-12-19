@@ -76,7 +76,7 @@ while loopAnalysis
 
         case '7'    
             % Analyze voltages
-
+            V_anaRes=analyzeVoltage(U_hist,busIsLoad);
             
         case '8'
             % Plot grid tree map

@@ -1,4 +1,4 @@
-function V_analysis=analyzeVoltage(U_hist,busIsLoad)
+function U_anaRes=analyzeVoltage(U_hist,busIsLoad)
     % Voltage analysis
     % Prints to command window
     [maxVoltageVec,maxVoltageTimeVec]=max(abs(U_hist),[],2);   % Max voltage for each bus
@@ -28,4 +28,17 @@ function V_analysis=analyzeVoltage(U_hist,busIsLoad)
 
     % fprintf('Minimum voltage difference: %g\n',minLoadVdiff);
     % fprintf('Maximum voltage difference: %g\n',maxLoadVdiff);
+    
+    U_anaRes.all.maxVoltage=maxVoltage;
+    U_anaRes.all.maxVoltageBusNr=maxVoltageBusNr;
+    U_anaRes.all.maxVoltageTimeStep=maxVoltageTimeStep;
+    U_anaRes.all.minVoltage=minVoltage;
+    U_anaRes.all.minVoltageBusNr=minVoltageBusNr;
+    U_anaRes.all.minVoltageTimeStep=minVoltageTimeStep;
+    U_anaRes.loads.maxVoltage=maxLoadVoltage;
+    U_anaRes.loads.maxVoltageBusNr=maxLoadVoltageBusNr;
+    U_anaRes.loads.maxVoltageTimeStep=maxLoadVoltageTimeStep;
+    U_anaRes.loads.minVoltage=minLoadVoltage;
+    U_anaRes.loads.minVoltageBusNr=minLoadVoltageBusNr;
+    U_anaRes.loads.minVoltageTimeStep=minLoadVoltageTimeStep;
 end

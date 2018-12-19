@@ -63,7 +63,7 @@ while loopAnalysis
 
             timeLine = tYear;
             
-            [U_hist,S_hist]=doSweepCalcs(Z_ser_tot,S_ana,U_bus,timeLine);
+            [U_hist,S_hist]=doSweepCalcs(Z_ser_tot,S_ana,U_bus,connectionBuses,busType,timeLine);
             
 
         case '5'

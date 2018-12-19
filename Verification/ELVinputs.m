@@ -8,5 +8,5 @@ for indexLoad = 1:height(Loads)
     LPimport = ELVLoadImport(filename);     % read data from filename --> output in kW
 
     Input(indexLoad).name = Loads.Yearly(indexLoad);
-    Input(indexLoad). values = LPimport;
+    Input(indexLoad).values = LPimport;
 end

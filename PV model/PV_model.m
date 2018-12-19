@@ -1,3 +1,31 @@
+function P_pv = PV_model(location, orientation, tilt, year)
+% PV_model function version of thesis work of some german guy
+%
+% location:
+% 1 - Norrkoeping
+% 2 - Kiruna
+% 3 - Visby
+% 4 - Munich
+% 
+% orientation:
+% 1 - East
+% 2 - Southeast
+% 3 - South
+% 4 - Southwest
+% 5 - West
+% 
+% tilt:
+% 1 - flat_22degree
+% 2 - medium_44degree
+% 3 - steep_60degree
+% 
+% year:
+% 1 - Y2013
+% 2 - Y2014
+% 3 - Y2015
+% 4 - Y2016
+
+
 %clear all
 userInput = 0;
 if(userInput == 1)
@@ -64,24 +92,25 @@ if(userInput == 1)
     else
     PV.Location = struct('Norrkoeping',58.58, 'Kiruna',67.83, 'Visby',57.67, 'Munich',48.15);
     dataLoc = fieldnames(PV.Location);
-    Loc2run = 1;
-    PV.latitude = PV.Location.Norrkoeping;
+    Loc2run = location;
+    PV.latitude = PV.Location.(dataLoc{Loc2run});
     radiation = 'RadiationTemperatureData';
     [aaee,daaate] = xlsread(radiation,num2str(Loc2run));
     
     PV.Orientation = struct('East',90,'Southeast',135,'South',180,'Southwest',225,'West',270);
     dataNames = fieldnames(PV.Orientation);
-    Orient2run = 3;
-    azimuth_pv = PV.Orientation.South;
+    Orient2run = orientation;
+    azimuth_pv = PV.Orientation.(dataNames{Orient2run});
     
     PV.Tilt = struct('flat_22degree',33,'medium_44degree',30,'steep_60degree',35);
     dataPV = fieldnames(PV.Tilt);
-    Tilt2run = 2;
-    tilt = PV.Tilt.medium_44degree;
+    Tilt2run = tilt;
+    tilt = PV.Tilt.(dataPV{Tilt2run});
     
     Year = struct('Y2013',365,'Y2014',365,'Y2015',365,'Y2016',366);
-    year2run = 4;
-    days = Year.Y2016;
+    dataYear = fieldnames(Year);
+    year2run = year;
+    days = Year.(dataYear{year2run});
     Yearq = [2013; 2014;2015;2016];
     yearr = Yearq(year2run);
     
@@ -225,12 +254,14 @@ P_simulationYearly = sum(P_simulation);
 P_simulationmax = max(P_simulation);
 P_simulation2 = P_simulation/1000;
 
-disp('*********************************')
+disp(' ')
 disp(['Location: ', dataLoc{Loc2run}, ' - Year: ', num2str(yearr)])
 disp('---------------------------------')
 disp(['Yearly power: ', num2str(P_simulationYearly/1e6), ' MW'])
 disp(['Max power during 1h: ', num2str(P_simulationmax), ' W'])
 disp('*********************************')
+
+P_pv = P_simulation;
 
 %% Plots
 %{
@@ -266,3 +297,5 @@ pos = get(h,'Position');
 set(h,'PaperPositionMode','Auto','PaperUnits','Inches','PaperSize',[pos(3), pos(4)])
 print(h,'RefMunich','-dpdf','-r0')
 %}
+
+end

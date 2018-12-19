@@ -1,4 +1,4 @@
-function [S_out, U_out] = fbsm(Z_in, S_in, U_in, connections, busType, MAX_ITER, eps, doPlot)
+function [S_out, U_out] = solveFBSM(Z_in, S_in, U_in, connections, busType, MAX_ITER, eps, doPlot)
 %FBSM, Forward Backward Sweep Method
 %
 %   Inputs:

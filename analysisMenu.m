@@ -2,23 +2,29 @@ clear analysisCase;
 loopAnalysis=true;
 
 while loopAnalysis
-    fprintf('\nANALYSIS MENU\n');
-    disp('Choose an option');
-    disp('1. Set power to input');
-    disp('2. Change power factor (BETA)');
-    disp('3. Add power production (BETA)');
-    disp('4. Run sweep calculation');
-    disp('5. Plot all results');
-    disp('6. Plot load results only');
-    disp('7. Analyze voltages');
-    disp('8. Plot grid tree map');
-    disp('9. Plot voltage histogram (ALPHA)');
-    disp('X. Cancel analysis');
-    analysisCase = input('Enter your choice: ','s');
-    fprintf('\n');
-    
+    % Select case
+    caseList={'setinput','Set power to input';...
+              'changepf','Change power factor (BETA)';...
+              'addprod','Add power production (BETA)';...
+              'settimeline','Set timeline';...
+              'sweepcalc','Run sweep calculation';...
+              'plotall','Plot all results';...
+              'plotloads','Plot load results only';...
+              'analyzevolt','Analyze voltages';...
+              'plotgridtree','Plot grid tree map';
+              'plotvhist','Plot voltage histogram (BETA)'};
+    [sel,ok] = listdlg('PromptString','Choose an option:',...
+        'SelectionMode','single',...
+        'ListString',caseList(:,2),...
+        'Name','Select a case',...
+        'ListSize',[200,200]);
+    if ok~=true
+        error('No case selected.');
+    end
+    analysisCase=strjoin(caseList(sel,1));
+
     switch analysisCase
-        case '1'
+        case 'setinput'
             % Set power to input
             S_ana=S_bus;
             disp('All bus powers set to input values.');
@@ -27,7 +33,7 @@ while loopAnalysis
             else
                 disp('Load input contains both active and reactive powers.');
             end
-        case '2'
+        case 'changepf'
             % Change power factor
             histogramNodeNumber = input('Enter new power factor: ');
             newPowerFactorLeading = input('Lagging/inductive (0) or leading/capacitive (1)? ');
@@ -38,7 +44,7 @@ while loopAnalysis
             fprintf('Power factor for all loads changed to %g',histogramNodeNumber)
             if newPowerFactorLeading, fprintf(' leading.\n'); else, fprintf(' lagging.\n'); end
 
-        case '3'
+        case 'addprod'
             % Add power production
 
             if ~exist('S_ana','var'), S_ana = S_bus; end
@@ -49,11 +55,7 @@ while loopAnalysis
             S_ana(productionAtBus,productionAtTime)=S_ana(productionAtBus,productionAtTime)...
                 -productionPower;
             fprintf('Added %g p.u. production at node %d\n',[productionPower productionAtBus]');
-        case '4'
-            % Run sweep calculation
-
-            if ~exist('S_ana','var'), S_ana = S_bus; end
-
+        case 'settimeline'
             % Set timeline
             tJan = 1:24*31;
             tFeb = 1+(24*31):24*(28+31);
@@ -62,30 +64,35 @@ while loopAnalysis
             tYear = 1:length(Input(1).values);
 
             timeLine = tYear;
-            
-            [U_hist,S_hist]=doSweepCalcs(Z_ser_tot,S_ana,U_bus,connectionBuses,busType,timeLine);
-            
 
-        case '5'
+        case 'sweepcalc'
+            % Run sweep calculation
+
+            if ~exist('S_ana','var'), S_ana = S_bus; end
+            [U_hist,S_hist]=doSweepCalcs(Z_ser_tot,S_ana,U_bus,connectionBuses,busType,timeLine);
+
+
+        case 'plotall'
             % Plot all
             plotResults(U_hist,S_hist,timeLine,busIsLoad,0);
 
-        case '6'
+        case 'plotloads'
             % Plot loads only
             plotResults(U_hist,S_hist,timeLine,busIsLoad,1);
 
-        case '7'    
+        case 'analyzevolt'    
             % Analyze voltages
             V_anaRes=analyzeVoltage(U_hist,busIsLoad);
-            
-        case '8'
+
+        case 'plotgridtree'
             % Plot grid tree map
             plotTreeGrid;
-        case '9'
+            
+        case 'plotvhist'
             % Plot voltage histogram
             plotVoltageHistogram;
-            
-        case {'X','x'}
+
+        case {'cancel'}
             % Cancel analysis
             loopAnalysis=false;
 
@@ -93,5 +100,4 @@ while loopAnalysis
             warning('Invalid choice');
     end
 end
-fprintf('\n');
-clear loopAnalysis analysisCase;
+clear analysisCase loopAnalysis;

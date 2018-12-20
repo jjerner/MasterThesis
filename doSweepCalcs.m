@@ -1,17 +1,18 @@
-function [U_hist,S_hist]=doSweepCalcs(Z_ser_tot,S_ana,U_bus,connectionBuses,busType,timeLine)
+function [U_hist,S_hist,nItersVec]=doSweepCalcs(Z_ser_tot,S_ana,U_bus,connectionBuses,busType,timeLine)
     S_hist = zeros(size(S_ana,1), length(timeLine));
     U_hist = zeros(size(U_bus,1), length(timeLine));
-
+    nItersVec=zeros(1,length(timeLine));
     barHandle = waitbar(0, '1', 'Name', 'Sweep calculations');
-    for iter = 1:length(timeLine)
-        waitbar(iter/length(timeLine), barHandle, sprintf('Sweep calculations %d/%d',...
-                iter, length(timeLine)));
+    for iTime = 1:length(timeLine)
+        waitbar(iTime/length(timeLine), barHandle, sprintf('Sweep calculations %d/%d',...
+                iTime, length(timeLine)));
 
-        [S_out, U_out] = solveFBSM(Z_ser_tot,S_ana(:,timeLine(iter)),U_bus(:,timeLine(iter)),...
+        [S_out,U_out,nIters] = solveFBSM(Z_ser_tot,S_ana(:,timeLine(iTime)),U_bus(:,timeLine(iTime)),...
                               connectionBuses,busType,1000,1e-3,0);
 
-        S_hist(:,iter) = S_out;
-        U_hist(:,iter) = U_out;
+        S_hist(:,iTime) = S_out;
+        U_hist(:,iTime) = U_out;
+        nItersVec(iTime)=nIters;
     end
     close(barHandle)
     disp('Sweep calculation finished.');

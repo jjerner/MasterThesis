@@ -1,4 +1,4 @@
-function [S_out, U_out] = solveFBSM(Z_in, S_in, U_in, connections, busType, MAX_ITER, eps, doPlot)
+function [S_out,U_out,iter] = solveFBSM(Z_in, S_in, U_in, connections, busType, MAX_ITER, eps, doPlot)
 %FBSM, Forward Backward Sweep Method
 %
 %   Inputs:
@@ -20,21 +20,21 @@ if ~exist('MAX_ITER','var'), MAX_ITER = 100; end    % Default value for max no o
 if ~exist('eps', 'var'), eps = 1e-6; end            % Default convergence  
 if ~exist('doPlot','var'), doPlot = 0; end          % Create plots is off by default 
 
-k = 2;
+iter = 2;
 S_calc(:,1) = S_in;
 U_calc(:,1) = U_in;
 calcDoneBwd=zeros(length(connections),1);
 calcDoneFwd=zeros(length(connections),1);
 
-while k<=MAX_ITER
+while iter<=MAX_ITER
     
-    if k == MAX_ITER
+    if iter == MAX_ITER
        warning('No convergence before maximal iterations was reached!') 
     end
  
     % Backward sweep
     while ~all(calcDoneBwd)
-        S_calc(:,k) = S_in;
+        S_calc(:,iter) = S_in;
         for iBack = length(connections):-1:1
             startPoint = connections(iBack, 1);
             endPoint   = connections(iBack, 2);
@@ -45,10 +45,10 @@ while k<=MAX_ITER
             upstreamCheck=all(calcDoneBwd(find(existsChildrenUS)));
             
             if upstreamCheck && downstreamCheck
-                S_loop = S_calc(endPoint,k) + S_calc(endPoint,k) * conj(S_calc(endPoint,k))...
-                    * Z_in(startPoint,endPoint) / U_calc(endPoint,k-1)^2;
+                S_loop = S_calc(endPoint,iter) + S_calc(endPoint,iter) * conj(S_calc(endPoint,iter))...
+                    * Z_in(startPoint,endPoint) / U_calc(endPoint,iter-1)^2;
                 % Update startpoints only
-                S_calc(startPoint,k) = S_calc(startPoint,k) + S_loop;
+                S_calc(startPoint,iter) = S_calc(startPoint,iter) + S_loop;
                 calcDoneBwd(iBack)=1;
             end
         end
@@ -56,7 +56,7 @@ while k<=MAX_ITER
     
     % Forward sweep
     while ~all(calcDoneFwd)
-        U_calc(:,k) = U_in;
+        U_calc(:,iter) = U_in;
         for iFwd = 1:length(connections)
             if strcmpi(busType(iFwd,:), 'SL') || strcmpi(busType(iFwd,:), 'PV')
                 calcDoneFwd(iFwd)=1;
@@ -74,7 +74,7 @@ while k<=MAX_ITER
                     %U_calc(endPoint,k) = U_calc(startPoint,k-1) - ...
                         %(real(S_calc(startPoint,k))*real(Z_in(startPoint,endPoint))+...
                         %(imag(S_calc(startPoint,k))*imag(Z_in(startPoint,endPoint))))/U_calc(startPoint,k-1);
-                    U_calc(endPoint,k) = U_calc(startPoint,k-1) -(S_calc(startPoint,k)*Z_in(startPoint,endPoint)/U_calc(startPoint,k-1));
+                    U_calc(endPoint,iter) = U_calc(startPoint,iter-1) -(S_calc(startPoint,iter)*Z_in(startPoint,endPoint)/U_calc(startPoint,iter-1));
                     calcDoneFwd(iFwd)=1;
                 end
             end
@@ -82,9 +82,9 @@ while k<=MAX_ITER
     end
     
     % Convergence
-    if k > 2
-        powerConvCrit = max(abs(S_calc(:,k-1) - S_calc(:,k)));
-        voltageConvCrit = max(abs(U_calc(:,k-1) - U_calc(:,k)));
+    if iter > 2
+        powerConvCrit = max(abs(S_calc(:,iter-1) - S_calc(:,iter)));
+        voltageConvCrit = max(abs(U_calc(:,iter-1) - U_calc(:,iter)));
 
         if powerConvCrit < eps && voltageConvCrit < eps
             break
@@ -93,7 +93,7 @@ while k<=MAX_ITER
     
     calcDoneBwd(:)=0;
     calcDoneFwd(:)=0;
-    k = k+1;
+    iter = iter+1;
 end
 
 if doPlot

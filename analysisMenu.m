@@ -64,7 +64,7 @@ while loopAnalysis
             % Run sweep calculation
 
             if ~exist('S_ana','var'), S_ana = S_bus; end
-            [U_hist,S_hist]=doSweepCalcs(Z_ser_tot,S_ana,U_bus,connectionBuses,busType,timeLine);
+            [U_hist,S_hist,nIters]=doSweepCalcs(Z_ser_tot,S_ana,U_bus,connectionBuses,busType,timeLine);
 
 
         case 'plotall'

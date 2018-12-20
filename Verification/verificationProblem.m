@@ -27,16 +27,14 @@ for iBus = 1:length(Y_bus)
                 elseif char == 'J' || char == 'H'
                     busType(iBus,:) = 'PQ';
                     U_bus(iBus,:) = 1;
-                    %S_bus(iBus) = 0;
                     
                 elseif char == 'S'
                     busType(iBus,:) = 'PQ';
                     U_bus(iBus,:) = 1;
-                    %S_bus(iBus) = 0;
                     
                 elseif char == 'L'
                     busType(iBus,:) = 'PQ';
-                    U_bus(iBus,:) = 1;
+                    U_bus(iBus,:) = 0.9;
                     busIsLoad(iBus) = true;
                     nameOfBus = iBus;
                     

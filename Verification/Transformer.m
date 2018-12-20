@@ -19,9 +19,9 @@ TransformerData.Z2k = TransformerData.R + j*TransformerData.X;
 TransformerData.R2k = 0.4;
 
 % base power and voltages
-TransformerData.S_base      = TransformerData.S_tot;
+TransformerData.S_base      = TransformerData.S_tot/3;
 TransformerData.U_prim_base = TransformerData.U_prim;
-TransformerData.U_sec_base  = TransformerData.U_sec;
+TransformerData.U_sec_base  = TransformerData.U_sec/sqrt(3);
 
 % base impedances
 TransformerData.Z_prim_base = (TransformerData.U_prim_base^2)/TransformerData.S_base;

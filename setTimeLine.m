@@ -56,4 +56,9 @@ function timeLine=setTimeLine(leapYear)
         fprintf('Selected months: %s',strjoin(monthList(sel,2),', '));
     end
     fprintf('.\n');
+    if leapYear
+        fprintf('Leap year: Yes.\n');
+    else
+        fprintf('Leap year: No.\n');
+    end
 end

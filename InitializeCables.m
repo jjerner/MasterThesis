@@ -34,9 +34,18 @@ for iGridCable = 1:nCablesInGrid
 
     while ~cablesFound(iGridCable) && iDBCable<nCablesInDB
         nameToCompare = Ledningsdata.Name{iDBCable};
-        if nameToCompare(end-2) == '/'
-            nameToCompare = nameToCompare(1:end-3);
+%         if nameToCompare(end-2) == '/'
+%             nameToCompare = nameToCompare(1:end-3);
+%         end
+
+        removalIndex = regexp(data.textdata{iGridCable,2}, '\dX');
+        
+        if ~isempty(removalIndex)
+            modName = data.textdata{iGridCable,2};
+            modName(2:3) = [];
+            data.textdata{iGridCable,2} = modName;
         end
+        
 
         if length(data.textdata{iGridCable,2}) == length(nameToCompare)
             if data.textdata{iGridCable,2} == nameToCompare

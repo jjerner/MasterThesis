@@ -59,11 +59,12 @@ for iGridCable = 1:nCablesInGrid
     end
     
     if ~cablesFound(iGridCable)
-        disp(['No DB match for cable ' num2str(iGridCable) ', using standard cable.']);
-        iDBCable = 4;  % <-- set appropriate index to "standard cable"
+        disp(['No DB match for cable ' num2str(iGridCable) ' (' data.textdata{iGridCable,2} '), using standard cable (NV4G10, 10 mm^2).']);
+        iDBCable = 174;  % Standard cable is NV4G10, 10 mm^2
     end
 
     %read data
+    CableData(iGridCable).Name   = Ledningsdata.Name(iDBCable);             % string
     CableData(iGridCable).l      = data.data(iGridCable,5);                 % [m]
     CableData(iGridCable).Rpl    = Ledningsdata.R(iDBCable);                % [Ohm / km]
     CableData(iGridCable).R0pl   = Ledningsdata.R0(iDBCable);               % [Ohm / km]

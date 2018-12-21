@@ -71,9 +71,6 @@ while iter<=MAX_ITER
                 upstreamCheck=all(calcDoneFwd(find(existsParentsUS)));
                 
                 if upstreamCheck && downstreamCheck
-                    %U_calc(endPoint,k) = U_calc(startPoint,k-1) - ...
-                        %(real(S_calc(startPoint,k))*real(Z_in(startPoint,endPoint))+...
-                        %(imag(S_calc(startPoint,k))*imag(Z_in(startPoint,endPoint))))/U_calc(startPoint,k-1);
                     U_calc(endPoint,iter) = U_calc(startPoint,iter-1) -(S_calc(startPoint,iter)*Z_in(startPoint,endPoint)/U_calc(startPoint,iter-1));
                     calcDoneFwd(iFwd)=1;
                 end

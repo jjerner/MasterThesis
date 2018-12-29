@@ -1,13 +1,16 @@
 % This script takes the previously setup buses
 
 fictive_data = 0;
-solar_data = 0;             % Set solar 
+solar_data = 0;             % Set solar
+
+U_t_guess = 1;              % initial transformer voltage guess
+U_l_guess = 0.97;           % initial load voltage guess
+U_j_guess = 1;              % initial jointconnection voltage guess
 
 if fictive_data == 1
     disp(' ')
     disp('Creating fictional input data.');
-    
-    createBusInputs;
+    createBusInputs;                            % under construction, do not enter
 else
     readInput;                                  % Read input data
 end
@@ -32,25 +35,25 @@ for iBus = 1:length(Y_bus)
                 if char == 'H' || char == 'T' && firstHighVoltageBusFound == 0
                     firstHighVoltageBusFound = 1;
                     busType(iBus,:) = 'SL';
-                    U_bus(iBus,:) = 1;
+                    U_bus(iBus,:) = U_t_guess;
                     
                 elseif char == 'T'
                     busType(iBus,:) = 'PQ';
-                    U_bus(iBus,:) = 1;
+                    U_bus(iBus,:) = U_t_guess;
                     
                 elseif char == 'J' || char == 'H'
                     busType(iBus,:) = 'PQ';
-                    U_bus(iBus,:) = 1;
+                    U_bus(iBus,:) = U_j_guess;
                     %S_bus(iBus) = 0;
                     
                 elseif char == 'S'
                     busType(iBus,:) = 'PQ';
-                    U_bus(iBus,:) = 1;
+                    U_bus(iBus,:) = U_j_guess;
                     %S_bus(iBus) = 0;
                     
                 elseif char == 'L'
                     busType(iBus,:) = 'PQ';
-                    U_bus(iBus,:) = 1;
+                    U_bus(iBus,:) = U_l_guess;
                     busIsLoad(iBus) = true;
                     nameOfBus = connectionName{iRow, iCol};
                     nameOfBus = str2double(nameOfBus);

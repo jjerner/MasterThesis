@@ -29,7 +29,7 @@ calcDoneFwd=zeros(length(connections),1);
 while iter<=MAX_ITER
     
     if iter == MAX_ITER
-       warning('No convergence before maximal iterations was reached!') 
+       warning('No convergence before maximum number of iterations was reached.') 
     end
  
     % Backward sweep

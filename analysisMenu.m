@@ -93,7 +93,7 @@ while loopAnalysis
         case 'analyzeus'    
             % Analyze voltages and powers
             if ~exist('resultSet','var'), disp('Error: Run or load calculation first.'); break; end
-            V_anaRes=analyzeUandS(resultSet,busIsLoad);
+            anaRes=analyzeUandS(resultSet,busIsLoad);
 
         case 'plotgridtree'
             % Plot grid tree map

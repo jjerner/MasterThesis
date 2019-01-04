@@ -11,7 +11,7 @@ while loopAnalysis
               'sweepcalc','Run sweep calculation';...
               'plotall','Plot all results';...
               'plotloads','Plot load results only';...
-              'analyzevolt','Analyze voltages';...
+              'analyzeus','Analyze voltages and powers';...
               'plotgridtree','Plot grid tree map';
               'plotvhist','Plot voltage histogram (BETA)'};
     [sel,ok] = listdlg('PromptString','Choose an option:',...
@@ -90,10 +90,10 @@ while loopAnalysis
             if ~exist('resultSet','var'), disp('Error: Run or load calculation first.'); break; end
             plotResults(resultSet,busIsLoad,1);
 
-        case 'analyzevolt'    
-            % Analyze voltages
+        case 'analyzeus'    
+            % Analyze voltages and powers
             if ~exist('resultSet','var'), disp('Error: Run or load calculation first.'); break; end
-            V_anaRes=analyzeVoltage(resultSet,busIsLoad);
+            V_anaRes=analyzeUandS(resultSet,busIsLoad);
 
         case 'plotgridtree'
             % Plot grid tree map

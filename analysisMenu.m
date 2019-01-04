@@ -48,15 +48,21 @@ while loopAnalysis
 
         case 'addprod'
             % Add power production
+            if ~exist('timeLine','var'), disp('Error: Set timeline first'); break; end
             if ~exist('S_ana','var'), S_ana = S_bus; end
-            productionAtBus=[118;120];          % Bus nr to add production to
-            productionAtTime=70:170;            % Time interval for production
-            productionPower=[1e-3;1e-2];        % Power [p.u.]
+%             productionAtBus=[118;120];          % Bus nr to add production to
+%             productionAtTime=70:170;            % Time interval for production
+%             productionPower=[1e-3;1e-2];        % Power [p.u.]
+% 
+%             S_ana(productionAtBus,productionAtTime)=S_ana(productionAtBus,productionAtTime)...
+%                 -productionPower;
+%             fprintf('Added %g p.u. production at node %d\n',[productionPower productionAtBus]');
+            disp('Calculating PV power from model.');
+            P_pv=(1/TransformerData.S_base)*PV_model(1,1,1,3)';    % Get PV power from model [p.u.]
+            P_pv=P_pv(timeLine);        % Set correct timeline
+            relLoadSize=S_ana(busIsLoad)./mean(S_ana(busIsLoad)); % Load size relative to mean load
+            S_ana(busIsLoad,timeLine)=S_ana(busIsLoad,timeLine)-0.1*relLoadSize.*repmat(P_pv,[size(S_ana(busIsLoad),1) 1]);
 
-            S_ana(productionAtBus,productionAtTime)=S_ana(productionAtBus,productionAtTime)...
-                -productionPower;
-            fprintf('Added %g p.u. production at node %d\n',[productionPower productionAtBus]');
-        
         case 'filterinput'
             % Filter input (moving average)
             if ~exist('S_ana','var'), S_ana = S_bus; end
@@ -71,23 +77,23 @@ while loopAnalysis
             % Run sweep calculation
             if ~exist('timeLine','var'), disp('Error: Set timeline first'); break; end
             if ~exist('S_ana','var'), S_ana = S_bus; end
-            [U_hist,S_hist,nIters]=doSweepCalcs(Z_ser_tot,S_ana,U_bus,connectionBuses,busType,timeLine);
+            resultSet=doSweepCalcs(Z_ser_tot,S_ana,U_bus,connectionBuses,busType,timeLine);
 
 
         case 'plotall'
             % Plot all
-            if ~exist('U_hist','var'), disp('Error: Run or load calculation first.'); break; end
-            plotResults(U_hist,S_hist,timeLine,busIsLoad,0);
+            if ~exist('resultSet','var'), disp('Error: Run or load calculation first.'); break; end
+            plotResults(resultSet,busIsLoad,0);
 
         case 'plotloads'
             % Plot loads only
-            if ~exist('U_hist','var'), disp('Error: Run or load calculation first.'); break; end
-            plotResults(U_hist,S_hist,timeLine,busIsLoad,1);
+            if ~exist('resultSet','var'), disp('Error: Run or load calculation first.'); break; end
+            plotResults(resultSet,busIsLoad,1);
 
         case 'analyzevolt'    
             % Analyze voltages
-            if ~exist('U_hist','var'), disp('Error: Run or load calculation first.'); break; end
-            V_anaRes=analyzeVoltage(U_hist,busIsLoad);
+            if ~exist('resultSet','var'), disp('Error: Run or load calculation first.'); break; end
+            V_anaRes=analyzeVoltage(resultSet,busIsLoad);
 
         case 'plotgridtree'
             % Plot grid tree map
@@ -95,7 +101,7 @@ while loopAnalysis
             
         case 'plotvhist'
             % Plot voltage histogram
-            if ~exist('U_hist','var'), disp('Error: Run or load calculation first.'); break; end
+            if ~exist('resultSet','var'), disp('Error: Run or load calculation first.'); break; end
             plotVoltageHistogram;
 
         case {'cancel'}

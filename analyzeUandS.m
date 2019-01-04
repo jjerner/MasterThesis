@@ -22,6 +22,7 @@ function anaRes=analyzeUandS(resultSet,busIsLoad)
     minLoadVoltageTimeStep=minVoltageTimeVec(minLoadVoltageBusNr);     % Time (col) for min load voltage
 
     % Prints to command window
+    disp('=== VOLTAGE ANALYSIS ===');
     fprintf('Maximum voltage: %g at bus %d, time %d\n',maxVoltage,maxVoltageBusNr,maxVoltageTimeStep);
     fprintf('Minimum voltage: %g at bus %d, time %d\n',minVoltage,minVoltageBusNr,minVoltageTimeStep);
     fprintf('Maximum load voltage: %g at bus %d, time %d\n',maxLoadVoltage,maxLoadVoltageBusNr,maxLoadVoltageTimeStep);
@@ -66,6 +67,7 @@ function anaRes=analyzeUandS(resultSet,busIsLoad)
     minLoadActivePowerTimeStep=minActivePowerTimeVec(minLoadActivePowerBusNr);     % Time (col) for min load active power
 
     % Prints to command window
+    disp('=== ACTIVE POWER ANALYSIS ===');
     fprintf('Maximum active power: %g at bus %d, time %d\n',maxActivePower,maxActivePowerBusNr,maxActivePowerTimeStep);
     fprintf('Minimum active power: %g at bus %d, time %d\n',minActivePower,minActivePowerBusNr,minActivePowerTimeStep);
     fprintf('Maximum load active power: %g at bus %d, time %d\n',maxLoadActivePower,maxLoadActivePowerBusNr,maxLoadActivePowerTimeStep);
@@ -89,8 +91,8 @@ function anaRes=analyzeUandS(resultSet,busIsLoad)
     
     %% Reactive power
     
-    [maxReactivePowerVec,maxReactivePowerTimeVec]=max(real(resultSet.S_hist),[],2);   % Max reactive power for each bus
-    [minReactivePowerVec,minReactivePowerTimeVec]=min(real(resultSet.S_hist),[],2);   % Min reactive power for each bus
+    [maxReactivePowerVec,maxReactivePowerTimeVec]=max(imag(resultSet.S_hist),[],2);   % Max reactive power for each bus
+    [minReactivePowerVec,minReactivePowerTimeVec]=min(imag(resultSet.S_hist),[],2);   % Min reactive power for each bus
 
     [maxReactivePower,maxReactivePowerBusNr]=max(maxReactivePowerVec);           % Max reactive power and bus number
     [minReactivePower,minReactivePowerBusNr]=min(minReactivePowerVec);           % Min reactive power and bus number
@@ -110,6 +112,7 @@ function anaRes=analyzeUandS(resultSet,busIsLoad)
     minLoadReactivePowerTimeStep=minReactivePowerTimeVec(minLoadReactivePowerBusNr);     % Time (col) for min load reactive power
 
     % Prints to command window
+    disp('=== REACTIVE POWER ANALYSIS ===');
     fprintf('Maximum reactive power: %g at bus %d, time %d\n',maxReactivePower,maxReactivePowerBusNr,maxReactivePowerTimeStep);
     fprintf('Minimum reactive power: %g at bus %d, time %d\n',minReactivePower,minReactivePowerBusNr,minReactivePowerTimeStep);
     fprintf('Maximum load reactive power: %g at bus %d, time %d\n',maxLoadReactivePower,maxLoadReactivePowerBusNr,maxLoadReactivePowerTimeStep);

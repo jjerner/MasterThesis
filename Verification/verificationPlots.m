@@ -1,5 +1,5 @@
-
-
+S_hist=verResultSet.S_hist;
+U_hist=verResultSet.U_hist;
 
 % plot Transformer lv side
 powerFig = figure;

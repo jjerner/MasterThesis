@@ -29,11 +29,11 @@ pf = 0.95;
 
 S_complex = createComplexPower(S_bus, pf, 0);
 
-[U_hist,S_hist]=doSweepCalcs(Z_ser_tot, S_complex, U_bus, connectionBuses, busType, 1:1440);
+verResultSet=doSweepCalcs(Z_ser_tot, S_complex, U_bus, connectionBuses, busType, 1:1440);
 
 % RESULTS
 
-% comparasion data
+% comparaison data
 load('GridLabData');
 
 verificationPlots;

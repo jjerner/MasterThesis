@@ -1,9 +1,12 @@
 % Create complex power from magnitude and power factor
 %
-% function S = createComplexPower(S_abs,powerFactor,leading)
+% function S = createComplexPower(power,powerInType,powerFactor,leading)
 %
 % INPUTS:
-% S_abs:        Power magnitude (absolute value) [any matrix]
+% powerIn:      Input power [any matrix]
+% powerInType:  Input power type [char]:
+%               - 'M' for power magnitude (apparent power)
+%               - 'P' for active power (real(S))
 % powerFactor:  Power factor cos(phi) [1x1 or size(S_abs)]
 % leading:      Make power factor leading (capacitive) instead of
 %               lagging (inductive). Default: off.
@@ -12,15 +15,30 @@
 % OUTPUTS:
 % S:            Complex power [size(S_abs)]
 
-function S = createComplexPower(S_abs,powerFactor,leading)
+function S = createComplexPower(powerIn,powerInType,powerFactor,leading)
     if ~exist('leading','var'), leading = 0; end    % Leading mode is off by default
     j=1i;                                   % Imaginary unit
-    S_abs=abs(S_abs);                       % Make sure S_abs is magnitude
-    P=S_abs.*powerFactor;                   % Active power
-    if ~leading
-        Q=S_abs.*sin(acos(powerFactor));    % Reactive power (positive)
-    elseif leading
-        Q=-S_abs.*sin(acos(powerFactor));   % Reactive power (negative)
+    
+    switch powerInType
+        case 'M'
+            % Input is power magnitude (apparent power)
+            M=powerIn;                                % Power magnitude
+            P=M.*powerFactor;                         % Active power
+            
+        case 'P'
+            % Input power is active power
+            P=powerIn;                                % Active power
+            M=P./powerFactor;                         % Power magnitude
+        
+        otherwise
+            error('Unsupported input power type.');
     end
-    S=P+j.*Q;                               % Complex power
+    
+    if ~leading
+        Q=M.*sin(acos(powerFactor));          % Reactive power (positive)
+    elseif leading
+        Q=-M*sin(acos(powerFactor));          % Reactive power (negative)
+    end
+    
+    S=P+j.*Q;                                 % Complex power
 end

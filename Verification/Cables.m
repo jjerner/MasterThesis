@@ -31,6 +31,7 @@ for iCode = 1:height(LineCodes)
             %formatting + calculations (NOTE: NOT IN PER-UNIT)
 
             CableData(iLine).R      = (CableData(iLine).l / 1e3) * CableData(iLine).Rpl;
+            %CableData(iLine).R     = (CableData(iLine).l / 1e3) * (2*CableData(iLine).Rpl+ CableData(iLine).R0pl + 3*CableData(iLine).RNpl);                     % three phase version??
             CableData(iLine).X      = (CableData(iLine).l / 1e3) * CableData(iLine).Xpl; 
             CableData(iLine).L      = (CableData(iLine).l / 1e3) * CableData(iLine).Xpl / (2*pi*freq);
             CableData(iLine).C      = (CableData(iLine).l / 1e3) * (CableData(iLine).Bdpl / (2*pi*freq*1e6));

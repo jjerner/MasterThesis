@@ -45,8 +45,11 @@ while iter<=MAX_ITER
             upstreamCheck=all(calcDoneBwd(find(existsChildrenUS)));
             
             if upstreamCheck && downstreamCheck
-                S_loop = S_calc(endPoint,iter) + S_calc(endPoint,iter) * conj(S_calc(endPoint,iter))...
-                    * Z_in(startPoint,endPoint) / U_calc(endPoint,iter-1)^2;
+                %S_loop2 = S_calc(endPoint,iter) + S_calc(endPoint,iter) * conj(S_calc(endPoint,iter))...
+                    %* Z_in(startPoint,endPoint) / U_calc(endPoint,iter-1)^2;
+                I_calc=conj(S_calc(endPoint,iter)/U_calc(endPoint,iter-1));
+                S_loss=abs(I_calc)^2*Z_in(startPoint,endPoint);
+                S_loop=S_calc(endPoint,iter)+S_loss;
                 
                 % Update startpoints only
                 S_calc(startPoint,iter) = S_calc(startPoint,iter) + S_loop;

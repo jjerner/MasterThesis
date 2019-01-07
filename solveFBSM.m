@@ -47,6 +47,7 @@ while iter<=MAX_ITER
             if upstreamCheck && downstreamCheck
                 S_loop = S_calc(endPoint,iter) + S_calc(endPoint,iter) * conj(S_calc(endPoint,iter))...
                     * Z_in(startPoint,endPoint) / U_calc(endPoint,iter-1)^2;
+                
                 % Update startpoints only
                 S_calc(startPoint,iter) = S_calc(startPoint,iter) + S_loop;
                 calcDoneBwd(iBack)=1;
@@ -58,7 +59,7 @@ while iter<=MAX_ITER
     while ~all(calcDoneFwd)
         U_calc(:,iter) = U_in;
         for iFwd = 1:length(connections)
-            if strcmpi(busType(iFwd,:), 'SL') || strcmpi(busType(iFwd,:), 'PV')
+            if strcmpi(busType(iFwd,:), 'SLXXX') || strcmpi(busType(iFwd,:), 'PVXXX')     %% PV bus not implemented
                 calcDoneFwd(iFwd)=1;
                 continue
             else
@@ -71,7 +72,10 @@ while iter<=MAX_ITER
                 upstreamCheck=all(calcDoneFwd(find(existsParentsUS)));
                 
                 if upstreamCheck && downstreamCheck
-                    U_calc(endPoint,iter) = U_calc(startPoint,iter-1) -(S_calc(startPoint,iter)*Z_in(startPoint,endPoint)/U_calc(startPoint,iter-1));
+                    U_calc(endPoint,iter) = U_calc(startPoint,iter-1) -(S_calc(startPoint,iter)/U_calc(startPoint,iter-1))*Z_in(startPoint,endPoint);
+                    %U_calc(endPoint,iter) = U_calc(startPoint,iter-1)...
+                     %   -(real(S_calc(startPoint,iter))/U_calc(startPoint,iter-1))*real(Z_in(startPoint,endPoint))...
+                      %  -(imag(S_calc(startPoint,iter))/U_calc(startPoint,iter-1))*imag(Z_in(startPoint,endPoint));
                     calcDoneFwd(iFwd)=1;
                 end
             end

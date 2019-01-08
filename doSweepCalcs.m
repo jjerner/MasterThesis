@@ -1,7 +1,7 @@
 function resultSet=doSweepCalcs(Z_ser_tot,S_ana,U_bus,connectionBuses,busType,timeLine)
     S_hist = zeros(size(S_ana,1), length(timeLine));
     U_hist = zeros(size(U_bus,1), length(timeLine));
-    I_hist = zeros(size(connectionsBuses,1), length(timeLine));
+    I_hist = zeros(size(connectionBuses,1), length(timeLine));
     nItersVec=zeros(1,length(timeLine));
     barHandle = waitbar(0, '1', 'Name', 'Sweep calculations');
     for iTime = 1:length(timeLine)

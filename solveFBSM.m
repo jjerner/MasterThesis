@@ -1,4 +1,4 @@
-function [S_out,U_out,iter] = solveFBSM(Z_in, S_in, U_in, connections, busType, MAX_ITER, eps, doPlot)
+function [S_out,U_out,I_out,iter] = solveFBSM(Z_in, S_in, U_in, connections, busType, MAX_ITER, eps, doPlot)
 %FBSM, Forward Backward Sweep Method
 %
 %   Inputs:
@@ -23,6 +23,7 @@ if ~exist('doPlot','var'), doPlot = 0; end          % Create plots is off by def
 iter = 2;
 S_calc(:,1) = S_in;
 U_calc(:,1) = U_in;
+I_calc(:,1) = zeros(length(connections),1);
 calcDoneBwd=zeros(length(connections),1);
 calcDoneFwd=zeros(length(connections),1);
 
@@ -35,6 +36,7 @@ while iter<=MAX_ITER
     % Backward sweep
     while ~all(calcDoneBwd)
         S_calc(:,iter) = S_in;
+        I_calc(:,iter) = zeros(length(connections),1);
         for iBack = length(connections):-1:1
             startPoint = connections(iBack, 1);
             endPoint   = connections(iBack, 2);
@@ -47,12 +49,13 @@ while iter<=MAX_ITER
             if upstreamCheck && downstreamCheck
                 %S_loop2 = S_calc(endPoint,iter) + S_calc(endPoint,iter) * conj(S_calc(endPoint,iter))...
                     %* Z_in(startPoint,endPoint) / U_calc(endPoint,iter-1)^2;
-                I_calc=conj(S_calc(endPoint,iter)/U_calc(endPoint,iter-1));
-                S_loss=abs(I_calc)^2*Z_in(startPoint,endPoint);
+                I_loop=conj(S_calc(endPoint,iter)/U_calc(endPoint,iter-1));
+                S_loss=abs(I_loop)^2*Z_in(startPoint,endPoint);
                 S_loop=S_calc(endPoint,iter)+S_loss;
                 
                 % Update startpoints only
                 S_calc(startPoint,iter) = S_calc(startPoint,iter) + S_loop;
+                I_calc(startPoint,iter) = I_calc(startPoint,iter) + I_loop;
                 calcDoneBwd(iBack)=1;
             end
         end
@@ -104,6 +107,7 @@ if doPlot
     legendLabelsU=[repmat('U_{',length(Z_in),1) num2str(transpose(1:length(Z_in))) repmat('}',length(Z_in),1)];
     legendLabelsP=[repmat('P_{',length(Z_in),1) num2str(transpose(1:length(Z_in))) repmat('}',length(Z_in),1)];
     legendLabelsQ=[repmat('Q_{',length(Z_in),1) num2str(transpose(1:length(Z_in))) repmat('}',length(Z_in),1)];
+    legendLabelsI=[repmat('I_{',length(connections),1) num2str(transpose(1:length(connections))) repmat('}',length(connections),1)];
     figure;
     plot(abs(U_calc'));
     title('Voltage history');
@@ -122,10 +126,17 @@ if doPlot
     xlabel('Number of iterations');
     ylabel('Reactive power [p.u.]');
     legend(legendLabelsQ);
+    figure;
+    plot(abs(I_calc'));
+    title('Current history');
+    xlabel('Number of iterations');
+    ylabel('Current [p.u.]');
+    legend(legendLabelsI);
 end
 
 % Output
-S_out = S_calc(:, end);
-U_out = U_calc(:, end);
+S_out = S_calc(:,end);
+U_out = U_calc(:,end);
+I_out = I_calc(:,end);
 
 end

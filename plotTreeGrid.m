@@ -1,5 +1,5 @@
-busParents=zeros(1,nBuses);
-for iBus=1:nBuses
+busParents=zeros(1,Info.nBuses);
+for iBus=1:Info.nBuses
     if iBus==1
         busParents(iBus)=0;
     else
@@ -12,5 +12,5 @@ treeplot(busParents);
 treeXpos = treeXpos';
 treeYpos = treeYpos';
 text(treeXpos(:,1),treeYpos(:,1),cellstr(num2str((1:size(busParents,2))')), 'VerticalAlignment','bottom','HorizontalAlignment','right')
-title(['Grid plot of ' location]);
-clear treeXpos treeYpos
+title(['Grid plot of ' Settings.location]);
+clear treeXpos treeYpos iBus

@@ -1,7 +1,8 @@
 clear
 
-%add paths
-AddPathsToMain                  % Add local paths to data repositories & PV model
+%% Add paths
+addpath('Verification');
+addpath('PV model');
 
 %% Settings
 Settings.location='Hallonvägen';                        % Location name

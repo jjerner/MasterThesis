@@ -112,4 +112,4 @@ while loopAnalysis
             warning('Invalid choice');
     end
 end
-clear analysisCase loopAnalysis;
+clear analysisCase loopAnalysis sel ok;

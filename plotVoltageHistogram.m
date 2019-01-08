@@ -6,7 +6,7 @@ for iMonth = 12:-1:1
     [vHistCount,vHistEdges]= histcounts(abs(resultSet.U_hist(histBusNr,timeLine < monthsBeginAt(iMonth+1) & monthsBeginAt(iMonth) < timeLine)));
     vHistCount(vHistCount == 0) = NaN;      % Ignore zero values
     vHistCenters=vHistEdges(1:end-1)+diff(vHistEdges)./2;
-    plot(vHistCenters,vHistCount/100 + 12-iMonth,'LineWidth',2);hold on;
+    plot(vHistCenters,vHistCount/100 + 12-iMonth+1,'LineWidth',2);hold on;
     minV(iMonth)=min(vHistEdges);
     maxV(iMonth)=max(vHistEdges);
 end

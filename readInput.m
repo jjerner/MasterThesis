@@ -1,16 +1,9 @@
-
-
-switch location
-    case 'Hallonvägen'
-        inputDir = 'data\Inputs\T085';
-    case 'Amundstorp'
-        inputDir = 'data\Inputs\T317';
-end
+% Reads input from directory specified in Settings.inputDir
 
 disp(' ');
-disp(['Reading input data for ', location, ' from file:']);
+disp(['Reading input data for ', Settings.location, ' from file:']);
 
-filesInDir = dir(inputDir);
+filesInDir = dir(Settings.inputDir);
 filesToRead = {};
 for k = 1:length(filesInDir)
     [fPath, fname, ext] = fileparts(filesInDir(k).name);
@@ -24,7 +17,7 @@ end
 counter = 1 ;
 for outerLoop = 1:length(filesToRead)             % loop for each file in the directory
     disp(['-      ', filesToRead{outerLoop}])
-    currentFile = strcat(inputDir, '\', filesToRead{outerLoop});
+    currentFile = strcat(Settings.inputDir, '\', filesToRead{outerLoop});
     fileID = fopen(currentFile, 'rt');
     %fileID = fopen('data\Inputs\T085\89260957239.txt', 'rt');
     scanData = textscan(fileID, '%s %s','Delimiter','=');

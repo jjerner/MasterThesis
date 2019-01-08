@@ -1,26 +1,18 @@
-%% Parameters
-cableDBPath='data/Ledningsdata.mat';    % Path to cable database
-
-switch location
-    case 'Amundstorp'
-        gridCableDataPath = 'T317 Amundstorp.xlsx';
-    case 'Hallonvägen'
-        gridCableDataPath = 'T085 Hallonvagen.xlsx';
-end
+% Initialize cables
 
 j = 1i;
 if ~(exist('freq', 'var'))
     freq = 50;
 end
 
-disp(['Loading cable database from: "', cableDBPath,'"']);
-disp(['Loading grid cable data from: "', gridCableDataPath,'"']);
+disp(['Loading cable database from: "', Settings.cableDBPath,'"']);
+disp(['Loading grid cable data from: "', Settings.gridCableDataPath,'"']);
 disp(' ');
 
-load(cableDBPath);                  % Load cable database
+load(Settings.cableDBPath);                  % Load cable database
 
 % Read grid cable data from file
-data = importdata(gridCableDataPath);
+data = importdata(Settings.gridCableDataPath);
 data.textdata = data.textdata(4:end, :);        % remove first 3 rows of nonsense in textdata
 
 nCablesInGrid=length(data.textdata(:,2));

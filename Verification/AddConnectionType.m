@@ -33,5 +33,5 @@ end
 
 % add the transformer to the connection matrix
 
-connectionBuses = [addedTransformerBusAtIndex; connectionBuses+1];
+connectionBuses = [Info.addedTransformerBusAtIndex; connectionBuses+1];
 connectionType = ['TT'; connectionType];

@@ -42,4 +42,4 @@ TransformerData.Z0_pu       = 0;
 TransformerData.Z2_pu       = TransformerData.Z2k_pu/2;       % half on LV side
 TransformerData.Z1_pu       = (TransformerData.Z2k_pu/2)*(TransformerData.U_sec_base/TransformerData.U_prim_base)^2;
 
-addedTransformerBusAtIndex = [1 2];
+Info.addedTransformerBusAtIndex = [1 2];

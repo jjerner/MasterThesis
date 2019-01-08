@@ -1,3 +1,5 @@
+% Verification main script
+% This is quite messy
 
 clear
 
@@ -9,8 +11,8 @@ addpath('European_LV_CSV/Solutions/OpenDSS/Time Series');
 addpath('European_LV_CSV/Solutions/GridLab-D');
 addpath('European_LV_CSV/Solutions/GridLab-D/Time Series');
 addpath('..');
+freq=50;
 j = 1i;
-freq = 50;
 
 % Read data
 Transformer;

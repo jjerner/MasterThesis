@@ -15,16 +15,16 @@ load(Settings.cableDBPath);                  % Load cable database
 data = importdata(Settings.gridCableDataPath);
 data.textdata = data.textdata(4:end, :);        % remove first 3 rows of nonsense in textdata
 
-nCablesInGrid=length(data.textdata(:,2));
-nCablesInDB=height(Ledningsdata);
-cablesFound=false(nCablesInGrid,1);
+Info.nCablesInGrid=length(data.textdata(:,2));
+Info.nCablesInDB=height(Ledningsdata);
+Info.cablesFound=false(Info.nCablesInGrid,1);
 
-for iGridCable = 1:nCablesInGrid
+for iGridCable = 1:Info.nCablesInGrid
     %compare (find the right cable data)
-    cablesFound(iGridCable) = false;
+    Info.cablesFound(iGridCable) = false;
     iDBCable = 1;
 
-    while ~cablesFound(iGridCable) && iDBCable<nCablesInDB
+    while ~Info.cablesFound(iGridCable) && iDBCable<Info.nCablesInDB
         nameToCompare = Ledningsdata.Name{iDBCable};
 %         if nameToCompare(end-2) == '/'
 %             nameToCompare = nameToCompare(1:end-3);
@@ -41,7 +41,7 @@ for iGridCable = 1:nCablesInGrid
 
         if length(data.textdata{iGridCable,2}) == length(nameToCompare)
             if data.textdata{iGridCable,2} == nameToCompare
-                cablesFound(iGridCable) = true;
+                Info.cablesFound(iGridCable) = true;
             else
                 iDBCable = iDBCable + 1;
             end
@@ -50,7 +50,7 @@ for iGridCable = 1:nCablesInGrid
         end
     end
     
-    if ~cablesFound(iGridCable)
+    if ~Info.cablesFound(iGridCable)
         disp(['No DB match for cable ' num2str(iGridCable) ' (' data.textdata{iGridCable,2} '), using standard cable (NV4G10, 10 mm^2).']);
         iDBCable = 174;  % Standard cable is NV4G10, 10 mm^2
     end
@@ -86,4 +86,4 @@ for iGridCable = 1:nCablesInGrid
 end
 
 % clear some workspace
-clear nameToCompare iDBCable iGridCable
+clear nameToCompare iDBCable iGridCable freq removalIndex modName

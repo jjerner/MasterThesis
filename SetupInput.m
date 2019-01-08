@@ -61,21 +61,21 @@ for outerLoop = 1:length(filesToRead)             % loop for each file in the di
         end
         
         if strcmp(referenceFromFile{iSet3}(refIndex(2)+1:end), '2')
-            Input(counter).type = 'active';
+            InputData(counter).type = 'active';
         elseif strcmp(referenceFromFile{iSet3}(refIndex(2)+1:end), '4')
-            Input(counter).type = 'reactive';
+            InputData(counter).type = 'reactive';
         elseif strcmp(referenceFromFile{iSet3}(refIndex(2)+1:end), '5')
-            Input(counter).type = 'production';
+            InputData(counter).type = 'production';
         else
-            Input(counter).type = ['unknown',referenceFromFile{iSet3}(refIndex(2)+1:end)];
+            InputData(counter).type = ['unknown',referenceFromFile{iSet3}(refIndex(2)+1:end)];
         end
         
         % Creating Input struct with 2 fields
-        Input(counter).reference = str2double(refString);
-        Input(counter).values = nan(length(valueString), 1);
+        InputData(counter).reference = str2double(refString);
+        InputData(counter).values = nan(length(valueString), 1);
 
         for iterator = 1:length(valueString)
-            Input(counter).values(iterator) = str2double(valueString(iterator));
+            InputData(counter).values(iterator) = str2double(valueString(iterator));
         end
         counter = counter + 1;
     end

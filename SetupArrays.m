@@ -10,14 +10,14 @@ elseif max(max(connectionBuses)) > length(connectionBuses)+1
     error('Connection index exceeds its limit, Check "connectionBuses"');
 end
 
-nCables = length(CableData);
-nTransformers = length(TransformerData);
-nBuses = nCables + nTransformers + 1;
+Info.nCables = length(CableData);
+Info.nTransformers = length(TransformerData);
+Info.nBuses = Info.nCables + Info.nTransformers + 1;
 
 % Preallocation 
-Z_ser_self = zeros(nBuses);    % Self impedance, series
-Z_ser_mutu = zeros(nBuses);    % Mutual impedance, series
-Y_shu_self = zeros(nBuses);    % Self admittance, shunt
+Z_ser_self = zeros(Info.nBuses);    % Self impedance, series
+Z_ser_mutu = zeros(Info.nBuses);    % Mutual impedance, series
+Y_shu_self = zeros(Info.nBuses);    % Self admittance, shunt
 
 
 
@@ -32,8 +32,8 @@ for iConnection = 1:length(connectionType)
         disp(' ');
         disp(['At buses: ', num2str(startBus), ',', num2str(endBus)]);
         
-        if iConnection ~= addedTransformerBusAtIndex(1)                    % if NOT at added trafo-bus
-            if iConnection < addedTransformerBusAtIndex(1)
+        if iConnection ~= Info.addedTransformerBusAtIndex(1)                    % if NOT at added trafo-bus
+            if iConnection < Info.addedTransformerBusAtIndex(1)
                 Z_ser_mutu(startBus,endBus) = CableData(iConnection).Z_ser / TransformerData.Z_prim_base;
                 Z_ser_mutu(endBus,startBus) = CableData(iConnection).Z_ser / TransformerData.Z_prim_base;
                 disp(['Series impedance added from Cable ', num2str(iConnection)])
@@ -54,7 +54,7 @@ end
 disp(' ')
 disp('SETTING DIAGONAL ELEMENTS.')
 disp(' ');
-for iBus = 1:nBuses
+for iBus = 1:Info.nBuses
     disp(['At bus ', num2str(iBus)]);
     Z_ser_self_vec = [];
     Y_shu_self_vec = [];
@@ -63,8 +63,8 @@ for iBus = 1:nBuses
         endBus = connectionBuses(iConnection,2);
         
         if iBus == startBus || iBus == endBus
-            if iConnection ~= addedTransformerBusAtIndex(1)                % if NOT at added trafo-bus
-                if iConnection < addedTransformerBusAtIndex(1)
+            if iConnection ~= Info.addedTransformerBusAtIndex(1)                % if NOT at added trafo-bus
+                if iConnection < Info.addedTransformerBusAtIndex(1)
                     Z_ser_self_vec = [Z_ser_self_vec; CableData(iConnection).Z_ser/TransformerData.Z_prim_base];
                     Y_shu_self_vec = [Y_shu_self_vec; 0.5*CableData(iConnection).Y_shu/(1/TransformerData.Z_prim_base)];
                     disp(['     - Cable ', num2str(iConnection)]);
@@ -74,12 +74,12 @@ for iBus = 1:nBuses
                     disp(['     - Cable ', num2str(iConnection-1)]);
                 end
             else
-                if iBus == addedTransformerBusAtIndex(1)        % if at HV side
+                if iBus == Info.addedTransformerBusAtIndex(1)        % if at HV side
                     Z_ser_self_vec =  [Z_ser_self_vec;...
                                         TransformerData.Z2k_pu*(TransformerData.U_sec_base/TransformerData.U_prim_base)^2];
                     Y_shu_self_vec =  [Y_shu_self_vec; 0.5*TransformerData.Z0_pu];
                     disp('     - Transformer R2k in HV base');
-                elseif iBus == addedTransformerBusAtIndex(2)       % if at LV side
+                elseif iBus == Info.addedTransformerBusAtIndex(2)       % if at LV side
                     Z_ser_self_vec =  [Z_ser_self_vec; TransformerData.Z2k_pu];
                     Y_shu_self_vec =  [Y_shu_self_vec; 0];
                     disp('     - Transformer R2k in LV base');

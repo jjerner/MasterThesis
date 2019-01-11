@@ -2,10 +2,10 @@ function [S_out,U_out,I_out,iter] = solveFBSM(Z_in, S_in, U_in, connections, bus
 %FBSM, Forward Backward Sweep Method
 %
 %   Inputs:
-%       Z_in        = Z-matrix (NxN) detailing impedances between all busses
-%       S_in        = Input of all known powers (Nx1), 0 if unknown or no
-%                     contribution of power in a node
-%       U_in        = Input of all known voltages (Nx1), 1 pu if unknown
+%       Z_in        = Z-matrix (NxN) detailing impedances between all buses
+%       S_in        = Input of all known powers (3-phase) (Nx1),
+%                     0 if unknown or no contribution of power in a bus.
+%       U_in        = Input of all known voltages (Nx1).
 %       connections = Front to End of each connection (N-1x2)
 %       busType     = Vector with bus types (Nx1)
 %       MAX_ITER    = Maximum number of iterations, default value = 100
@@ -24,6 +24,7 @@ iter = 2;
 S_calc(:,1) = S_in;
 U_calc(:,1) = U_in;
 I_calc(:,1) = zeros(length(connections),1);
+I_calc2(:,1) = zeros(length(connections),1);
 calcDoneBwd=zeros(length(connections),1);
 calcDoneFwd=zeros(length(connections),1);
 
@@ -37,26 +38,26 @@ while iter<=MAX_ITER
     while ~all(calcDoneBwd)
         S_calc(:,iter) = S_in;
         I_calc(:,iter) = zeros(length(connections),1);
-        for iBack = length(connections):-1:1
-            startPoint = connections(iBack, 1);
-            endPoint   = connections(iBack, 2);
+        for iConnB = length(connections):-1:1
+            startPoint = connections(iConnB, 1);
+            endPoint   = connections(iConnB, 2);
             
-            existsChildrenDS=[zeros(iBack,1); connections(iBack+1:end,1)] == endPoint;
-            existsChildrenUS=[connections(1:iBack-1,1); zeros(length(connections)-iBack+1,1)] == endPoint;
+            existsChildrenDS=[zeros(iConnB,1); connections(iConnB+1:end,1)] == endPoint;
+            existsChildrenUS=[connections(1:iConnB-1,1); zeros(length(connections)-iConnB+1,1)] == endPoint;
             downstreamCheck=all(calcDoneBwd(find(existsChildrenDS)));
             upstreamCheck=all(calcDoneBwd(find(existsChildrenUS)));
             
             if upstreamCheck && downstreamCheck
-                %S_loop2 = S_calc(endPoint,iter) + S_calc(endPoint,iter) * conj(S_calc(endPoint,iter))...
-                    %* Z_in(startPoint,endPoint) / U_calc(endPoint,iter-1)^2;
-                I_loop=conj(S_calc(endPoint,iter)/U_calc(endPoint,iter-1));
-                S_loss=abs(I_loop)^2*Z_in(startPoint,endPoint);
-                S_loop=S_calc(endPoint,iter)+S_loss;
+                I_line=(1/sqrt(3))*abs(S_calc(endPoint,iter))/abs(U_calc(endPoint,iter-1)); % Current in one line (three-phase)
+                %I_line=abs(S_calc(endPoint,iter))/abs(U_calc(endPoint,iter-1)); % Current in one line (single-phase)
+                S_loss=(3/sqrt(3))*I_line^2*Z_in(startPoint,endPoint);                                % Three-phase power loss <--- CHANSNING HÄR
+                %S_loss=I_line^2*Z_in(startPoint,endPoint);                                % Single-phase power loss
+                S_line=S_calc(endPoint,iter)+S_loss;                                        % Three-phase power (total)
                 
                 % Update startpoints only
-                S_calc(startPoint,iter) = S_calc(startPoint,iter) + S_loop;
-                I_calc(startPoint,iter) = I_calc(startPoint,iter) + I_loop;
-                calcDoneBwd(iBack)=1;
+                S_calc(startPoint,iter) = S_calc(startPoint,iter) + S_line;                 % Three-phase power in junction
+                I_calc(iConnB,iter) = I_calc(iConnB,iter) + I_line;                 % Current in junction
+                calcDoneBwd(iConnB)=1;                                                      % Mark connection as done
             end
         end
     end
@@ -64,25 +65,27 @@ while iter<=MAX_ITER
     % Forward sweep
     while ~all(calcDoneFwd)
         U_calc(:,iter) = U_in;
-        for iFwd = 1:length(connections)
-            if strcmpi(busType(iFwd,:), 'SLXXX') || strcmpi(busType(iFwd,:), 'PVXXX')     %% PV bus not implemented
-                calcDoneFwd(iFwd)=1;
+        I_calc2(:,iter) = zeros(length(connections),1);
+        for iConnF = 1:length(connections)
+            if strcmpi(busType(iConnF,:), 'SLXXX') || strcmpi(busType(iConnF,:), 'PVXXX')     %% PV bus not implemented
+                calcDoneFwd(iConnF)=1;
                 continue
             else
-                startPoint = connections(iFwd, 1);
-                endPoint   = connections(iFwd, 2);
+                startPoint = connections(iConnF, 1);
+                endPoint   = connections(iConnF, 2);
 
-                existsParentsDS=[zeros(iFwd,1); connections(iFwd+1:end,2)] == startPoint;
-                existsParentsUS=[connections(1:iFwd-1,2); zeros(length(connections)-iFwd+1,1)] == startPoint;
+                existsParentsDS=[zeros(iConnF,1); connections(iConnF+1:end,2)] == startPoint;
+                existsParentsUS=[connections(1:iConnF-1,2); zeros(length(connections)-iConnF+1,1)] == startPoint;
                 downstreamCheck=all(calcDoneFwd(find(existsParentsDS)));
                 upstreamCheck=all(calcDoneFwd(find(existsParentsUS)));
                 
                 if upstreamCheck && downstreamCheck
-                    U_calc(endPoint,iter) = U_calc(startPoint,iter-1) -(S_calc(startPoint,iter)/U_calc(startPoint,iter-1))*Z_in(startPoint,endPoint);
-                    %U_calc(endPoint,iter) = U_calc(startPoint,iter-1)...
-                     %   -(real(S_calc(startPoint,iter))/U_calc(startPoint,iter-1))*real(Z_in(startPoint,endPoint))...
-                      %  -(imag(S_calc(startPoint,iter))/U_calc(startPoint,iter-1))*imag(Z_in(startPoint,endPoint));
-                    calcDoneFwd(iFwd)=1;
+                    I_line2 = (1/sqrt(3))*(abs(S_calc(startPoint,iter))/abs(U_calc(startPoint,iter)));      % Current in one line
+                    %I_line2 = (abs(S_calc(startPoint,iter))/abs(U_calc(startPoint,iter)));
+                    U_loss  = I_line2*Z_in(startPoint,endPoint);                                            % Voltage loss over line
+                    U_calc(endPoint,iter) = U_calc(startPoint,iter) - U_loss;                               % Voltage at endpoint
+                    calcDoneFwd(iConnF)=1;                                                                  % Mark connection as done
+                    I_calc2(iConnF,iter) = I_calc2(iConnF,iter) + I_line2;
                 end
             end
         end
@@ -92,8 +95,9 @@ while iter<=MAX_ITER
     if iter > 2
         powerConvCrit = max(abs(S_calc(:,iter-1) - S_calc(:,iter)));
         voltageConvCrit = max(abs(U_calc(:,iter-1) - U_calc(:,iter)));
-
-        if powerConvCrit < eps && voltageConvCrit < eps
+        currentConvCrit = max(abs(I_calc(:,iter-1) - I_calc(:,iter)));
+        
+        if powerConvCrit < eps && voltageConvCrit < eps && currentConvCrit < eps
             break
         end
     end
@@ -138,5 +142,6 @@ end
 S_out = S_calc(:,end);
 U_out = U_calc(:,end);
 I_out = I_calc(:,end);
+I_out2 = I_calc2(:,end);
 
 end

@@ -9,4 +9,4 @@ for iConnection = 1:length(connectionBuses)
         disp(['Series impedance added from Cable ', num2str(iConnection)])
 end
 
-[S_out,U_out,I_out,iter] = solveFBSM(Z_ser, S_in, U_in, connectionBuses, busType,100,1e-3,0)
+[S_out,U_out,I_out,iter] = solveFBSM(Z_ser, S_in, U_in, connectionBuses, busType,100,1e-6,0)

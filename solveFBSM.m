@@ -28,6 +28,8 @@ I_calc2(:,1) = zeros(length(connections),1);
 calcDoneBwd=zeros(length(connections),1);
 calcDoneFwd=zeros(length(connections),1);
 
+S_in=conj(S_in);
+
 while iter<=MAX_ITER
     
     if iter == MAX_ITER
@@ -50,7 +52,7 @@ while iter<=MAX_ITER
             if upstreamCheck && downstreamCheck
                 I_line=(1/sqrt(3))*abs(S_calc(endPoint,iter))/abs(U_calc(endPoint,iter-1)); % Current in one line (three-phase)
                 %I_line=abs(S_calc(endPoint,iter))/abs(U_calc(endPoint,iter-1)); % Current in one line (single-phase)
-                S_loss=(3/sqrt(3))*I_line^2*Z_in(startPoint,endPoint);                                % Three-phase power loss <--- CHANSNING HÄR
+                S_loss=3*I_line^2*Z_in(startPoint,endPoint);                                % Three-phase power loss <--- CHANSNING HÄR
                 %S_loss=I_line^2*Z_in(startPoint,endPoint);                                % Single-phase power loss
                 S_line=S_calc(endPoint,iter)+S_loss;                                        % Three-phase power (total)
                 
@@ -82,7 +84,7 @@ while iter<=MAX_ITER
                 if upstreamCheck && downstreamCheck
                     I_line2 = (1/sqrt(3))*(abs(S_calc(startPoint,iter))/abs(U_calc(startPoint,iter)));      % Current in one line
                     %I_line2 = (abs(S_calc(startPoint,iter))/abs(U_calc(startPoint,iter)));
-                    U_loss  = I_line2*Z_in(startPoint,endPoint);                                            % Voltage loss over line
+                    U_loss  = sqrt(3)*I_line2*Z_in(startPoint,endPoint);                                            % Voltage loss over line
                     U_calc(endPoint,iter) = U_calc(startPoint,iter) - U_loss;                               % Voltage at endpoint
                     calcDoneFwd(iConnF)=1;                                                                  % Mark connection as done
                     I_calc2(iConnF,iter) = I_calc2(iConnF,iter) + I_line2;

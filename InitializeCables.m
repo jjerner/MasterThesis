@@ -26,9 +26,6 @@ for iGridCable = 1:Info.nCablesInGrid
 
     while ~Info.cablesFound(iGridCable) && iDBCable<Info.nCablesInDB
         nameToCompare = Ledningsdata.Name{iDBCable};
-%         if nameToCompare(end-2) == '/'
-%             nameToCompare = nameToCompare(1:end-3);
-%         end
 
         removalIndex = regexp(data.textdata{iGridCable,2}, '\dX');
         

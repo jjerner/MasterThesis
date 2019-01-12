@@ -27,13 +27,13 @@ TransformerData.S_base      = TransformerData.S_tot;
 TransformerData.U_prim_base = TransformerData.Uprim;
 TransformerData.U_sec_base  = TransformerData.Usec;
 
-% base impedances
-TransformerData.Z_prim_base = (TransformerData.U_prim_base^2)/TransformerData.S_base;
-TransformerData.Z_sec_base  = (TransformerData.U_sec_base^2)/TransformerData.S_base;
-
 % base currents
-TransformerData.I_prim_base = TransformerData.S_base / TransformerData.U_prim_base;
-TransformerData.I_sec_base  = TransformerData.S_base / TransformerData.U_sec_base;
+TransformerData.I_prim_base = TransformerData.S_base / (sqrt(3)*TransformerData.U_prim_base);
+TransformerData.I_sec_base  = TransformerData.S_base / (sqrt(3)*TransformerData.U_sec_base);
+
+% base impedances
+TransformerData.Z_prim_base = (TransformerData.U_prim_base)/(sqrt(3)*TransformerData.I_prim_base);
+TransformerData.Z_sec_base  = (TransformerData.U_sec_base)/(sqrt(3)*TransformerData.I_sec_base);
 
 % Impedances
 TransformerData.Z2k_pu      = TransformerData.Z2k;  

@@ -34,9 +34,9 @@ vFig = figure;
 vFig.Name = 'Voltages';
 title('Voltages');
 subplot(3,1,1)
-plot(timeLine, abs(U_hist(35,:)), 'b');  % load1 TransformerData.U_sec_base./sqrt(3)
+plot(timeLine, abs(U_hist(35,:)).*TransformerData.U_sec_base, 'b');  % load1 TransformerData.U_sec_base./sqrt(3)
 hold on
-plot(timeLine, abs(VoltageLoad1(timeLine,1) + VoltageLoad1(timeLine,2)*j)./252, 'r')
+plot(timeLine, abs(VoltageLoad1(timeLine,1) + VoltageLoad1(timeLine,2)*j), 'r')
 title('Load 1')
 xlabel('Time [min]')
 ylabel('Voltage [V]')
@@ -44,9 +44,9 @@ legend('Our', 'GridLab');
 hold off
 
 subplot(3,1,2)
-plot(timeLine, abs(U_hist(615,:)), 'b'); % load32 TransformerData.U_sec_base./sqrt(3)
+plot(timeLine, abs(U_hist(615,:)).*TransformerData.U_sec_base, 'b'); % load32 TransformerData.U_sec_base./sqrt(3)
 hold on
-plot(timeLine, abs(VoltageLoad32(timeLine,1) + VoltageLoad32(timeLine,2)*j)./252, 'r')
+plot(timeLine, abs(VoltageLoad32(timeLine,1) + VoltageLoad32(timeLine,2)*j), 'r')
 title('Load 32')
 xlabel('Time [min]')
 ylabel('Voltage [V]')
@@ -54,9 +54,9 @@ legend('Our', 'GridLab');
 hold off
 
 subplot(3,1,3)
-plot(timeLine, abs(U_hist(900,:)), 'b'); % load53 TransformerData.U_sec_base./sqrt(3)
+plot(timeLine, abs(U_hist(900,:)).*TransformerData.U_sec_base, 'b'); % load53 TransformerData.U_sec_base./sqrt(3)
 hold on
-plot(timeLine, abs(VoltageLoad53(timeLine,1) + VoltageLoad53(timeLine,2)*j)./252, 'r')
+plot(timeLine, abs(VoltageLoad53(timeLine,1) + VoltageLoad53(timeLine,2)*j), 'r')
 title('Load 53')
 xlabel('Time [min]')
 ylabel('Voltage [V]')

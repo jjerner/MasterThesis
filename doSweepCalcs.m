@@ -8,13 +8,13 @@ function resultSet=doSweepCalcs(Z_ser_tot,S_ana,U_bus,connectionBuses,busType,ti
         waitbar(iTime/length(timeLine), barHandle, sprintf('Sweep calculations %d/%d',...
                 iTime, length(timeLine)));
 
-        [S_out,U_out,I_out,nIters] = solveFBSM(Z_ser_tot,S_ana(:,timeLine(iTime)),U_bus(:,timeLine(iTime)),...
+        solverRes = solveFBSM(Z_ser_tot,S_ana(:,timeLine(iTime)),U_bus(:,timeLine(iTime)),...
                               connectionBuses,busType,1000,1e-3,0);
 
-        S_hist(:,iTime) = S_out;
-        U_hist(:,iTime) = U_out;
-        I_hist(:,iTime) = I_out;
-        nItersVec(iTime)=nIters;
+        S_hist(:,iTime) = solverRes.S_out;
+        U_hist(:,iTime) = solverRes.U_out;
+        I_hist(:,iTime) = solverRes.I_out;
+        nItersVec(iTime)= solverRes.nIters;
     end
     close(barHandle)
     disp('Sweep calculation finished.');

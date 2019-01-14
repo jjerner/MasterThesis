@@ -36,13 +36,9 @@ TransformerData.Z_prim_base = (TransformerData.U_prim_base)/(sqrt(3)*Transformer
 TransformerData.Z_sec_base  = (TransformerData.U_sec_base)/(sqrt(3)*TransformerData.I_sec_base);
 
 % Impedances
-TransformerData.Z2k_pu      = TransformerData.Z2k;  
-TransformerData.R2k_pu      = TransformerData.R2k;
+TransformerData.Z2k_pu      = TransformerData.Z2k/100;
+TransformerData.R2k_pu      = TransformerData.R2k/100;
 
 TransformerData.R0_pu       = TransformerData.R0;
 TransformerData.Z0_pu       = TransformerData.Z0;
-
-% Recalculation of impedances for both HV and LV sides (These might not be needed)
-TransformerData.Z2_pu       = TransformerData.Z2k_pu/2;       % half on LV side
-TransformerData.Z1_pu       = (TransformerData.Z2k_pu/2)*(TransformerData.U_sec_base/TransformerData.U_prim_base)^2;
 

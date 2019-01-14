@@ -13,7 +13,8 @@ while loopAnalysis
               'plotloads','Plot load results only';...
               'analyzeus','Analyze voltages and powers';...
               'plotgridtree','Plot grid tree map';
-              'plotvhist','Plot voltage histogram (BETA)'};
+              'plotvhist','Plot voltage histogram (BETA)';...
+              'plotniters','Plot number of iterations'};
     [sel,ok] = listdlg('PromptString','Choose an option:',...
                        'SelectionMode','single',...
                        'ListString',caseList(:,2),...
@@ -104,9 +105,13 @@ while loopAnalysis
             if ~exist('resultSet','var'), disp('Error: Run or load calculation first.'); break; end
             plotVoltageHistogram;
 
-        case {'cancel'}
-            % Cancel analysis
-            loopAnalysis=false;
+        case {'plotniters'}
+            % Plot number of iterations
+            figure;
+            plot(resultSet.timeLine,resultSet.nItersVec);
+            title('Number of iterations');
+            xlabel('Timeline');
+            ylabel('Number of iterations');
 
         otherwise
             warning('Invalid choice');

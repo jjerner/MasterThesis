@@ -43,8 +43,8 @@ for iConnection = 1:length(connectionType)
                 disp(['Series impedance added from Cable ', num2str(iConnection-1)])
             end
         else
-            Z_ser_mutu(startBus,endBus) = TransformerData.Z2k_pu*(TransformerData.U_sec_base/TransformerData.U_prim_base)^2;
-            Z_ser_mutu(endBus,startBus) = TransformerData.Z2k_pu*(TransformerData.U_sec_base/TransformerData.U_prim_base)^2;
+            Z_ser_mutu(startBus,endBus) = TransformerData.Z2k_pu;
+            Z_ser_mutu(endBus,startBus) = TransformerData.Z2k_pu;
             disp('Impedance added from transformer');
         end
 end
@@ -76,7 +76,7 @@ for iBus = 1:Info.nBuses
             else
                 if iBus == Info.addedTransformerBusAtIndex(1)        % if at HV side
                     Z_ser_self_vec =  [Z_ser_self_vec;...
-                                        TransformerData.Z2k_pu*(TransformerData.U_sec_base/TransformerData.U_prim_base)^2];
+                                        TransformerData.Z2k_pu];
                     Y_shu_self_vec =  [Y_shu_self_vec; 0.5*TransformerData.Z0_pu];
                     disp('     - Transformer R2k in HV base');
                 elseif iBus == Info.addedTransformerBusAtIndex(2)       % if at LV side

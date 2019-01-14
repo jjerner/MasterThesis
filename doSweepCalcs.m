@@ -1,4 +1,5 @@
 function resultSet=doSweepCalcs(Z_ser_tot,S_ana,U_bus,connectionBuses,busType,timeLine)
+    tic;
     S_hist = zeros(size(S_ana,1), length(timeLine));
     U_hist = zeros(size(U_bus,1), length(timeLine));
     I_hist = zeros(size(connectionBuses,1), length(timeLine));
@@ -16,11 +17,13 @@ function resultSet=doSweepCalcs(Z_ser_tot,S_ana,U_bus,connectionBuses,busType,ti
         I_hist(:,iTime) = solverRes.I_out;
         nItersVec(iTime)= solverRes.nIters;
     end
-    close(barHandle)
-    disp('Sweep calculation finished.');
+    close(barHandle);
+    calcTime=toc;
+    fprintf('Sweep calculation finished. Calculation time %.1f s.\n',calcTime);
     resultSet.U_hist=U_hist;
     resultSet.S_hist=S_hist;
     resultSet.I_hist=I_hist;
     resultSet.nItersVec=nItersVec;
     resultSet.timeLine=timeLine;
+    resultSet.calcTime=calcTime;
 end

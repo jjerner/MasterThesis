@@ -24,7 +24,7 @@ for iBus = 1:length(Y_bus)
                     
                 elseif char == 'T'
                     busType(iBus,:) = 'PQ';
-                    U_bus(iBus,:) = Settings.U_t_guess;
+                    U_bus(iBus,:) = 1;
                     
                 elseif char == 'J' || char == 'H'
                     busType(iBus,:) = 'PQ';

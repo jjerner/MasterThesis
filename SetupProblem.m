@@ -1,4 +1,4 @@
-% This script takes the previously setup buses ??
+% Define buses etc.
 
 busType = blanks(length(Y_bus))';               % Bus names as 2 chars [PQ, PV, SL] SL = Slack bus
 busType = repmat(busType, 1, 2);
@@ -20,7 +20,7 @@ for iBus = 1:length(Y_bus)
                 if char == 'H' || char == 'T' && firstHighVoltageBusFound == 0
                     firstHighVoltageBusFound = 1;
                     busType(iBus,:) = 'SL';
-                    U_bus(iBus,:) = Settings.U_t_guess;
+                    U_bus(iBus,:) = 1;
                     
                 elseif char == 'T'
                     busType(iBus,:) = 'PQ';

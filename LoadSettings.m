@@ -3,8 +3,8 @@
 %% Common
 Settings.cableDBPath='data/Ledningsdata.mat';           % Path to cable database file
 Settings.removeHighVoltageBuses = true;                 % Ignore buses before transformer
-Settings.U_l_guess = 1.3;                               % Initial load voltage guess
-Settings.U_j_guess = 1.3;                               % Initial joint connection voltage guess
+Settings.U_j_guess = 1.00;                              % Initial joint connection voltage guess
+Settings.U_l_guess = 0.99;                              % Initial load voltage guess
 
 %% Location specific
 

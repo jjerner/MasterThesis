@@ -1,14 +1,12 @@
-
-% Help file for "InitializeCables.m"
-% Does not work on its own.
+% Set up connection buses, names, types etc.
 
 % Start bus is in data.data(:,3) & data.textdata(:,3)
 % End bus is in data.data(:,4) & data.textdata(:,4)
 % 5 possible types of bus: Transformer - T
-%                           Cablestation - S
-%                           Load - L
-%                           High voltage (pre-trafo) - H
-%                           Joint - J
+%                          Cablestation - S
+%                          Load - L
+%                          High voltage (pre-trafo) - H
+%                          Joint - J
 
 startBuses = zeros(length(data.data),1);
 endBuses = zeros(length(data.data),1);
@@ -92,6 +90,7 @@ for iConn = 1:length(connectionType(1,:))
    
     if all(strcmp(connectionType(iConn,:), 'HT'))
         connectionType = [connectionType(1:iConn,1:2); 'TT'; connectionType(iConn+1:end,1:2)];
+        connectionName = [connectionName(1:iConn,1:2); [{'Trafo internal'} {'Trafo internal'}]; connectionName(iConn+1:end,1:2)];
         newStart = [connectionBuses_notrafo(1:iConn,1); iConn+1; connectionBuses_notrafo(iConn+1:end,1)+1];
         newEnd = [connectionBuses_notrafo(1:iConn,2); iConn+2; connectionBuses_notrafo(iConn+1:end,2)+1];
         connectionBuses = [newStart, newEnd];
@@ -102,21 +101,17 @@ for iConn = 1:length(connectionType(1,:))
 end
 
 % The following section is to remove any connection previous to the
-% Transformer, so that bus 1 is the transformers high voltage side
+% Transformer, so that bus 1 is the transformer's high voltage side
 
 if Settings.removeHighVoltageBuses
     type = connectionType(1, :);
     while any(type == 'H')
-        if all(type == 'H')
-            connectionName(1,:) = [];
-        end
-        CableData(1) = [];          % remove first struct in cable data
-        connectionType(1,:) = [];   % remove first connection type
+        CableData(1)         = [];  % remove first struct in cable data
+        connectionType(1,:)  = [];  % remove first connection types
         connectionBuses(1,:) = [];  % remove first connection buses
-        
-        connectionBuses = connectionBuses - 1;
-        Info.addedTransformerBusAtIndex = Info.addedTransformerBusAtIndex - 1;
-        
+        connectionName(1,:)  = [];  % remove first connection names
+        connectionBuses = connectionBuses - 1;      % re-numbering of buses
+        Info.addedTransformerBusAtIndex = Info.addedTransformerBusAtIndex - 1;  % re-numbering of transformer bus
         type = connectionType(1, :);    % update type
     end
     

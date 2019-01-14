@@ -13,7 +13,9 @@ function resultSet=doSweepCalcs(Z_ser_tot,S_ana,U_bus,connectionBuses,busType,ti
                               connectionBuses,busType,1000,1e-3,0);
 
         S_hist(:,iTime) = solverRes.S_out;
+        S_loss(:,iTime) = solverRes.S_loss;
         U_hist(:,iTime) = solverRes.U_out;
+        U_loss(:,iTime) = solverRes.U_out;
         I_hist(:,iTime) = solverRes.I_out;
         nItersVec(iTime)= solverRes.nIters;
     end

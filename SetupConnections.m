@@ -11,7 +11,8 @@
 startBuses = zeros(length(data.data),1);
 endBuses = zeros(length(data.data),1);
 connectionType = blanks(length(data.data))';
-connectionType = repmat(connectionType, 1, 2);
+connectionType = repmat(connectionType,1,2);
+connectionName = cell(size(connectionType));
 
 for iRow = 1:length(data.data)
 % startbus   

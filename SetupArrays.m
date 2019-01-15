@@ -78,11 +78,11 @@ for iBus = 1:Info.nBuses
                     Z_ser_self_vec =  [Z_ser_self_vec;...
                                         TransformerData.Z2k_pu];
                     Y_shu_self_vec =  [Y_shu_self_vec; 0.5*TransformerData.Z0_pu];
-                    disp('     - Transformer R2k in HV base');
+                    disp('     - Transformer R2k');
                 elseif iBus == Info.addedTransformerBusAtIndex(2)       % if at LV side
                     Z_ser_self_vec =  [Z_ser_self_vec; TransformerData.Z2k_pu];
                     Y_shu_self_vec =  [Y_shu_self_vec; 0];
-                    disp('     - Transformer R2k in LV base');
+                    disp('     - Transformer R2k');
                 end
             end
         end

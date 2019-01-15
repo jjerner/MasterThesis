@@ -64,7 +64,7 @@ while iter<=MAX_ITER
         I_conn(:,iter) = zeros(length(connections),1);
         I_calc(:,iter) = zeros(length(connections),1);
         
-        for iConnB = length(connections):-1:1
+        for iConnB = size(connections,1):-1:1
             startBus = connections(iConnB,1);       % Start bus for connection
             endBus   = connections(iConnB,2);       % End bus for connection
             

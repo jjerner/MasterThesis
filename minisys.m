@@ -1,6 +1,6 @@
 j=1i;
 
-for iConnection = 1:length(connectionBuses)
+for iConnection = 1:size(connectionBuses,1)
         startBus = connectionBuses(iConnection,1);
         endBus = connectionBuses(iConnection,2);
         disp(['At buses: ', num2str(startBus), ', ', num2str(endBus)]);

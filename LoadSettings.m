@@ -1,19 +1,20 @@
 %% Settings
 
-%% Initialize constants
+%% Constants
 j = 1i;
 
-%% Add paths
+%% Paths
 %addpath('Verification');
 addpath('PV model');
+addpath('analysis');
 
-%% Common
+%% Common settings
 Settings.cableDBPath='data/Ledningsdata.mat';           % Path to cable database file
 Settings.removeHighVoltageBuses = true;                 % Ignore buses before transformer
 Settings.U_j_guess = 1.00;                              % Initial joint connection voltage guess
 Settings.U_l_guess = 0.99;                              % Initial load voltage guess
 
-%% Location specific
+%% Location specific settings
 
 % === Hallonvägen ===
 Settings.location='Hallonvägen';                        % Location name

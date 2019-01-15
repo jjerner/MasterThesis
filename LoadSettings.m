@@ -1,5 +1,12 @@
 %% Settings
 
+%% Initialize constants
+j = 1i;
+
+%% Add paths
+%addpath('Verification');
+addpath('PV model');
+
 %% Common
 Settings.cableDBPath='data/Ledningsdata.mat';           % Path to cable database file
 Settings.removeHighVoltageBuses = true;                 % Ignore buses before transformer

@@ -1,9 +1,13 @@
-clear analysisCase;
-loopAnalysis=true;
+clear menuCase;
+loopMenu=true;
 
-while loopAnalysis
+while loopMenu
     % Select case
-    caseList={'resetinput','Reset and analyze input';...
+    caseList={'loadsettings','Load settings';...
+              'setupsystem','Set up system';...
+              'readinput','Read input from .txt files';...
+              'setupproblem','Set up problem (solver input)';...
+              'resetanalysis','Reset analysis';...
               'changepf','Change power factor (BETA)';...
               'addprod','Add power production (BETA)';...
               'filterinput','Filter input (moving average)';...
@@ -15,20 +19,39 @@ while loopAnalysis
               'plotgridtree','Plot grid tree map';
               'plotvhist','Plot voltage histogram (BETA)';...
               'plotniters','Plot number of iterations'};
-    [sel,ok] = listdlg('PromptString','Choose an option:',...
+    [menuSel,menuOK] = listdlg('PromptString','Menu:',...
                        'SelectionMode','single',...
                        'ListString',caseList(:,2),...
                        'Name','Select a case',...
-                       'ListSize',[200,200],...
+                       'ListSize',[200,300],...
                        'SelectionMode','single');
-    if ok~=true
+    if menuOK~=true
         error('No case selected.');
     end
-    analysisCase=strjoin(caseList(sel,1));
+    menuCase=strjoin(caseList(menuSel,1));
 
-    switch analysisCase
-        case 'resetinput'
-            % Reset and analyze input
+    switch menuCase
+        case 'loadsettings'
+            % Load settings
+            LoadSettings;
+        
+        case 'setupsystem'
+            % Set up system
+            InitializeTransformer;          % Initialize transformer parameters
+            InitializeCables;               % Initialize cables
+            SetupConnections;               % Set up connection buses, names, type etc.
+            SetupArrays;                    % Match cable parameters and connections to matrices
+            
+        case 'readinput'
+            % Read input from .txt
+            ReadInputTXT;
+            
+        case 'setupproblem'
+            % Set up problem
+            SetupProblem;
+            
+        case 'resetanalysis'
+            % Reset analysis
             S_ana=S_bus;
             disp('All bus powers reset to input values.');
             if all(all(S_bus(busIsLoad,:)==real(S_bus(busIsLoad,:))))
@@ -36,6 +59,7 @@ while loopAnalysis
             else
                 disp('Load input contains both active and reactive powers.');
             end
+            
         case 'changepf'
             % Change power factor
             if ~exist('S_ana','var'), S_ana = S_bus; end            % Powers for analysis set to inputs
@@ -117,4 +141,4 @@ while loopAnalysis
             warning('Invalid choice');
     end
 end
-clear analysisCase loopAnalysis sel ok;
+clear menuCase loopMenu menuSel menuOK;

@@ -1,7 +1,9 @@
-% Reads input from directory specified in Settings.inputDir
+% ReadInputTXT
+% Reads input .txt files from directory specified in Settings.inputDir
+% Works standalone as long as settings are loaded
 
-disp(' ');
-disp(['Reading input data for ', Settings.location, ' from file:']);
+disp(['Reading input .txt files for ', Settings.location, '.']);
+disp(['File path: ''' Settings.inputDir '''']);
 
 filesInDir = dir(Settings.inputDir);
 filesToRead = {};
@@ -15,11 +17,10 @@ end
 
 
 counter = 1 ;
-for outerLoop = 1:length(filesToRead)             % loop for each file in the directory
-    disp(['-      ', filesToRead{outerLoop}])
-    currentFile = strcat(Settings.inputDir, '\', filesToRead{outerLoop});
+for iFile = 1:length(filesToRead)             % loop for each file in the directory
+    disp(['- ', filesToRead{iFile}])
+    currentFile = strcat(Settings.inputDir, '\', filesToRead{iFile});
     fileID = fopen(currentFile, 'rt');
-    %fileID = fopen('data\Inputs\T085\89260957239.txt', 'rt');
     scanData = textscan(fileID, '%s %s','Delimiter','=');
     setsBeginAtRow = find(strcmp(scanData{1}, '##Time-series'));
     dataEndsAtRow = find(strcmp(scanData{1}, '##End-message'));
@@ -43,8 +44,8 @@ for outerLoop = 1:length(filesToRead)             % loop for each file in the di
         referenceAtRow = find(strcmp(allSets(:,:,iSet2), '#Reference'));
         valueAtRow = find(strcmp(allSets(:,:,iSet2), '#Value'));
         % Output is reference and value
-        referenceFromFile(iSet2)=allSets(referenceAtRow,2,iSet2);  % bytte namn [reference -> referenceFromFile]
-        valueFromFile(iSet2)=allSets(valueAtRow,2,iSet2);          % bytte namn [value -> valueFromFile]
+        referenceFromFile(iSet2)=allSets(referenceAtRow,2,iSet2);
+        valueFromFile(iSet2)=allSets(valueAtRow,2,iSet2);
     end
     
     for iSet3 = 1:nSets
@@ -57,7 +58,7 @@ for outerLoop = 1:length(filesToRead)             % loop for each file in the di
         if length(refIndex) == 2
             refString = referenceFromFile{iSet3}(refIndex(1)+1 : refIndex(2)-1);
         else
-            warning(['Cant find reference value in ', filesToRead{outerLoop}]);
+            warning(['Cannot find reference value in ', filesToRead{iFile}]);
         end
         
         if strcmp(referenceFromFile{iSet3}(refIndex(2)+1:end), '2')
@@ -83,6 +84,8 @@ for outerLoop = 1:length(filesToRead)             % loop for each file in the di
     fclose(fileID);
 
 end
+
+fprintf('Successfully read %d input .txt files.\n',iFile);
 
 % Detta kan du testa med sen!!!
 % Tar alla inlästa referenser och jämför med det som vi redan hade
@@ -110,6 +113,6 @@ end
 %}
 
 
-clear iSet iSet2 iSet3 counter currentFile outerLoop fileID scanData dataEndsAtRow setsBeginAtRow nSets allSets
+clear iSet iSet2 iSet3 counter currentFile iFile fileID scanData dataEndsAtRow setsBeginAtRow nSets allSets
 clear filesInDir filesToRead fPath fname ext inputDir referenceAtRow valueAtRow referenceFromFile valueFromFile
 clear valueIndex valueString refIndex refString k iterator

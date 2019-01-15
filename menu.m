@@ -44,6 +44,7 @@ while loopMenu
             
         case 'readinput'
             % Read input from .txt
+            if ~exist('Settings','var'), disp('Error: Load settings first'); break; end
             ReadInputTXT;
             
         case 'setupproblem'

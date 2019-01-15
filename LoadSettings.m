@@ -26,3 +26,6 @@ Settings.transformerDataPath='data/TransformerData_Hallonvagen.mat';    % Path t
 % Settings.inputDir = 'data/Inputs/T317';               % Directory for input files
 % Settings.gridCableDataPath = 'data/T317 Amundstorp.xlsx';               % Path to grid cable data file
 % Settings.transformerDataPath='data/TransformerData_Amundstorp.mat';     % Path to transformer data file
+
+%% Display
+disp('Settings loaded successfully.');

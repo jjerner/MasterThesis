@@ -63,35 +63,14 @@ while loopMenu
             
         case 'changepf'
             % Change power factor
-            if ~exist('S_ana','var'), S_ana = S_bus; end            % Powers for analysis set to inputs
-            newPowerFactor = input('Enter new power factor: ');
-            newPowerFactorLeading = input('Lagging/inductive (0) or leading/capacitive (1)? ');
-            %fprintf('\n');
-
-            S_ana(busIsLoad,:)=createComplexPower(abs(S_ana(busIsLoad,:)),'M',newPowerFactor,newPowerFactorLeading);
-            fprintf('Power factor for all loads changed to %g',newPowerFactor)
-            if newPowerFactorLeading, fprintf(' leading.\n'); else, fprintf(' lagging.\n'); end
+            changePowerFactor;
 
         case 'addprod'
             % Add power production
-            if ~exist('timeLine','var'), disp('Error: Set timeline first'); break; end
-            if ~exist('S_ana','var'), S_ana = S_bus; end
-%             productionAtBus=[118;120];          % Bus nr to add production to
-%             productionAtTime=70:170;            % Time interval for production
-%             productionPower=[1e-3;1e-2];        % Power [p.u.]
-% 
-%             S_ana(productionAtBus,productionAtTime)=S_ana(productionAtBus,productionAtTime)...
-%                 -productionPower;
-%             fprintf('Added %g p.u. production at node %d\n',[productionPower productionAtBus]');
-            disp('Calculating PV power from model.');
-            P_pv=(1/TransformerData.S_base)*PV_model(1,1,1,3)';    % Get PV power from model [p.u.]
-            P_pv=P_pv(timeLine);        % Set correct timeline
-            relLoadSize=S_ana(busIsLoad)./mean(S_ana(busIsLoad)); % Load size relative to mean load
-            S_ana(busIsLoad,timeLine)=S_ana(busIsLoad,timeLine)-0.1*relLoadSize.*repmat(P_pv,[size(S_ana(busIsLoad),1) 1]);
+            addPowerProduction;
 
         case 'filterinput'
             % Filter input (moving average)
-            if ~exist('S_ana','var'), S_ana = S_bus; end
             filterInput;
             
         case 'settimeline'
@@ -104,7 +83,6 @@ while loopMenu
             if ~exist('timeLine','var'), disp('Error: Set timeline first'); break; end
             if ~exist('S_ana','var'), S_ana = S_bus; end
             resultSet=doSweepCalcs(Z_ser_tot,S_ana,U_bus,connectionBuses,busType,timeLine);
-
 
         case 'plotall'
             % Plot all
@@ -132,11 +110,8 @@ while loopMenu
 
         case {'plotniters'}
             % Plot number of iterations
-            figure;
-            plot(resultSet.timeLine,resultSet.nItersVec);
-            title('Number of iterations');
-            xlabel('Timeline');
-            ylabel('Number of iterations');
+            if ~exist('resultSet','var'), disp('Error: Run or load calculation first.'); break; end
+            plotNumberOfIterations;
 
         otherwise
             warning('Invalid choice');

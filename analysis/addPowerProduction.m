@@ -1,6 +1,5 @@
 % Add power production
-if ~exist('timeLine','var'), disp('Error: Set timeline first'); break; end
-if ~exist('S_ana','var'), S_ana = S_bus; end
+
 % productionAtBus=[118;120];          % Bus nr to add production to
 % productionAtTime=70:170;            % Time interval for production
 % productionPower=[1e-3;1e-2];        % Power [p.u.]
@@ -8,6 +7,9 @@ if ~exist('S_ana','var'), S_ana = S_bus; end
 % S_ana(productionAtBus,productionAtTime)=S_ana(productionAtBus,productionAtTime)...
 %     -productionPower;
 % fprintf('Added %g p.u. production at node %d\n',[productionPower productionAtBus]');
+
+if ~exist('S_ana','var'), S_ana = S_bus; end
+
 disp('Calculating PV power from model.');
 P_pv=(1/TransformerData.S_base)*PV_model(1,1,1,3)';    % Get PV power from model [p.u.]
 P_pv=P_pv(timeLine);        % Set correct timeline

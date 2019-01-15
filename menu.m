@@ -67,6 +67,7 @@ while loopMenu
 
         case 'addprod'
             % Add power production
+            if ~exist('timeLine','var'), disp('Error: Set timeline first'); break; end
             addPowerProduction;
 
         case 'filterinput'

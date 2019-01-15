@@ -129,7 +129,13 @@ for iCable = 1:length(CableData)
     end
 end
 
+% Find connection level
+connectionLevelHigh=(connectionType(:,1)=='H' & connectionType(:,2)=='H') | (connectionType(:,1)=='H' & connectionType(:,2)=='T');
+connectionLevel=blanks(length(connectionType))';
+connectionLevel(connectionLevelHigh)='H';
+connectionLevel(~connectionLevelHigh)='L';
+connectionLevel(connectionType(:,1)=='T' & connectionType(:,2)=='T')='T';
 
 %clear some workspace
 clear foundTransformer typeEnd typeStart startBuses endBuses intStart intEnd typeStart typeEnd
-clear currentcell cellsplit iRow iCol newStart newEnd type iCable iConn data connectionBuses_notrafo
+clear currentcell cellsplit iRow iCol newStart newEnd type iCable iConn data connectionBuses_notrafo connectionLevelHigh

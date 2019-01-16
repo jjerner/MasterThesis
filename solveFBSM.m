@@ -1,4 +1,4 @@
-function Results = solveFBSM(Z_in,S_in,U_in,connections,busType,MAX_ITER,eps,doPlot)
+function Results = solveFBSM(Z_ser,Y_shu,S_in,U_in,connections,busType,MAX_ITER,eps,doPlot)
 % Forward Backward Sweep Method (FBSM) solver for radial power networks
 %
 % Results = solveFBSM(Z_in,S_in,U_in,connections,busType,MAX_ITER,eps,doPlot)
@@ -76,7 +76,9 @@ while iter<=MAX_ITER
             if upstreamCheck && downstreamCheck   
                 I_conn(iConnB,iter) = (1/sqrt(3))*abs(S_calc(endBus,iter))...
                                       /abs(U_calc(endBus,iter-1));                      % Three-phase current through one connection
-                S_loss(iConnB,iter) = 3*I_conn(iConnB,iter)^2*Z_in(startBus,endBus);	% Three-phase power loss through connection
+                S_loss(iConnB,iter) = 3*I_conn(iConnB,iter)^2*Z_ser(startBus,endBus);	% Three-phase power loss through connection
+                
+                
                 S_conn(iConnB,iter) = S_calc(endBus,iter)+S_loss(iConnB,iter);          % Total power through connection including losses
                 
                 % Update startpoints only
@@ -107,7 +109,7 @@ while iter<=MAX_ITER
             upstreamCheck   = all(calcDoneFwd(find(existsParentsUS)));
 
             if upstreamCheck && downstreamCheck
-                U_loss(iConnF,iter) = sqrt(3)*I_calc(iConnF,iter)*Z_in(startBus,endBus);	% Voltage loss over line
+                U_loss(iConnF,iter) = sqrt(3)*I_calc(iConnF,iter)*Z_ser(startBus,endBus);	% Voltage loss over line
                 U_calc(endBus,iter) = U_calc(startBus,iter)-U_loss(iConnF,iter);            % Voltage at endpoint
                 calcDoneFwd(iConnF) = true;                                                 % Mark connection calculation as done
             end
@@ -133,9 +135,9 @@ end
 
 % Plot convergence
 if doPlot
-    legendLabelsU=[repmat('U_{',length(Z_in),1) num2str(transpose(1:length(Z_in))) repmat('}',length(Z_in),1)];
-    legendLabelsP=[repmat('P_{',length(Z_in),1) num2str(transpose(1:length(Z_in))) repmat('}',length(Z_in),1)];
-    legendLabelsQ=[repmat('Q_{',length(Z_in),1) num2str(transpose(1:length(Z_in))) repmat('}',length(Z_in),1)];
+    legendLabelsU=[repmat('U_{',length(Z_ser),1) num2str(transpose(1:length(Z_ser))) repmat('}',length(Z_ser),1)];
+    legendLabelsP=[repmat('P_{',length(Z_ser),1) num2str(transpose(1:length(Z_ser))) repmat('}',length(Z_ser),1)];
+    legendLabelsQ=[repmat('Q_{',length(Z_ser),1) num2str(transpose(1:length(Z_ser))) repmat('}',length(Z_ser),1)];
     legendLabelsI=[repmat('I_{',length(connections),1) num2str(transpose(1:length(connections))) repmat('}',length(connections),1)];
     figure;
     plot(abs(U_calc'));

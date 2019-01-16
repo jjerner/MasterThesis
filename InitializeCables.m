@@ -75,7 +75,7 @@ for iGridCable = 1:Info.nCablesInGrid
     CableData(iGridCable).X      = (CableData(iGridCable).l / 1e3) * CableData(iGridCable).Xpl;                        % [Ohm]
     CableData(iGridCable).L      = (CableData(iGridCable).l / 1e3) * CableData(iGridCable).Xpl / (2*pi*freq);          % [H]
     CableData(iGridCable).C      = (CableData(iGridCable).l / 1e3) * (CableData(iGridCable).Bdpl / (2*pi*freq*1e6));   % [F]
-    CableData(iGridCable).Bd     = (CableData(iGridCable).l / 1e3) * CableData(iGridCable).Bdpl;                       % [S]
+    CableData(iGridCable).Bd     = (CableData(iGridCable).l / 1e3) * CableData(iGridCable).Bdpl / 1e6;                 % [S]
 
     CableData(iGridCable).Z_ser=CableData(iGridCable).R+j*CableData(iGridCable).X;             % Series impedance [ohm]
     CableData(iGridCable).Y_shu=CableData(iGridCable).G+j*CableData(iGridCable).Bd;            % Shunt admittance [S]

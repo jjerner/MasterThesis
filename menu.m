@@ -83,7 +83,7 @@ while loopMenu
             % Run sweep calculation
             if ~exist('timeLine','var'), disp('Error: Set timeline first'); break; end
             if ~exist('S_ana','var'), S_ana = S_bus; end
-            resultSet=doSweepCalcs(Z_ser_tot,S_ana,U_bus,connectionBuses,busType,timeLine);
+            resultSet=doSweepCalcs(Z_ser_tot,Y_shu_tot,S_ana,U_bus,connectionBuses,busType,timeLine);
 
         case 'plotall'
             % Plot all

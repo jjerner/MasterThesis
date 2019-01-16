@@ -88,9 +88,9 @@ while iter<=MAX_ITER
     end
     
     % Update slack bus voltage angle but keep magnitude
-    isSlackBus=busType(:,1)=='S' & busType(:,2)=='L';
+    isSlackBus=busType(:,1)=='S' & busType(:,2)=='L';               % Find slack bus
     U_calc(isSlackBus,iter)=abs(U_calc(isSlackBus,iter-1))...
-        *S_calc(isSlackBus,iter)/abs(S_calc(isSlackBus,iter));
+        *S_calc(isSlackBus,iter)/abs(S_calc(isSlackBus,iter));      % At slack bus, voltage angle = power angle
     
     % Forward sweep to calculate voltages
     while ~all(calcDoneFwd)

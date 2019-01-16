@@ -30,7 +30,7 @@ verificationProblem;
 pf = 0.95;
 
 S_complex = createComplexPower(S_bus,'P', pf, 0);
-timeLine=500:550;
+timeLine=500:600;
 resultSet=doSweepCalcs(Z_ser_tot, S_complex, U_bus, connectionBuses, busType, timeLine);
 
 % RESULTS

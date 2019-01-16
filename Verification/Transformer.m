@@ -32,8 +32,8 @@ TransformerData.I_prim_base = TransformerData.S_base / (sqrt(3)*TransformerData.
 TransformerData.I_sec_base  = TransformerData.S_base / (sqrt(3)*TransformerData.U_sec_base);
 
 % Impedances
-TransformerData.Z2k_pu      = TransformerData.Z2k / TransformerData.Z_sec_base;  
-TransformerData.R2k_pu      = TransformerData.R2k / TransformerData.Z_sec_base;
+TransformerData.Z2k_pu      = TransformerData.Z2k / 100;  
+TransformerData.R2k_pu      = TransformerData.R2k / 100;
 
 % TransformerData.R0_pu       = TransformerData.R0;
 TransformerData.Z0_pu       = 0;

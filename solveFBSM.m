@@ -46,7 +46,7 @@ U_loss(:,1) = zeros(length(connections),1);
 calcDoneBwd = false(length(connections),1);
 calcDoneFwd = false(length(connections),1);
 
-S_in=conj(S_in);
+%S_in=conj(S_in);
 
 while iter<=MAX_ITER
     
@@ -54,7 +54,7 @@ while iter<=MAX_ITER
         warning('No convergence before maximum number of iterations was reached.') 
     end
  
-    % Backward sweep
+    % Backward sweep to calculate powers and currents
     while ~all(calcDoneBwd)
         % Inputs
         S_calc(:,iter) = S_in;
@@ -87,31 +87,29 @@ while iter<=MAX_ITER
         end
     end
     
-    % Forward sweep
+    % Update slack bus voltage angle but keep magnitude
+    isSlackBus=busType(:,1)=='S' & busType(:,2)=='L';
+    U_calc(isSlackBus,iter)=abs(U_calc(isSlackBus,iter-1))...
+        *S_calc(isSlackBus,iter)/abs(S_calc(isSlackBus,iter));
+    
+    % Forward sweep to calculate voltages
     while ~all(calcDoneFwd)
-        % Input
-        U_calc(:,iter) = U_in;
         % Matrix preallocation
         U_loss(:,iter) = zeros(length(connections),1);
 
         for iConnF = 1:length(connections)
-            if strcmpi(busType(iConnF,:), 'SLXXX') || strcmpi(busType(iConnF,:), 'PVXXX')     % PV bus not implemented
-                calcDoneFwd(iConnF) = true;
-                continue
-            else
-                startBus = connections(iConnF,1);   % Start bus for connection
-                endBus   = connections(iConnF,2);   % End bus for connection
+            startBus = connections(iConnF,1);   % Start bus for connection
+            endBus   = connections(iConnF,2);   % End bus for connection
 
-                existsParentsDS = [zeros(iConnF,1); connections(iConnF+1:end,2)] == startBus;
-                existsParentsUS = [connections(1:iConnF-1,2); zeros(length(connections)-iConnF+1,1)] == startBus;
-                downstreamCheck = all(calcDoneFwd(find(existsParentsDS)));
-                upstreamCheck   = all(calcDoneFwd(find(existsParentsUS)));
-                
-                if upstreamCheck && downstreamCheck
-                    U_loss(iConnF,iter) = sqrt(3)*I_calc(iConnF,iter)*Z_in(startBus,endBus);	% Voltage loss over line
-                    U_calc(endBus,iter) = U_calc(startBus,iter)-U_loss(iConnF,iter);            % Voltage at endpoint
-                    calcDoneFwd(iConnF) = true;                                                 % Mark connection calculation as done
-                end
+            existsParentsDS = [zeros(iConnF,1); connections(iConnF+1:end,2)] == startBus;
+            existsParentsUS = [connections(1:iConnF-1,2); zeros(length(connections)-iConnF+1,1)] == startBus;
+            downstreamCheck = all(calcDoneFwd(find(existsParentsDS)));
+            upstreamCheck   = all(calcDoneFwd(find(existsParentsUS)));
+
+            if upstreamCheck && downstreamCheck
+                U_loss(iConnF,iter) = sqrt(3)*I_calc(iConnF,iter)*Z_in(startBus,endBus);	% Voltage loss over line
+                U_calc(endBus,iter) = U_calc(startBus,iter)-U_loss(iConnF,iter);            % Voltage at endpoint
+                calcDoneFwd(iConnF) = true;                                                 % Mark connection calculation as done
             end
         end
     end

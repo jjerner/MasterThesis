@@ -25,6 +25,8 @@ if ~exist('MAX_ITER','var'),    MAX_ITER    = 100;   end    % Default value for 
 if ~exist('eps', 'var'),        eps         = 1e-6;  end    % Default convergence limit
 if ~exist('doPlot','var'),      doPlot      = false; end    % Default value for plot creation
 
+includeShuntCapacitance = false;
+
 iter = 2;               % First calculation is iteration 2
 
 % Inputs
@@ -77,10 +79,13 @@ while iter<=MAX_ITER
                 I_conn(iConnB,iter) = (1/sqrt(3))*abs(S_calc(endBus,iter))...
                                       /abs(U_calc(endBus,iter-1));                      % Three-phase current through one connection
                 S_loss(iConnB,iter) = 3*I_conn(iConnB,iter)^2*Z_ser(startBus,endBus);	% Three-phase power loss through connection
-                %Q_C1(iConnB,iter)   = -3j*(abs(U_calc(startBus,iter-1)/sqrt(3))^2*imag(Y_shu(startBus,endBus))/2);
-                %Q_C2(iConnB,iter)   = -3j*(abs(U_calc(endBus,iter-1)/sqrt(3))^2*imag(Y_shu(startBus,endBus))/2);
-                %S_loss(iConnB,iter) = S_loss(iConnB,iter)+
                 
+                if includeShuntCapacitance
+                    Q_C1(iConnB,iter)   = -3j*(abs(U_calc(startBus,iter-1)/sqrt(3))^2*imag(Y_shu(startBus,endBus))/2);
+                    Q_C2(iConnB,iter)   = -3j*(abs(U_calc(endBus,iter-1)/sqrt(3))^2*imag(Y_shu(startBus,endBus))/2);
+                    S_loss(iConnB,iter) = S_loss(iConnB,iter)+Q_C1(iConnB,iter)+Q_C2(iConnB,iter);
+                end
+                    
                 S_conn(iConnB,iter) = S_calc(endBus,iter)+S_loss(iConnB,iter);          % Total power through connection including losses
                 
                 % Update startpoints only

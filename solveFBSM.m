@@ -1,7 +1,7 @@
-function Results = solveFBSM(Z_ser,Y_shu,S_in,U_in,connections,busType,MAX_ITER,eps,doPlot)
+function Results = solveFBSM(Z_ser,Y_shu,S_in,U_in,connections,busType,MAX_ITER,eps,doPlot,shuntCap)
 % Forward Backward Sweep Method (FBSM) solver for radial power networks
 %
-% Results = solveFBSM(Z_in,S_in,U_in,connections,busType,MAX_ITER,eps,doPlot)
+% Results = solveFBSM(Z_in,S_in,U_in,connections,busType,MAX_ITER,eps,doPlot,shuntCap)
 %
 % Inputs:
 %    Z_in        = Impedance matrix for all connections (NxN).
@@ -12,6 +12,7 @@ function Results = solveFBSM(Z_ser,Y_shu,S_in,U_in,connections,busType,MAX_ITER,
 %    MAX_ITER    = Maximum number of iterations. Default value = 100.
 %    eps         = Convergence criteria. Default value = 1e-6.
 %    doPlot      = Create plots (1x1 logical). Default value = false.
+%    shuntCap    = Include shunt capacitance (1x1 logical). Default value = false.
 %
 % Outputs:
 %    Results.S_out   = Power calculation (per bus)
@@ -24,8 +25,7 @@ function Results = solveFBSM(Z_ser,Y_shu,S_in,U_in,connections,busType,MAX_ITER,
 if ~exist('MAX_ITER','var'),    MAX_ITER    = 100;   end    % Default value for maximum number of iterations
 if ~exist('eps', 'var'),        eps         = 1e-6;  end    % Default convergence limit
 if ~exist('doPlot','var'),      doPlot      = false; end    % Default value for plot creation
-
-includeShuntCapacitance = true;
+if ~exist('shuntCap','var'),    shuntCap    = false; end    % Default value for shunt capacitance
 
 iter = 2;               % First calculation is iteration 2
 
@@ -40,6 +40,8 @@ I_calc(:,1) = zeros(size(connections,1),1);
 % Power matrix preallocations (excluding inputs)
 S_conn(:,1) = zeros(size(connections,1),1);
 S_loss(:,1) = zeros(size(connections,1),1);
+Q_shu1(:,1) = zeros(size(connections,1),1);
+Q_shu2(:,1) = zeros(size(connections,1),1);
 
 % Voltage matrix preallocations (excluding inputs)
 U_loss(:,1) = zeros(size(connections,1),1);
@@ -80,10 +82,11 @@ while iter<=MAX_ITER
                                       /abs(U_calc(endBus,iter-1));                      % Three-phase current through one connection
                 S_loss(iConnB,iter) = 3*I_conn(iConnB,iter)^2*Z_ser(startBus,endBus);	% Three-phase power loss through connection
                 
-                if includeShuntCapacitance
-                    Q_C1(iConnB,iter)   = -3j*(abs(U_calc(startBus,iter-1)/sqrt(3))^2*imag(Y_shu(startBus,endBus))/2);
-                    Q_C2(iConnB,iter)   = -3j*(abs(U_calc(endBus,iter-1)/sqrt(3))^2*imag(Y_shu(startBus,endBus))/2);
-                    S_loss(iConnB,iter) = S_loss(iConnB,iter)+Q_C1(iConnB,iter)+Q_C2(iConnB,iter);
+                if shuntCap
+                    % Include reaction power generation in shunt capacitors
+                    Q_shu1(iConnB,iter) = -3j*(abs(U_calc(startBus,iter-1)/sqrt(3))^2*imag(Y_shu(startBus,endBus))/2);
+                    Q_shu2(iConnB,iter) = -3j*(abs(U_calc(endBus,iter-1)/sqrt(3))^2*imag(Y_shu(startBus,endBus))/2);
+                    S_loss(iConnB,iter) = S_loss(iConnB,iter)+Q_shu1(iConnB,iter)+Q_shu2(iConnB,iter);
                 end
                     
                 S_conn(iConnB,iter) = S_calc(endBus,iter)+S_loss(iConnB,iter);          % Total power through connection including losses
@@ -178,8 +181,8 @@ Results.S_loss = S_loss(:,end);      % Power loss calculation (per connection)
 Results.U_out  = U_calc(:,end);      % Voltage calculation (per bus)
 Results.U_loss = U_loss(:,end);      % Voltage loss calculation (per connection)
 Results.I_out  = I_calc(:,end);      % Current calculation (per connection)
-Results.Q_shu1 = Q_C1(:,end);        % Shunt capacitor reactive power generation at start bus (per connection)
-Results.Q_shu2 = Q_C2(:,end);        % Shunt capacitor reactive power generation at end bus (per connection)
+Results.Q_shu1 = Q_shu1(:,end);      % Shunt capacitor reactive power generation at start bus (per connection)
+Results.Q_shu2 = Q_shu2(:,end);      % Shunt capacitor reactive power generation at end bus (per connection)
 Results.nIters = iter;               % Output number of iterations
 
 end

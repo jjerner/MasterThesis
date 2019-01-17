@@ -25,7 +25,7 @@ if ~exist('MAX_ITER','var'),    MAX_ITER    = 100;   end    % Default value for 
 if ~exist('eps', 'var'),        eps         = 1e-6;  end    % Default convergence limit
 if ~exist('doPlot','var'),      doPlot      = false; end    % Default value for plot creation
 
-includeShuntCapacitance = false;
+includeShuntCapacitance = true;
 
 iter = 2;               % First calculation is iteration 2
 
@@ -173,11 +173,13 @@ if doPlot
 end
 
 % Output
-Results.S_out  = S_calc(:,end);      % Output last iteration of power calculation (per bus)
-Results.S_loss = S_loss(:,end);      % Output last iteration of power loss calculation (per connection)
-Results.U_out  = U_calc(:,end);      % Output last iteration of voltage calculation (per bus)
-Results.U_loss = U_loss(:,end);      % Output last iteration of voltage loss calculation (per connection)
-Results.I_out  = I_calc(:,end);      % Output last iteration of current calculation (per connection)
+Results.S_out  = S_calc(:,end);      % Power calculation (per bus)
+Results.S_loss = S_loss(:,end);      % Power loss calculation (per connection)
+Results.U_out  = U_calc(:,end);      % Voltage calculation (per bus)
+Results.U_loss = U_loss(:,end);      % Voltage loss calculation (per connection)
+Results.I_out  = I_calc(:,end);      % Current calculation (per connection)
+Results.Q_shu1 = Q_C1(:,end);        % Shunt capacitor reactive power generation at start bus (per connection)
+Results.Q_shu2 = Q_C2(:,end);        % Shunt capacitor reactive power generation at end bus (per connection)
 Results.nIters = iter;               % Output number of iterations
 
 end

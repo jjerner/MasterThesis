@@ -1,17 +1,17 @@
 % Define buses etc.
 
-busType = blanks(length(Y_bus))';               % Bus names as 2 chars [PQ, PV, SL] SL = Slack bus
+busType = blanks(size(Z_ser,1))';               % Bus names as 2 chars [PQ, PV, SL] SL = Slack bus
 busType = repmat(busType, 1, 2);
 
-S_bus = zeros(length(Y_bus),length(InputData(1).values));   % Power in bus
-U_bus = ones(length(Y_bus),length(InputData(1).values));    % Voltage at bus
-busIsLoad = false(length(Y_bus),1);
+S_bus = zeros(size(Z_ser,1),length(InputData(1).values));   % Power in bus
+U_bus = ones(size(Z_ser,1),length(InputData(1).values));    % Voltage at bus
+busIsLoad = false(size(Z_ser,1),1);
 
 % Här blir de stökigt, ha så kul!
 % Need to add known parameter data to bus types.
 
 firstHighVoltageBusFound = 0;
-for iBus = 1:length(Y_bus)
+for iBus = 1:size(Z_ser,1)
     for iRow = 1:length(connectionBuses)
         for iCol = 1:2
             if iBus == connectionBuses(iRow,iCol) && isspace(busType(iBus))

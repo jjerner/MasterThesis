@@ -1,5 +1,7 @@
 %% Settings
 
+global Settings;        % Make settings struct global
+
 %% Constants
 j = 1i;
 
@@ -13,6 +15,8 @@ Settings.cableDBPath='data/Ledningsdata.mat';           % Path to cable database
 Settings.removeHighVoltageBuses = true;                 % Ignore buses before transformer
 Settings.U_j_guess = 1.00;                              % Initial joint connection voltage guess
 Settings.U_l_guess = 0.99;                              % Initial load voltage guess
+Settings.defaultMaxIter = 100;                          % Default number for maximum number of iterations
+Settings.defaultConvEps = 1e-3;                         % Default value for convergence epsilon
 
 %% Location specific settings
 

@@ -1,4 +1,5 @@
 function resultSet=doSweepCalcs(Z_ser,Y_shu,S_ana,U_bus,connectionBuses,busType,timeLine)
+    global Settings;
     tic;
     S_hist = zeros(size(S_ana,1), length(timeLine));
     U_hist = zeros(size(U_bus,1), length(timeLine));
@@ -6,11 +7,12 @@ function resultSet=doSweepCalcs(Z_ser,Y_shu,S_ana,U_bus,connectionBuses,busType,
     nItersVec=zeros(1,length(timeLine));
     barHandle = waitbar(0, '1', 'Name', 'Sweep calculations');
     for iTime = 1:length(timeLine)
-        waitbar(iTime/length(timeLine), barHandle, sprintf('Sweep calculations %d/%d',...
+        waitbar(iTime/length(timeLine), barHandle, sprintf('Sweep calculation %d/%d',...
                 iTime, length(timeLine)));
 
-        solverRes = solveFBSM(Z_ser,Y_shu,S_ana(:,timeLine(iTime)),U_bus(:,timeLine(iTime)),...
-                              connectionBuses,busType,1000,1e-3,0);
+        solverRes = solveFBSM(Z_ser,Y_shu,S_ana(:,timeLine(iTime)),...
+            U_bus(:,timeLine(iTime)),connectionBuses,busType,...
+            Settings.defaultMaxIter,Settings.defaultConvEps,0);
 
         S_hist(:,iTime) = solverRes.S_out;
         S_loss(:,iTime) = solverRes.S_loss;

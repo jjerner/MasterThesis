@@ -6,10 +6,13 @@ P_pv=P_pv(timeLine);                                    % Set correct timeline
 
 busNumber = (1:Info.nBuses)';
 loadNumber = busNumber(busIsLoad);
-S_ana=S_bus(1:Info.nBuses, timeLine);                   % S_analysis based of timeLine
-U_ana=U_bus(1:Info.nBuses, timeLine);                   % U_ana
+
 
 for iPv = 1:length(loadNumber)  % iPV - number of pv systems
+    
+    S_ana=S_bus(1:Info.nBuses, timeLine);                   % S_analysis based of timeLine
+    U_ana=U_bus(1:Info.nBuses, timeLine);                   % U_ana
+    
     totalPV = iPv.*P_pv;               
     pvPerLoad = totalPV ./ length(loadNumber);
     
@@ -27,5 +30,5 @@ for iPv = 1:length(loadNumber)  % iPV - number of pv systems
 end
 
 
-% Analysera Dist!
+% Analysera Dist
 % // code here //

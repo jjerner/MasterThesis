@@ -55,7 +55,7 @@ for iBus = 1:size(Z_ser,1)
                         warning(['Cannot find data for load reference: ', num2str(nameOfBus)]); 
                         S_bus(iBus,:) = 1;
                     elseif referenceFound == 1
-                        S_bus(iBus,:) = (InputData(iInput).values'.*1000)./(3*TransformerData.S_base);
+                        S_bus(iBus,:) = (InputData(iInput).values'.*1000)./TransformerData.S_base;
                     end
                     
                 else

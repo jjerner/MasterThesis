@@ -1,4 +1,5 @@
 j=1i;
+addpath('..');
 
 for iConnection = 1:size(connectionBuses,1)
         startBus = connectionBuses(iConnection,1);

@@ -12,7 +12,7 @@ end
 
 Y_shu = zeros(size(Z_ser));
 
-Results = solveFBSM(Z_ser, S_in, U_in, connectionBuses, busType,100,1e-6,0);
+Results = solveFBSM(Z_ser,Y_shu,S_in, U_in, connectionBuses, busType,100,1e-6,0);
 
 S_out=Results.S_out
 U_out=Results.U_out

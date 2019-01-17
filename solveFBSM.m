@@ -32,19 +32,19 @@ S_calc(:,1) = S_in;     % Input powers (loads) at iteration 1
 U_calc(:,1) = U_in;     % Input voltages (guesses) at iteration 1
 
 % Current matrix preallocations (excluding inputs)
-I_conn(:,1) = zeros(length(connections),1);
-I_calc(:,1) = zeros(length(connections),1);
+I_conn(:,1) = zeros(size(connections,1),1);
+I_calc(:,1) = zeros(size(connections,1),1);
 
 % Power matrix preallocations (excluding inputs)
-S_conn(:,1) = zeros(length(connections),1);
-S_loss(:,1) = zeros(length(connections),1);
+S_conn(:,1) = zeros(size(connections,1),1);
+S_loss(:,1) = zeros(size(connections,1),1);
 
 % Voltage matrix preallocations (excluding inputs)
-U_loss(:,1) = zeros(length(connections),1);
+U_loss(:,1) = zeros(size(connections,1),1);
 
 % Vectors storing if calculation for a connection is done
-calcDoneBwd = false(length(connections),1);
-calcDoneFwd = false(length(connections),1);
+calcDoneBwd = false(size(connections,1),1);
+calcDoneFwd = false(size(connections,1),1);
 
 %S_in=conj(S_in);
 
@@ -59,17 +59,17 @@ while iter<=MAX_ITER
         % Inputs
         S_calc(:,iter) = S_in;
         % Matrix preallocations
-        S_loss(:,iter) = zeros(length(connections),1);
-        S_conn(:,iter) = zeros(length(connections),1);
-        I_conn(:,iter) = zeros(length(connections),1);
-        I_calc(:,iter) = zeros(length(connections),1);
+        S_loss(:,iter) = zeros(size(connections,1),1);
+        S_conn(:,iter) = zeros(size(connections,1),1);
+        I_conn(:,iter) = zeros(size(connections,1),1);
+        I_calc(:,iter) = zeros(size(connections,1),1);
         
         for iConnB = size(connections,1):-1:1
             startBus = connections(iConnB,1);       % Start bus for connection
             endBus   = connections(iConnB,2);       % End bus for connection
             
             existsChildrenDS = [zeros(iConnB,1); connections(iConnB+1:end,1)] == endBus;
-            existsChildrenUS = [connections(1:iConnB-1,1); zeros(length(connections)-iConnB+1,1)] == endBus;
+            existsChildrenUS = [connections(1:iConnB-1,1); zeros(size(connections,1)-iConnB+1,1)] == endBus;
             downstreamCheck  = all(calcDoneBwd(find(existsChildrenDS)));
             upstreamCheck    = all(calcDoneBwd(find(existsChildrenUS)));
             
@@ -77,7 +77,9 @@ while iter<=MAX_ITER
                 I_conn(iConnB,iter) = (1/sqrt(3))*abs(S_calc(endBus,iter))...
                                       /abs(U_calc(endBus,iter-1));                      % Three-phase current through one connection
                 S_loss(iConnB,iter) = 3*I_conn(iConnB,iter)^2*Z_ser(startBus,endBus);	% Three-phase power loss through connection
-                
+                %Q_C1(iConnB,iter)   = -3j*(abs(U_calc(startBus,iter-1)/sqrt(3))^2*imag(Y_shu(startBus,endBus))/2);
+                %Q_C2(iConnB,iter)   = -3j*(abs(U_calc(endBus,iter-1)/sqrt(3))^2*imag(Y_shu(startBus,endBus))/2);
+                %S_loss(iConnB,iter) = S_loss(iConnB,iter)+
                 
                 S_conn(iConnB,iter) = S_calc(endBus,iter)+S_loss(iConnB,iter);          % Total power through connection including losses
                 
@@ -97,14 +99,14 @@ while iter<=MAX_ITER
     % Forward sweep to calculate voltages
     while ~all(calcDoneFwd)
         % Matrix preallocation
-        U_loss(:,iter) = zeros(length(connections),1);
+        U_loss(:,iter) = zeros(size(connections,1),1);
 
-        for iConnF = 1:length(connections)
+        for iConnF = 1:size(connections,1)
             startBus = connections(iConnF,1);   % Start bus for connection
             endBus   = connections(iConnF,2);   % End bus for connection
 
             existsParentsDS = [zeros(iConnF,1); connections(iConnF+1:end,2)] == startBus;
-            existsParentsUS = [connections(1:iConnF-1,2); zeros(length(connections)-iConnF+1,1)] == startBus;
+            existsParentsUS = [connections(1:iConnF-1,2); zeros(size(connections,1)-iConnF+1,1)] == startBus;
             downstreamCheck = all(calcDoneFwd(find(existsParentsDS)));
             upstreamCheck   = all(calcDoneFwd(find(existsParentsUS)));
 
@@ -138,7 +140,7 @@ if doPlot
     legendLabelsU=[repmat('U_{',length(Z_ser),1) num2str(transpose(1:length(Z_ser))) repmat('}',length(Z_ser),1)];
     legendLabelsP=[repmat('P_{',length(Z_ser),1) num2str(transpose(1:length(Z_ser))) repmat('}',length(Z_ser),1)];
     legendLabelsQ=[repmat('Q_{',length(Z_ser),1) num2str(transpose(1:length(Z_ser))) repmat('}',length(Z_ser),1)];
-    legendLabelsI=[repmat('I_{',length(connections),1) num2str(transpose(1:length(connections))) repmat('}',length(connections),1)];
+    legendLabelsI=[repmat('I_{',size(connections,1),1) num2str(transpose(1:size(connections,1))) repmat('}',size(connections,1),1)];
     figure;
     plot(abs(U_calc'));
     title('Voltage convergence');

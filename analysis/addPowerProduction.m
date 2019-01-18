@@ -16,6 +16,12 @@ disp('2. Even distribution')
 disp('3. Selected distribution')
 prodCase = input('Enter case:');
 
+
+%Create waitbar for any case, update with handle 'wh'
+
+wh = waitbar(0, 'Running Calculation', 'Name', 'Power Production',...
+             'Units','Normalized', 'Position', [0.405, 0.6, 0.19, 0.05]);
+
 switch prodCase
 
     case 1
@@ -38,3 +44,8 @@ switch prodCase
         warning('Not valid case')
 end
 
+%remove waitbar
+delete(wh)
+
+
+clear wh

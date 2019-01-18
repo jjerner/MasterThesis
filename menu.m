@@ -7,11 +7,11 @@ while loopMenu
               'setupsystem','Set up system';...
               'readinput','Read input from .txt files';...
               'setupproblem','Set up problem (solver input)';...
+              'settimeline','Set timeline';...
               'resetanalysis','Reset analysis';...
               'changepf','Change power factor (BETA)';...
               'addprod','Add power production (BETA)';...
               'filterinput','Filter input (moving average)';...
-              'settimeline','Set timeline';...
               'sweepcalc','Run sweep calculation';...
               'plotall','Plot all results';...
               'plotloads','Plot load results only';...
@@ -26,7 +26,8 @@ while loopMenu
                        'ListSize',[200,300],...
                        'SelectionMode','single');
     if menuOK~=true
-        error('No case selected.');
+        warning('No case selected.');
+        return
     end
     menuCase=strjoin(caseList(menuSel,1));
 
@@ -50,6 +51,11 @@ while loopMenu
         case 'setupproblem'
             % Set up problem
             SetupProblem;
+                        
+        case 'settimeline'
+            % Set timeline
+            leapYear = input('Leap year?  No (0) or Yes (1): ');
+            timeLine=setTimeLine(leapYear);
             
         case 'resetanalysis'
             % Reset analysis
@@ -73,11 +79,6 @@ while loopMenu
         case 'filterinput'
             % Filter input (moving average)
             filterInput;
-            
-        case 'settimeline'
-            % Set timeline
-            leapYear = input('Leap year?  No (0) or Yes (1): ');
-            timeLine=setTimeLine(leapYear);
 
         case 'sweepcalc'
             % Run sweep calculation

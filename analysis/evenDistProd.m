@@ -51,12 +51,11 @@ U_min_load = Dist(1).Results.U_hist(busIsLoad,:);
 S_max_load = Dist(iPv).Results.S_hist(busIsLoad,:);
 [rowMaxLoad, timeMaxLoad] = find(U_max_load == max(max(U_max_load)));
 [rowMinLoad, timeMinLoad] = find(U_min_load == min(min(U_min_load)));
-[rowMaxProd, timeMaxProd] = find(S_max_load == max(max(S_max_load)));
+[rowMaxProd, timeMaxProd] = find(S_max_load == min(min(S_max_load))); % max production -> lowest S total
 
 iMaxLoad = loadNumber(rowMaxLoad);  % Max loadvoltage found at this bus number
 iMinLoad = loadNumber(rowMinLoad);  % Min loadvoltage found at this bus number
 iMaxProd = loadNumber(rowMaxProd);  % Max productionload
-iMinProd = loadNumber(rowMinProd);
 
 U_max_pu = U_max_load(rowMaxLoad, :);
 U_min_pu = U_min_load(rowMinLoad, :);

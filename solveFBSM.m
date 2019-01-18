@@ -91,6 +91,9 @@ while iter<=MAX_ITER
                     
                 S_conn(iConnB,iter) = S_calc(endBus,iter)+S_loss(iConnB,iter);          % Total power through connection including losses
                 
+                % Set correct sign of current
+                I_conn(iConnB,iter) = sign(real(S_conn(iConnB,iter)))*I_conn(iConnB,iter);
+                
                 % Update startpoints only
                 S_calc(startBus,iter) = S_calc(startBus,iter)+S_conn(iConnB,iter);      % Three-phase power in bus
                 I_calc(iConnB,iter)   = I_calc(iConnB,iter)+I_conn(iConnB,iter);        % Current in bus
@@ -101,9 +104,13 @@ while iter<=MAX_ITER
     
     % Update slack bus voltage angle but keep magnitude
     isSlackBus=busType(:,1)=='S' & busType(:,2)=='L';               % Find slack bus
-    U_calc(isSlackBus,iter)=abs(U_calc(isSlackBus,iter-1))...
-        *S_calc(isSlackBus,iter)/abs(S_calc(isSlackBus,iter));      % At slack bus, voltage angle = power angle
-    
+    if S_calc(isSlackBus,iter)>=0
+        U_calc(isSlackBus,iter)=abs(U_calc(isSlackBus,iter-1))...
+            *S_calc(isSlackBus,iter)/abs(S_calc(isSlackBus,iter));      % At slack bus, voltage angle = power angle
+    else
+        U_calc(isSlackBus,iter)=-abs(U_calc(isSlackBus,iter-1))...
+            *S_calc(isSlackBus,iter)/abs(S_calc(isSlackBus,iter));      % At slack bus, voltage angle = power angle
+    end
     % Forward sweep to calculate voltages
     while ~all(calcDoneFwd)
         % Matrix preallocation
@@ -119,7 +126,11 @@ while iter<=MAX_ITER
             upstreamCheck   = all(calcDoneFwd(find(existsParentsUS)));
 
             if upstreamCheck && downstreamCheck
-                U_loss(iConnF,iter) = sqrt(3)*I_calc(iConnF,iter)*Z_ser(startBus,endBus);	% Voltage loss over line
+                if I_calc(iConnF,iter)>=0
+                    U_loss(iConnF,iter) = sqrt(3)*abs(I_calc(iConnF,iter))*Z_ser(startBus,endBus);	% Voltage loss over line
+                else
+                    U_loss(iConnF,iter) = -sqrt(3)*abs(I_calc(iConnF,iter))*Z_ser(startBus,endBus);	% Voltage loss over line
+                end
                 U_calc(endBus,iter) = U_calc(startBus,iter)-U_loss(iConnF,iter);            % Voltage at endpoint
                 calcDoneFwd(iConnF) = true;                                                 % Mark connection calculation as done
             end

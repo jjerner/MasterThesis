@@ -32,23 +32,39 @@ for iPv = 1:length(loadNumber)  % iPV - number of pv systems
         break
     end
     
-    %store results
-    Dist(iPv).iteration = iPv;
-    Dist(iPv).Results = res;
+    %store results in struct
+    EvenDist(iPv).iteration = iPv;
+    EvenDist(iPv).Results = res;
+    
+    %Analysis
+    voltageVec = res.U_hist;
+    currentVec = res.I_hist;
+    powerVec = res.S_hist;
+    
+    [rowMaxLoad, timeMaxLoad] = find(voltageVec == max(max(voltageVec)));
+    [rowMinLoad, timeMinLoad] = find(voltageVec == min(min(voltageVec)));
+    [rowMaxProd, timeMaxProd] = find(powerVec == min(min(powerVec))); % min in powerVec -> max PV prod
+    
+    iMaxLoad = loadNumber(rowMaxLoad);  % Max loadvoltage found at this bus number
+    iMinLoad = loadNumber(rowMinLoad);  % Min loadvoltage found at this bus number
+    iMaxProd = loadNumber(rowMaxProd);  % Max productionload
+    
+    %hitta max volt min volt och max deltaV
+    
     
 end
 
 
-% Analysera Dist
+% Analysera EvenDist
 
 % find loadbus with highest voltage (assumed to be in the last iteration where
 % p_pv is the highest
 % find loadbus with lowest voltage (assumed to be in the first iteration where
 % p_pv is the lowest
 
-U_max_load = Dist(iPv).Results.U_hist(busIsLoad,:);
-U_min_load = Dist(1).Results.U_hist(busIsLoad,:);
-S_max_load = Dist(iPv).Results.S_hist(busIsLoad,:);
+U_max_load = EvenDist(iPv).Results.U_hist(busIsLoad,:);
+U_min_load = EvenDist(1).Results.U_hist(busIsLoad,:);
+S_max_load = EvenDist(iPv).Results.S_hist(busIsLoad,:);
 [rowMaxLoad, timeMaxLoad] = find(U_max_load == max(max(U_max_load)));
 [rowMinLoad, timeMinLoad] = find(U_min_load == min(min(U_min_load)));
 [rowMaxProd, timeMaxProd] = find(S_max_load == min(min(S_max_load))); % max production -> lowest S total
@@ -87,4 +103,4 @@ ylabel('Voltage, U_f, [V]')
 
 
 
-clear numCalcStr
+clear numCalcStr powerVec currentVec voltageVec

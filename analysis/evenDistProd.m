@@ -35,7 +35,7 @@ for iPv = 0:length(loadNumber)  % iPV - number of pv systems
     
     
     %Analysis
-    voltageVec = res.U_hist;
+    voltageVec = res.U_hist(busIsLoad, :);      % get all Load voltages
     %currentVec = res.I_hist;
     %powerVec = res.S_hist;
     
@@ -47,23 +47,24 @@ for iPv = 0:length(loadNumber)  % iPV - number of pv systems
     iMinLoad = loadNumber(rowMinLoad);  % Min loadvoltage found at this bus number
     
     %Store interesting points in EvenDist.Critical
-    EvenDist(iPv+1).Critical.maxVoltage.Voltage = res.U_hist(rowMaxLoad, timeMaxLoad);
-    EvenDist(iPv+1).Critical.maxVoltage.BusNumber = rowMaxLoad;
+    EvenDist(iPv+1).Critical.maxVoltage.Voltage = voltageVec(rowMaxLoad, timeMaxLoad);
+    EvenDist(iPv+1).Critical.maxVoltage.BusNumber = iMaxLoad;
     
-    EvenDist(iPv+1).Critical.minVoltage.Voltage =res.U_hist(rowMinLoad, timeMinLoad);
-    EvenDist(iPv+1).Critical.minVoltage.BusNumber = rowMinLoad;
+    EvenDist(iPv+1).Critical.minVoltage.Voltage = voltageVec(rowMinLoad, timeMinLoad);
+    EvenDist(iPv+1).Critical.minVoltage.BusNumber = iMinLoad;
     
     if iPv == 0
         EvenDist(iPv+1).Critical.deltaV.Voltage = 0;
         EvenDist(iPv+1).Critical.deltaV.BusNumber = 0;
     else
         % find max deltaV
-        lastU = EvenDist(iPv-1).Results.U_hist;
-        diffU = res.U_hist - lastU;
+        lastU = EvenDist(iPv).Results.U_hist(busIsLoad, :);
+        diffU = voltageVec - lastU;
         [rowMaxDiff, timeMaxDiff] = find(diffU == max(max(diffU)));
+        iMaxDiff = loadNumber(rowMaxDiff);
         
         EvenDist(iPv+1).Critical.deltaV.Voltage = diffU(rowMaxDiff, timeMaxDiff);
-        EvenDist(iPv+1).Critical.deltaV.BusNumber = rowMaxDiff;
+        EvenDist(iPv+1).Critical.deltaV.BusNumber = iMaxDiff;
     end
     
     %store ALL results in struct

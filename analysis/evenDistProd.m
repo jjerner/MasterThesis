@@ -8,7 +8,7 @@ busNumber = (1:Info.nBuses)';
 loadNumber = busNumber(busIsLoad);
 
 numCalcStr = num2str(length(loadNumber));
-for iPv = 1:length(loadNumber)  % iPV - number of pv systems
+for iPv = 0:length(loadNumber)  % iPV - number of pv systems
     
     %Update waitbar
     waitbar(iPv/length(loadNumber), wh, ['Running Calculation: ',...
@@ -32,24 +32,44 @@ for iPv = 1:length(loadNumber)  % iPV - number of pv systems
         break
     end
     
-    %store results in struct
-    EvenDist(iPv).iteration = iPv;
-    EvenDist(iPv).Results = res;
+    
     
     %Analysis
     voltageVec = res.U_hist;
-    currentVec = res.I_hist;
-    powerVec = res.S_hist;
+    %currentVec = res.I_hist;
+    %powerVec = res.S_hist;
     
+    %hitta max volt min volt och max deltaV
     [rowMaxLoad, timeMaxLoad] = find(voltageVec == max(max(voltageVec)));
     [rowMinLoad, timeMinLoad] = find(voltageVec == min(min(voltageVec)));
-    [rowMaxProd, timeMaxProd] = find(powerVec == min(min(powerVec))); % min in powerVec -> max PV prod
     
     iMaxLoad = loadNumber(rowMaxLoad);  % Max loadvoltage found at this bus number
     iMinLoad = loadNumber(rowMinLoad);  % Min loadvoltage found at this bus number
-    iMaxProd = loadNumber(rowMaxProd);  % Max productionload
     
-    %hitta max volt min volt och max deltaV
+    %Store interesting points in EvenDist.Critical
+    EvenDist(iPv+1).Critical.maxVoltage.Voltage = res.U_hist(rowMaxLoad, timeMaxLoad);
+    EvenDist(iPv+1).Critical.maxVoltage.BusNumber = rowMaxLoad;
+    
+    EvenDist(iPv+1).Critical.minVoltage.Voltage =res.U_hist(rowMinLoad, timeMinLoad);
+    EvenDist(iPv+1).Critical.minVoltage.BusNumber = rowMinLoad;
+    
+    if iPv == 0
+        EvenDist(iPv+1).Critical.deltaV.Voltage = 0;
+        EvenDist(iPv+1).Critical.deltaV.BusNumber = 0;
+    else
+        % find max deltaV
+        lastU = EvenDist(iPv-1).Results.U_hist;
+        diffU = res.U_hist - lastU;
+        [rowMaxDiff, timeMaxDiff] = find(diffU == max(max(diffU)));
+        
+        EvenDist(iPv+1).Critical.deltaV.Voltage = diffU(rowMaxDiff, timeMaxDiff);
+        EvenDist(iPv+1).Critical.deltaV.BusNumber = rowMaxDiff;
+    end
+    
+    %store ALL results in struct
+    EvenDist(iPv+1).Results = res;          % Kanske ska ta bort denna då det ÄTER! RAM-minne
+    EvenDist(iPv+1).PvSystemsAdded = iPv;
+    EvenDist(iPv+1).PvPowerPerLoad = pvPerLoad;
     
     
 end
@@ -62,43 +82,43 @@ end
 % find loadbus with lowest voltage (assumed to be in the first iteration where
 % p_pv is the lowest
 
-U_max_load = EvenDist(iPv).Results.U_hist(busIsLoad,:);
-U_min_load = EvenDist(1).Results.U_hist(busIsLoad,:);
-S_max_load = EvenDist(iPv).Results.S_hist(busIsLoad,:);
-[rowMaxLoad, timeMaxLoad] = find(U_max_load == max(max(U_max_load)));
-[rowMinLoad, timeMinLoad] = find(U_min_load == min(min(U_min_load)));
-[rowMaxProd, timeMaxProd] = find(S_max_load == min(min(S_max_load))); % max production -> lowest S total
-
-iMaxLoad = loadNumber(rowMaxLoad);  % Max loadvoltage found at this bus number
-iMinLoad = loadNumber(rowMinLoad);  % Min loadvoltage found at this bus number
-iMaxProd = loadNumber(rowMaxProd);  % Max productionload
-
-U_max_pu = U_max_load(rowMaxLoad, :);
-U_min_pu = U_min_load(rowMinLoad, :);
-U_max = U_max_pu*(TransformerData.U_sec_base/sqrt(3));
-U_min = U_min_pu*(TransformerData.U_sec_base/sqrt(3));
-
-allowedMax = repmat(230*1.1,1, length(timeLine));
-allowedMin = repmat(230*0.9,1, length(timeLine));
-
-figure
-subplot(2,1,1)
-plot(timeLine, abs(U_max))
-hold on
-plot(timeLine, allowedMax, 'r--')
-title(['Max voltage at load ', num2str(iMaxLoad)])
-xlabel('Time [h]')
-ylabel('Voltage, U_f, [V]')
-subplot(2,1,2)
-plot(timeLine, abs(U_min))
-hold on
-plot(timeLine, allowedMin, 'r--')
-title(['Min voltage at load ', num2str(iMinLoad)])
-xlabel('Time [h]')
-ylabel('Voltage, U_f, [V]')
-
-
-
+% U_max_load = EvenDist(iPv).Results.U_hist(busIsLoad,:);
+% U_min_load = EvenDist(1).Results.U_hist(busIsLoad,:);
+% S_max_load = EvenDist(iPv).Results.S_hist(busIsLoad,:);
+% [rowMaxLoad, timeMaxLoad] = find(U_max_load == max(max(U_max_load)));
+% [rowMinLoad, timeMinLoad] = find(U_min_load == min(min(U_min_load)));
+% [rowMaxProd, timeMaxProd] = find(S_max_load == min(min(S_max_load))); % max production -> lowest S total
+% 
+% iMaxLoad = loadNumber(rowMaxLoad);  % Max loadvoltage found at this bus number
+% iMinLoad = loadNumber(rowMinLoad);  % Min loadvoltage found at this bus number
+% iMaxProd = loadNumber(rowMaxProd);  % Max productionload
+% 
+% U_max_pu = U_max_load(rowMaxLoad, :);
+% U_min_pu = U_min_load(rowMinLoad, :);
+% U_max = U_max_pu*(TransformerData.U_sec_base/sqrt(3));
+% U_min = U_min_pu*(TransformerData.U_sec_base/sqrt(3));
+% 
+% allowedMax = repmat(230*1.1,1, length(timeLine));
+% allowedMin = repmat(230*0.9,1, length(timeLine));
+% 
+% figure
+% subplot(2,1,1)
+% plot(timeLine, abs(U_max))
+% hold on
+% plot(timeLine, allowedMax, 'r--')
+% title(['Max voltage at load ', num2str(iMaxLoad)])
+% xlabel('Time [h]')
+% ylabel('Voltage, U_f, [V]')
+% subplot(2,1,2)
+% plot(timeLine, abs(U_min))
+% hold on
+% plot(timeLine, allowedMin, 'r--')
+% title(['Min voltage at load ', num2str(iMinLoad)])
+% xlabel('Time [h]')
+% ylabel('Voltage, U_f, [V]')
+% 
+% 
+% 
 
 
 

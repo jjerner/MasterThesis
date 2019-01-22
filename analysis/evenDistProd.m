@@ -78,50 +78,8 @@ end
 
 % Analysera EvenDist
 
-% find loadbus with highest voltage (assumed to be in the last iteration where
-% p_pv is the highest
-% find loadbus with lowest voltage (assumed to be in the first iteration where
-% p_pv is the lowest
-
-% U_max_load = EvenDist(iPv).Results.U_hist(busIsLoad,:);
-% U_min_load = EvenDist(1).Results.U_hist(busIsLoad,:);
-% S_max_load = EvenDist(iPv).Results.S_hist(busIsLoad,:);
-% [rowMaxLoad, timeMaxLoad] = find(U_max_load == max(max(U_max_load)));
-% [rowMinLoad, timeMinLoad] = find(U_min_load == min(min(U_min_load)));
-% [rowMaxProd, timeMaxProd] = find(S_max_load == min(min(S_max_load))); % max production -> lowest S total
-% 
-% iMaxLoad = loadNumber(rowMaxLoad);  % Max loadvoltage found at this bus number
-% iMinLoad = loadNumber(rowMinLoad);  % Min loadvoltage found at this bus number
-% iMaxProd = loadNumber(rowMaxProd);  % Max productionload
-% 
-% U_max_pu = U_max_load(rowMaxLoad, :);
-% U_min_pu = U_min_load(rowMinLoad, :);
-% U_max = U_max_pu*(TransformerData.U_sec_base/sqrt(3));
-% U_min = U_min_pu*(TransformerData.U_sec_base/sqrt(3));
-% 
-% allowedMax = repmat(230*1.1,1, length(timeLine));
-% allowedMin = repmat(230*0.9,1, length(timeLine));
-% 
-% figure
-% subplot(2,1,1)
-% plot(timeLine, abs(U_max))
-% hold on
-% plot(timeLine, allowedMax, 'r--')
-% title(['Max voltage at load ', num2str(iMaxLoad)])
-% xlabel('Time [h]')
-% ylabel('Voltage, U_f, [V]')
-% subplot(2,1,2)
-% plot(timeLine, abs(U_min))
-% hold on
-% plot(timeLine, allowedMin, 'r--')
-% title(['Min voltage at load ', num2str(iMinLoad)])
-% xlabel('Time [h]')
-% ylabel('Voltage, U_f, [V]')
-% 
-% 
-% 
 
 
 
-
-clear numCalcStr powerVec currentVec voltageVec
+clear numCalcStr powerVec currentVec voltageVec lastU diffU rowMaxLoad rowMinLoad rowMaxDiff
+clear timeMaxLoad timeMinLoad timeMaxDiff res iPv totalPV S_ana U_ana pvPerLoad

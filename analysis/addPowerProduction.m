@@ -48,4 +48,4 @@ end
 delete(wh)
 
 
-clear wh
+clear wh prodCase

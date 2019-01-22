@@ -7,12 +7,11 @@ P_pv=P_pv(timeLine);                                    % Set correct timeline
 busNumber = (1:Info.nBuses)';
 loadNumber = busNumber(busIsLoad);
 
-numCalcStr = num2str(length(loadNumber));
-for iPv = 0:length(loadNumber)  % iPV - number of pv systems
+for iPv = 0:length(loadNumber)      % iPV - number of pv systems
     
     %Update waitbar
     waitbar(iPv/length(loadNumber), wh, ['Running Calculation: ',...
-                       num2str(iPv),'/',numCalcStr]);
+                       num2str(iPv),'/',num2str(length(loadNumber))]);
     
     %Setup analysis matrices
     S_ana=S_bus(1:Info.nBuses, timeLine);                   % S_analysis based of timeLine
@@ -46,6 +45,11 @@ for iPv = 0:length(loadNumber)  % iPV - number of pv systems
     iMaxLoad = loadNumber(rowMaxLoad);  % Max loadvoltage found at this bus number
     iMinLoad = loadNumber(rowMinLoad);  % Min loadvoltage found at this bus number
     
+    %store ALL results in struct EvenDist, containing 0 to 100
+    EvenDist(iPv+1).Results = res;          % Kanske ska ta bort denna då det ÄTER! RAM-minne
+    EvenDist(iPv+1).PvSystemsAdded = iPv;
+    EvenDist(iPv+1).PvPowerPerLoad = pvPerLoad;
+    
     %Store interesting points in EvenDist.Critical
     EvenDist(iPv+1).Critical.maxVoltage.Voltage = voltageVec(rowMaxLoad, timeMaxLoad);
     EvenDist(iPv+1).Critical.maxVoltage.BusNumber = iMaxLoad;
@@ -66,12 +70,7 @@ for iPv = 0:length(loadNumber)  % iPV - number of pv systems
         EvenDist(iPv+1).Critical.deltaV.Voltage = diffU(rowMaxDiff, timeMaxDiff);
         EvenDist(iPv+1).Critical.deltaV.BusNumber = iMaxDiff;
     end
-    
-    %store ALL results in struct
-    EvenDist(iPv+1).Results = res;          % Kanske ska ta bort denna då det ÄTER! RAM-minne
-    EvenDist(iPv+1).PvSystemsAdded = iPv;
-    EvenDist(iPv+1).PvPowerPerLoad = pvPerLoad;
-    
+ 
     
 end
 

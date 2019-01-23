@@ -34,7 +34,7 @@ S_calc(:,1) = S_in;     % Input powers (loads) at iteration 1
 U_calc(:,1) = U_in;     % Input voltages (guesses) at iteration 1
 
 % Current matrix preallocations (excluding inputs)
-I_conn(:,1) = zeros(size(connections,1),1);
+I_calc(:,1) = zeros(size(connections,1),1);
 I_calc(:,1) = zeros(size(connections,1),1);
 
 % Power matrix preallocations (excluding inputs)
@@ -44,7 +44,7 @@ Q_shu1(:,1) = zeros(size(connections,1),1);
 Q_shu2(:,1) = zeros(size(connections,1),1);
 
 % Voltage matrix preallocations (excluding inputs)
-U_loss(:,1) = zeros(size(connections,1),1);
+U_delta(:,1) = zeros(size(connections,1),1);
 
 % Vectors storing if calculation for a connection is done
 calcDoneBwd = false(size(connections,1),1);
@@ -65,7 +65,7 @@ while iter<=MAX_ITER
         % Matrix preallocations
         S_loss(:,iter) = zeros(size(connections,1),1);
         S_conn(:,iter) = zeros(size(connections,1),1);
-        I_conn(:,iter) = zeros(size(connections,1),1);
+        I_calc(:,iter) = zeros(size(connections,1),1);
         I_calc(:,iter) = zeros(size(connections,1),1);
         
         for iConnB = size(connections,1):-1:1
@@ -76,11 +76,23 @@ while iter<=MAX_ITER
             existsChildrenUS = [connections(1:iConnB-1,1); zeros(size(connections,1)-iConnB+1,1)] == endBus;
             downstreamCheck  = all(calcDoneBwd(find(existsChildrenDS)));
             upstreamCheck    = all(calcDoneBwd(find(existsChildrenUS)));
+            connectionToLoad = ~any(existsChildrenDS | existsChildrenUS);
             
             if upstreamCheck && downstreamCheck   
-                I_conn(iConnB,iter) = (1/sqrt(3))*abs(S_calc(endBus,iter))...
-                                      /abs(U_calc(endBus,iter-1));                      % Three-phase current through one connection
-                S_loss(iConnB,iter) = 3*I_conn(iConnB,iter)^2*Z_ser(startBus,endBus);	% Three-phase power loss through connection
+                
+                % Find three-phase current through connection
+                if connectionToLoad
+                    % If connection to load, use load power
+                    I_calc(iConnB,iter) = (1/sqrt(3))*abs(S_calc(endBus,iter))...
+                        /abs(U_calc(endBus,iter-1));   
+                    % Set correct sign of current
+                    I_calc(iConnB,iter) = sign(real(S_calc(endBus,iter)))*I_calc(iConnB,iter);
+                else
+                    % If connection to other connection(s), use sum of incoming currents
+                    I_calc(iConnB,iter) = sum(I_calc(connections(:,1)==endBus,iter));
+                end
+                  
+                S_loss(iConnB,iter) = 3*I_calc(iConnB,iter)^2*Z_ser(startBus,endBus);	% Three-phase power loss through connection (always positive)
                 
                 if shuntCap
                     % Include reaction power generation in shunt capacitors
@@ -91,12 +103,8 @@ while iter<=MAX_ITER
                     
                 S_conn(iConnB,iter) = S_calc(endBus,iter)+S_loss(iConnB,iter);          % Total power through connection including losses
                 
-                % Set correct sign of current
-                I_conn(iConnB,iter) = sign(real(S_conn(iConnB,iter)))*I_conn(iConnB,iter);
-                
                 % Update startpoints only
                 S_calc(startBus,iter) = S_calc(startBus,iter)+S_conn(iConnB,iter);      % Three-phase power in bus
-                I_calc(iConnB,iter)   = I_calc(iConnB,iter)+I_conn(iConnB,iter);        % Current in bus
                 calcDoneBwd(iConnB)   = true;                                           % Mark connection calculation as done
             end
         end
@@ -104,17 +112,19 @@ while iter<=MAX_ITER
     
     % Update slack bus voltage angle but keep magnitude
     isSlackBus=busType(:,1)=='S' & busType(:,2)=='L';               % Find slack bus
-    if S_calc(isSlackBus,iter)>=0
+    
+    if I_calc(isSlackBus,iter)>=0
         U_calc(isSlackBus,iter)=abs(U_calc(isSlackBus,iter-1))...
             *S_calc(isSlackBus,iter)/abs(S_calc(isSlackBus,iter));      % At slack bus, voltage angle = power angle
     else
         U_calc(isSlackBus,iter)=-abs(U_calc(isSlackBus,iter-1))...
             *S_calc(isSlackBus,iter)/abs(S_calc(isSlackBus,iter));      % At slack bus, voltage angle = power angle
     end
+    
     % Forward sweep to calculate voltages
     while ~all(calcDoneFwd)
         % Matrix preallocation
-        U_loss(:,iter) = zeros(size(connections,1),1);
+        U_delta(:,iter) = zeros(size(connections,1),1);
 
         for iConnF = 1:size(connections,1)
             startBus = connections(iConnF,1);   % Start bus for connection
@@ -126,12 +136,21 @@ while iter<=MAX_ITER
             upstreamCheck   = all(calcDoneFwd(find(existsParentsUS)));
 
             if upstreamCheck && downstreamCheck
+                U_delta(iConnF,iter) = -sqrt(3)*I_calc(iConnF,iter)*Z_ser(startBus,endBus);	% Voltage loss over line
+                
                 if I_calc(iConnF,iter)>=0
-                    U_loss(iConnF,iter) = sqrt(3)*abs(I_calc(iConnF,iter))*Z_ser(startBus,endBus);	% Voltage loss over line
-                else
-                    U_loss(iConnF,iter) = -sqrt(3)*abs(I_calc(iConnF,iter))*Z_ser(startBus,endBus);	% Voltage loss over line
+                    % 1st or 4th quadrant
+                    % No need to change anything
+                elseif I_calc(iConnF,iter)<0
+                    if sign(imag(S_calc(endBus,iter)))>=0
+                        % 2nd quadrant
+                        U_delta(iConnF,iter)=conj(U_delta(iConnF,iter));
+                    elseif sign(imag(S_calc(endBus,iter)))<0
+                        % 3rd quadrant
+                        U_delta(iConnF,iter)=-U_delta(iConnF,iter);
+                    end
                 end
-                U_calc(endBus,iter) = U_calc(startBus,iter)-U_loss(iConnF,iter);            % Voltage at endpoint
+                U_calc(endBus,iter) = U_calc(startBus,iter)+U_delta(iConnF,iter);           % Voltage at end bus
                 calcDoneFwd(iConnF) = true;                                                 % Mark connection calculation as done
             end
         end
@@ -187,13 +206,13 @@ if doPlot
 end
 
 % Output
-Results.S_out  = S_calc(:,end);      % Power calculation (per bus)
-Results.S_loss = S_loss(:,end);      % Power loss calculation (per connection)
-Results.U_out  = U_calc(:,end);      % Voltage calculation (per bus)
-Results.U_loss = U_loss(:,end);      % Voltage loss calculation (per connection)
-Results.I_out  = I_calc(:,end);      % Current calculation (per connection)
-Results.Q_shu1 = Q_shu1(:,end);      % Shunt capacitor reactive power generation at start bus (per connection)
-Results.Q_shu2 = Q_shu2(:,end);      % Shunt capacitor reactive power generation at end bus (per connection)
-Results.nIters = iter;               % Output number of iterations
+Results.S_out   = S_calc(:,end);      % Power calculation (per bus)
+Results.S_loss  = S_loss(:,end);      % Power loss calculation (per connection)
+Results.U_out   = U_calc(:,end);      % Voltage calculation (per bus)
+Results.U_delta = U_delta(:,end);     % Voltage loss calculation (per connection)
+Results.I_out   = I_calc(:,end);      % Current calculation (per connection)
+Results.Q_shu1  = Q_shu1(:,end);      % Shunt capacitor reactive power generation at start bus (per connection)
+Results.Q_shu2  = Q_shu2(:,end);      % Shunt capacitor reactive power generation at end bus (per connection)
+Results.nIters  = iter;               % Output number of iterations
 
 end

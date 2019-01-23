@@ -3,6 +3,7 @@ function resultSet=doSweepCalcs(Z_ser,Y_shu,S_ana,U_bus,connectionBuses,busType,
     tic;
     S_hist = zeros(size(S_ana,1), length(timeLine));
     U_hist = zeros(size(U_bus,1), length(timeLine));
+    U_delta = zeros(size(connectionBuses,1), length(timeLine));
     I_hist = zeros(size(connectionBuses,1), length(timeLine));
     nItersVec=zeros(1,length(timeLine));
     barHandle = waitbar(0, '1', 'Name', 'Sweep calculations');
@@ -14,19 +15,20 @@ function resultSet=doSweepCalcs(Z_ser,Y_shu,S_ana,U_bus,connectionBuses,busType,
             U_bus(:,timeLine(iTime)),connectionBuses,busType,...
             Settings.defaultMaxIter,Settings.defaultConvEps,0);
 
-        S_hist(:,iTime) = solverRes.S_out;
-        S_loss(:,iTime) = solverRes.S_loss;
-        U_hist(:,iTime) = solverRes.U_out;
-        U_loss(:,iTime) = solverRes.U_loss;
-        I_hist(:,iTime) = solverRes.I_out;
-        Q_shu1(:,iTime) = solverRes.Q_shu1;
-        Q_shu2(:,iTime) = solverRes.Q_shu2;
-        nItersVec(iTime)= solverRes.nIters;
+        S_hist(:,iTime)  = solverRes.S_out;
+        S_loss(:,iTime)  = solverRes.S_loss;
+        U_hist(:,iTime)  = solverRes.U_out;
+        U_delta(:,iTime) = solverRes.U_delta;
+        I_hist(:,iTime)  = solverRes.I_out;
+        Q_shu1(:,iTime)  = solverRes.Q_shu1;
+        Q_shu2(:,iTime)  = solverRes.Q_shu2;
+        nItersVec(iTime) = solverRes.nIters;
     end
     close(barHandle);
     calcTime=toc;
     fprintf('Sweep calculation finished. Calculation time %.1f s.\n',calcTime);
     resultSet.U_hist=U_hist;
+    resultSet.U_delta=U_delta;
     resultSet.S_hist=S_hist;
     resultSet.I_hist=I_hist;
     resultSet.Q_shu1=Q_shu1;

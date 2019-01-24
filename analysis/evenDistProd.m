@@ -6,8 +6,15 @@ P_pv=P_pv(timeLine);                                    % Set correct timeline
 
 busNumber = (1:Info.nBuses)';
 loadNumber = busNumber(busIsLoad);
+minAllowed = 0.9;
+maxAllowed = 1.1;
+minV = 1;
+maxV = 1;
+withinVoltageLimit = maxV<=maxAllowed && minV>=minAllowed;
 
-for iPv = 0:length(loadNumber)      % iPV - number of pv systems
+whileLoop = true;
+while withinVoltageLimit
+%for iPv = 0:length(loadNumber)      % iPV - number of pv systems
     
     %Update waitbar
     waitbar(iPv/length(loadNumber), wh, ['Running Calculation: ',...
@@ -28,6 +35,7 @@ for iPv = 0:length(loadNumber)      % iPV - number of pv systems
     if any(res.nItersVec == Settings.defaultMaxIter)
         % break if max itereations is reached in sweep calc, dont store
         % results of this iteration
+        warning('Max iter reached in sweep calcs! Aborting!');
         break
     end
     
@@ -39,8 +47,8 @@ for iPv = 0:length(loadNumber)      % iPV - number of pv systems
     %powerVec = res.S_hist;
     
     %hitta max volt min volt och max deltaV
-    [rowMaxLoad, timeMaxLoad] = find(voltageVec == max(max(voltageVec)));
-    [rowMinLoad, timeMinLoad] = find(voltageVec == min(min(voltageVec)));
+    [rowMaxLoad, timeMaxLoad] = find(voltageVec == max(max(abs(voltageVec))));
+    [rowMinLoad, timeMinLoad] = find(voltageVec == min(min(abs(voltageVec))));
     
     iMaxLoad = loadNumber(rowMaxLoad);  % Max loadvoltage found at this bus number
     iMinLoad = loadNumber(rowMinLoad);  % Min loadvoltage found at this bus number
@@ -51,26 +59,47 @@ for iPv = 0:length(loadNumber)      % iPV - number of pv systems
     EvenDist(iPv+1).PvPowerPerLoad = pvPerLoad;
     
     %Store interesting points in EvenDist.Critical
-    EvenDist(iPv+1).Critical.maxVoltage.Voltage = voltageVec(rowMaxLoad, timeMaxLoad);
+    EvenDist(iPv+1).Critical.maxVoltage.Voltage = abs(voltageVec(rowMaxLoad, timeMaxLoad));
+    EvenDist(iPv+1).Critical.maxVoltage.TimeStamp = timeMaxLoad;
     EvenDist(iPv+1).Critical.maxVoltage.BusNumber = iMaxLoad;
     
-    EvenDist(iPv+1).Critical.minVoltage.Voltage = voltageVec(rowMinLoad, timeMinLoad);
+    EvenDist(iPv+1).Critical.minVoltage.Voltage = abs(voltageVec(rowMinLoad, timeMinLoad));
+    EvenDist(iPv+1).Critical.minVoltage.TimeStamp = timeMinLoad;
     EvenDist(iPv+1).Critical.minVoltage.BusNumber = iMinLoad;
+    
+    [maxMean, rowMaxMean] = max(mean(abs(voltageVec), 2));
+    EvenDist(iPv+1).Critical.maxMeanVoltage.Voltage = maxMean;
+    EvenDist(iPv+1).Critical.maxMeanVoltage.BusNumer = loadNumber(rowMaxMean);
+    
+    [minMean, rowMinMean] = min(mean(abs(voltageVec), 2));
+    EvenDist(iPv+1).Critical.minMeanVoltage.Voltage = minMean;
+    EvenDist(iPv+1).Critical.minMeanVoltage.BusNumber = loadNumber(rowMinMean);
+    
     
     if iPv == 0
         EvenDist(iPv+1).Critical.deltaV.Voltage = 0;
+        EvenDist(iPv+1).Critical.deltaV.TimeStamp = 0;
         EvenDist(iPv+1).Critical.deltaV.BusNumber = 0;
     else
         % find max deltaV
         lastU = EvenDist(iPv).Results.U_hist(busIsLoad, :);
-        diffU = voltageVec - lastU;
+        diffU = abs(voltageVec) - abs(lastU);
         [rowMaxDiff, timeMaxDiff] = find(diffU == max(max(diffU)));
         iMaxDiff = loadNumber(rowMaxDiff);
         
-        EvenDist(iPv+1).Critical.deltaV.Voltage = diffU(rowMaxDiff, timeMaxDiff);
+        EvenDist(iPv+1).Critical.deltaV.Voltage = abs(diffU(rowMaxDiff, timeMaxDiff));
+        EvenDist(iPv+1).Critical.deltaV.TimeStamp = timeMaxDiff;
         EvenDist(iPv+1).Critical.deltaV.BusNumber = iMaxDiff;
     end
- 
+    
+    if whileLoop
+        iPv = iPv+1;
+
+        minV = abs(voltageVec(rowMinLoad, timeMinLoad));
+        maxV = abs(voltageVec(rowMaxLoad, timeMaxLoad));
+        withinVoltageLimit = maxV<=maxAllowed && minV>=minAllowed;
+        
+    end
     
 end
 

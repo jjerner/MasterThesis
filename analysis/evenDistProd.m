@@ -10,6 +10,7 @@ minAllowed = 0.9;
 maxAllowed = 1.1;
 minV = 1;
 maxV = 1;
+iPv = 0;
 withinVoltageLimit = maxV<=maxAllowed && minV>=minAllowed;
 
 whileLoop = true;
@@ -45,10 +46,11 @@ while withinVoltageLimit
     voltageVec = res.U_hist(busIsLoad, :);      % get all Load voltages
     %currentVec = res.I_hist;
     %powerVec = res.S_hist;
+    voltageAbs = abs(voltageVec);
     
     %hitta max volt min volt och max deltaV
-    [rowMaxLoad, timeMaxLoad] = find(voltageVec == max(max(abs(voltageVec))));
-    [rowMinLoad, timeMinLoad] = find(voltageVec == min(min(abs(voltageVec))));
+    [rowMaxLoad, timeMaxLoad] = find(voltageAbs == max(max(voltageAbs)));
+    [rowMinLoad, timeMinLoad] = find(voltageAbs == min(min(voltageAbs)));
     
     iMaxLoad = loadNumber(rowMaxLoad);  % Max loadvoltage found at this bus number
     iMinLoad = loadNumber(rowMinLoad);  % Min loadvoltage found at this bus number
@@ -97,7 +99,18 @@ while withinVoltageLimit
 
         minV = abs(voltageVec(rowMinLoad, timeMinLoad));
         maxV = abs(voltageVec(rowMaxLoad, timeMaxLoad));
+        if isempty(minV)
+            minV = 1;
+        end
+        if isempty(maxV)
+            maxV = 1;
+        end
         withinVoltageLimit = maxV<=maxAllowed && minV>=minAllowed;
+        
+        sizing = whos('EvenDist');
+        if sizing.bytes > 9000000000
+            warning('EvenDist exceeds 1 GB of ram')
+        end
         
     end
     

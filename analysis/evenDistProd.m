@@ -4,6 +4,7 @@ disp('Calculating PV power from model.');
 P_pv=(1/TransformerData.S_base).*PV_model(1,1,1,3)';    % Get PV power from model [p.u.]
 P_pv=P_pv(timeLine);                                    % Set correct timeline
 
+pvFactor = 5;
 busNumber = (1:Info.nBuses)';
 loadNumber = busNumber(busIsLoad);
 minAllowed = 0.9;
@@ -25,7 +26,7 @@ while withinVoltageLimit
     S_ana=S_bus(1:Info.nBuses, timeLine);                   % S_analysis based of timeLine
     U_ana=U_bus(1:Info.nBuses, timeLine);                   % U_ana
     
-    totalPV = iPv.*P_pv;               
+    totalPV = iPv.*P_pv*pvFactor;               
     pvPerLoad = totalPV ./ length(loadNumber);
     
     S_ana(busIsLoad,:) = S_ana(busIsLoad,:) - pvPerLoad; % Added PV power to busses

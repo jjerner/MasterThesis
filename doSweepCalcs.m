@@ -1,5 +1,5 @@
 function resultSet=doSweepCalcs(Z_ser,Y_shu,S_ana,U_bus,connectionBuses,busType,timeLine,waitBar)
-    if ~exist('waitbar','var'), waitbar = true; end    % Default value for waitbar
+    if ~exist('waitBar','var'), waitBar = true; end    % Default value for waitbar
     global Settings;
     tic;
     S_hist = zeros(size(S_ana,1), length(timeLine));

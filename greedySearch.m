@@ -15,7 +15,7 @@ pvPower=pvPower(timeLine)';
 addedPvPowerAt=[];
 busesToTest=loadBuses;
 
-for iStep=41:length(loadBuses)
+for iStep=1:length(loadBuses)
     for iOption=1:length(busesToTest)
         pvBusesInSweep=[addedPvPowerAt; busesToTest(iOption)];
         S_greedy=S_bus;

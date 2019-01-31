@@ -112,14 +112,8 @@ while iter<=MAX_ITER
     
     % Update slack bus voltage angle but keep magnitude
     isSlackBus=busType(:,1)=='S' & busType(:,2)=='L';               % Find slack bus
-    
-    if I_calc(isSlackBus,iter)>=0
-        U_calc(isSlackBus,iter)=abs(U_calc(isSlackBus,iter-1))...
-            *S_calc(isSlackBus,iter)/abs(S_calc(isSlackBus,iter));      % At slack bus, voltage angle = power angle
-    else
-        U_calc(isSlackBus,iter)=-abs(U_calc(isSlackBus,iter-1))...
-            *S_calc(isSlackBus,iter)/abs(S_calc(isSlackBus,iter));      % At slack bus, voltage angle = power angle
-    end
+    U_calc(isSlackBus,iter)=abs(U_calc(isSlackBus,iter-1))...
+        *S_calc(isSlackBus,iter)/abs(S_calc(isSlackBus,iter));      % At slack bus, voltage angle = power angle
     
     % Forward sweep to calculate voltages
     while ~all(calcDoneFwd)
@@ -136,20 +130,8 @@ while iter<=MAX_ITER
             upstreamCheck   = all(calcDoneFwd(find(existsParentsUS)));
 
             if upstreamCheck && downstreamCheck
-                U_delta(iConnF,iter) = -sqrt(3)*I_calc(iConnF,iter)*Z_ser(startBus,endBus);	% Voltage loss over line
-                
-                if I_calc(iConnF,iter)>=0
-                    % 1st or 4th quadrant
-                    % No need to change anything
-                elseif I_calc(iConnF,iter)<0
-                    if sign(imag(S_calc(endBus,iter)))>=0
-                        % 2nd quadrant
-                        U_delta(iConnF,iter)=conj(U_delta(iConnF,iter));
-                    elseif sign(imag(S_calc(endBus,iter)))<0
-                        % 3rd quadrant
-                        U_delta(iConnF,iter)=-U_delta(iConnF,iter);
-                    end
-                end
+                U_delta(iConnF,iter) = -sqrt(3)*sign(real(U_calc(startBus,iter)))...
+                    *I_calc(iConnF,iter)*Z_ser(startBus,endBus);                            % Voltage loss over line         
                 U_calc(endBus,iter) = U_calc(startBus,iter)+U_delta(iConnF,iter);           % Voltage at end bus
                 calcDoneFwd(iConnF) = true;                                                 % Mark connection calculation as done
             end

@@ -4,6 +4,9 @@
 allBuses=1:Info.nBuses;
 loadBuses=allBuses(busIsLoad);
 
+% Result without production, for comparison
+ResultNoProd=doSweepCalcs(Z_ser,Y_shu,S_bus,U_bus,connectionBuses,busType,timeLine);
+
 % Get PV power data
 pvPower=PV_model(1,1,1,4)./TransformerData.S_base;
 pvPower=pvPower(timeLine)';
@@ -12,17 +15,21 @@ pvPower=pvPower(timeLine)';
 addedPvPowerAt=[];
 busesToTest=loadBuses;
 
-for iStep=1:length(busesToTest)
+for iStep=41:length(loadBuses)
     for iOption=1:length(busesToTest)
         pvBusesInSweep=[addedPvPowerAt; busesToTest(iOption)];
         S_greedy=S_bus;
         S_greedy(pvBusesInSweep,timeLine)=S_greedy(pvBusesInSweep,timeLine)...
             -repmat(pvPower,size(pvBusesInSweep,1),1);
-        res=doSweepCalcs(Z_ser,Y_shu,S_greedy,U_bus,connectionBuses,busType,timeLine);
-        % / save res  for later /
+        ResultTemp=doSweepCalcs(Z_ser,Y_shu,S_greedy,U_bus,connectionBuses,busType,timeLine);
+        diffU=abs(ResultTemp.U_hist(busesToTest,:))-abs(ResultNoProd.U_hist(busesToTest,:));
+        [rowMaxDiff, timeMaxDiff] = find(diffU == max(max(diffU)));
+        maxDiffUAtBus(iOption) = busesToTest(rowMaxDiff(1));
+        maxDiffU(iOption) = max(max(diffU));
     end
-    % / choose something based on res /
-    chosenBus=6;
+    [maxDiffUChoice,maxDiffUAtBusChoice]=max(maxDiffU);
+    chosenBus=maxDiffUAtBus(maxDiffUAtBusChoice);
     busesToTest(find(busesToTest==chosenBus))=[];
     addedPvPowerAt(iStep,1)=chosenBus;
+    clear maxDiffUAtBus maxDiffU;
 end

@@ -1,4 +1,5 @@
-function resultSet=doSweepCalcs(Z_ser,Y_shu,S_ana,U_bus,connectionBuses,busType,timeLine)
+function resultSet=doSweepCalcs(Z_ser,Y_shu,S_ana,U_bus,connectionBuses,busType,timeLine,waitBar)
+    if ~exist('waitbar','var'), waitbar = true; end    % Default value for waitbar
     global Settings;
     tic;
     S_hist = zeros(size(S_ana,1), length(timeLine));
@@ -6,15 +7,17 @@ function resultSet=doSweepCalcs(Z_ser,Y_shu,S_ana,U_bus,connectionBuses,busType,
     U_delta = zeros(size(connectionBuses,1), length(timeLine));
     I_hist = zeros(size(connectionBuses,1), length(timeLine));
     nItersVec=zeros(1,length(timeLine));
-    barHandle = waitbar(0, '1', 'Name', 'Sweep calculations');
+    if waitBar
+       barHandle = waitbar(0, '1', 'Name', 'Calculating'); 
+    end
     for iTime = 1:length(timeLine)
-        waitbar(iTime/length(timeLine), barHandle, sprintf('Sweep calculation %d/%d',...
-                iTime, length(timeLine)));
-
+        if waitBar
+            waitbar(iTime/length(timeLine), barHandle,...
+                sprintf('Sweep calculation %d/%d',iTime,length(timeLine)));
+        end
         solverRes = solveFBSM(Z_ser,Y_shu,S_ana(:,timeLine(iTime)),...
             U_bus(:,timeLine(iTime)),connectionBuses,busType,...
             Settings.defaultMaxIter,Settings.defaultConvEps,0);
-
         S_hist(:,iTime)  = solverRes.S_out;
         S_loss(:,iTime)  = solverRes.S_loss;
         U_hist(:,iTime)  = solverRes.U_out;
@@ -24,7 +27,9 @@ function resultSet=doSweepCalcs(Z_ser,Y_shu,S_ana,U_bus,connectionBuses,busType,
         Q_shu2(:,iTime)  = solverRes.Q_shu2;
         nItersVec(iTime) = solverRes.nIters;
     end
-    close(barHandle);
+    if waitBar
+        close(barHandle);
+    end
     calcTime=toc;
     fprintf('Sweep calculation finished. Calculation time %.1f s.\n',calcTime);
     resultSet.U_hist=U_hist;
@@ -36,5 +41,4 @@ function resultSet=doSweepCalcs(Z_ser,Y_shu,S_ana,U_bus,connectionBuses,busType,
     resultSet.nItersVec=nItersVec;
     resultSet.timeLine=timeLine;
     resultSet.calcTime=calcTime;
-    
 end

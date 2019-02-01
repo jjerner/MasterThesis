@@ -2,7 +2,6 @@
 
 disp('Calculating PV power from model.');
 P_pv=(1/TransformerData.S_base).*PV_model(1,1,1,3)';    % Get PV power from model [p.u.]
-P_pv=P_pv(timeLine);                                    % Set correct timeline
 
 pvFactor = 1;
 busNumber = (1:Info.nBuses)';
@@ -23,11 +22,14 @@ while withinVoltageLimit
                        num2str(iPv),'/',num2str(length(loadNumber))]);
     
     %Setup analysis matrices
-    S_ana=S_bus(1:Info.nBuses, timeLine);                   % S_analysis based of timeLine
-    U_ana=U_bus(1:Info.nBuses, timeLine);                   % U_ana
+    S_ana=S_bus(:,1:end-1);                                   % S_analysis based of timeLine
+    U_ana=U_bus(:,1:end-1);                                   % U_ana
     
-    totalPV = iPv.*P_pv*pvFactor;               
-    pvPerLoad = totalPV ./ length(loadNumber);
+    % %totalPV = iPv.*P_pv*pvFactor;                          % n systems per iteration
+                                                              % distributed on all loads
+    % %pvPerLoad = totalPV ./ length(loadNumber);
+    
+    pvPerLoad = P_pv*iPv*(1/10);
     
     S_ana(busIsLoad,:) = S_ana(busIsLoad,:) - pvPerLoad; % Added PV power to busses
     
@@ -57,7 +59,8 @@ while withinVoltageLimit
     iMinLoad = loadNumber(rowMinLoad);  % Min loadvoltage found at this bus number
     
     %store ALL results in struct EvenDist, containing 0 to 100
-    EvenDist(iPv+1).Results = res;          % Kanske ska ta bort denna då det ÄTER! RAM-minne
+    EvenDist(iPv+1).Results.U_hist = res.U_hist(busIsLoad,:);          % Kanske ska ta bort denna då det ÄTER! RAM-minne
+    EvenDist(iPv+1).Results.S_hist = res.S_hist(busIsLoad,:);
     EvenDist(iPv+1).PvSystemsAdded = iPv;
     EvenDist(iPv+1).PvPowerPerLoad = pvPerLoad;
     
@@ -85,7 +88,7 @@ while withinVoltageLimit
         EvenDist(iPv+1).Critical.deltaV.BusNumber = 0;
     else
         % find max deltaV
-        lastU = EvenDist(iPv).Results.U_hist(busIsLoad, :);
+        lastU = EvenDist(iPv).Results.U_hist;
         diffU = abs(voltageVec) - abs(lastU);
         [rowMaxDiff, timeMaxDiff] = find(diffU == max(max(diffU)));
         iMaxDiff = loadNumber(rowMaxDiff);
@@ -98,8 +101,8 @@ while withinVoltageLimit
     if whileLoop
         iPv = iPv+1;
 
-        minV = abs(voltageVec(rowMinLoad, timeMinLoad));
-        maxV = abs(voltageVec(rowMaxLoad, timeMaxLoad));
+        minV = min(min(abs(voltageVec(rowMinLoad, timeMinLoad))));
+        maxV = max(max(abs(voltageVec(rowMaxLoad, timeMaxLoad))));
         if isempty(minV)
             minV = 1;
         end
@@ -109,7 +112,7 @@ while withinVoltageLimit
         withinVoltageLimit = maxV<=maxAllowed && minV>=minAllowed;
         
         sizing = whos('EvenDist');
-        if sizing.bytes > 9000000000
+        if sizing.bytes > 1.0737e+09
             warning('EvenDist exceeds 1 GB of ram')
         end
         
@@ -118,7 +121,77 @@ while withinVoltageLimit
 end
 
 
+
+
+doPlot = 1;
+if doPlot == 1
 % Analysera EvenDist
+load = find(loadNumber == EvenDist(end).Critical.maxVoltage.BusNumber);
+% Plot av fallet där kritisk spänning uppnåtts samt fallet utan produktion
+% för eventuell jämförelse
+figure;
+sgtitle(['Critical Voltage and Power of bus ', num2str(EvenDist(end).Critical.maxVoltage.BusNumber)])
+subplot(2,2,1)
+plot(timeLine, abs(EvenDist(end).Results.U_hist(load,:)))
+title('U_{crit}')
+subplot(2,2,3)
+plot(timeLine, real(EvenDist(end).Results.S_hist(load,:)))
+title('S_{crit}')
+subplot(2,2,2)
+plot(timeLine, abs(EvenDist(1).Results.U_hist(load,:)))
+title('U_{0}')
+subplot(2,2,4)
+plot(timeLine, real(EvenDist(1).Results.S_hist(load,:)))
+title('S_{0}')
+
+
+% Hitta unika kritiska bussar och sedan plotta spänningsökningen i extrempunkten
+for asd = 2:length(EvenDist) % börja på 2 för att plats 1 är utan prod.
+    criticalBuses(asd-1,1) = EvenDist(asd).Critical.maxVoltage.BusNumber;
+    critTime(asd-1,1) = EvenDist(asd).Critical.maxVoltage.TimeStamp;
+end
+
+crit = [criticalBuses, critTime];
+
+crit_unique = crit(1,:);
+for asd = 1:size(crit,1)
+    if ~ismember(crit(asd,:),crit_unique,'rows')
+        crit_unique(end+1,:) = crit(asd,:);
+    end
+end
+
+for iBus = 1:size(crit_unique,1)
+    bus = crit_unique(iBus, 1);
+    time = crit_unique(iBus, 2);
+    load = find(loadNumber == bus);
+    
+    for qwe = 1:length(EvenDist)
+        voltage(qwe) = abs(EvenDist(qwe).Results.U_hist(load,time)*TransformerData.U_sec_base/sqrt(3));
+        prod(qwe) = EvenDist(qwe).PvPowerPerLoad(1,time)*(TransformerData.S_base/1000);
+    end
+    
+    figure
+    plot(prod, voltage)
+    title(['Bus', num2str(bus), ' at time: ', num2str(time)])
+    xlabel('PV-production [kW]')
+    ylabel('Voltage [V]')
+    
+end
+
+
+
+end
+
+
+
+
+
+
+
+
+
+
+
 
 
 

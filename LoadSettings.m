@@ -9,6 +9,7 @@ j = 1i;
 %addpath('Verification');
 addpath('PV model');
 addpath('analysis');
+addpath('minisys');
 
 %% Common settings
 Settings.cableDBPath='data/Ledningsdata.mat';           % Path to cable database file

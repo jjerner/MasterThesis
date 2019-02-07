@@ -88,8 +88,11 @@ while iter<=MAX_ITER
                     % Set correct sign of current
                     I_calc(iConnB,iter) = sign(real(S_calc(endBus,iter)))*I_calc(iConnB,iter);
                 else
-                    % If connection to other connection(s), use sum of incoming currents
-                    I_calc(iConnB,iter) = sum(I_calc(connections(:,1)==endBus,iter));
+                    % If connection to other connection(s), use sum of
+                    % incoming currents with regard to power factor
+                    I_calc(iConnB,iter) = abs(sum(abs(I_calc(connections(:,1)==endBus,iter))...
+                        .*S_calc(connections(connections(:,1)==endBus,2),iter)...
+                        ./abs(S_calc(connections(connections(:,1)==endBus,2),iter)),'omitnan'));
                 end
                   
                 S_loss(iConnB,iter) = 3*I_calc(iConnB,iter)^2*Z_ser(startBus,endBus);	% Three-phase power loss through connection (always positive)
@@ -115,6 +118,7 @@ while iter<=MAX_ITER
     U_calc(isSlackBus,iter)=abs(U_calc(isSlackBus,iter-1))...
         *S_calc(isSlackBus,iter)/abs(S_calc(isSlackBus,iter));      % At slack bus, voltage angle = power angle
     
+    
     % Forward sweep to calculate voltages
     while ~all(calcDoneFwd)
         % Matrix preallocation
@@ -130,8 +134,7 @@ while iter<=MAX_ITER
             upstreamCheck   = all(calcDoneFwd(find(existsParentsUS)));
 
             if upstreamCheck && downstreamCheck
-                U_delta(iConnF,iter) = -sqrt(3)*sign(real(U_calc(startBus,iter)))...
-                    *I_calc(iConnF,iter)*Z_ser(startBus,endBus);                            % Voltage loss over line         
+                U_delta(iConnF,iter) = -sqrt(3)*I_calc(iConnF,iter)*Z_ser(startBus,endBus); % Voltage loss over line  
                 U_calc(endBus,iter) = U_calc(startBus,iter)+U_delta(iConnF,iter);           % Voltage at end bus
                 calcDoneFwd(iConnF) = true;                                                 % Mark connection calculation as done
             end

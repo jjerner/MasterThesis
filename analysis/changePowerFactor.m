@@ -4,6 +4,6 @@ newPowerFactor = input('Enter new power factor: ');
 newPowerFactorLeading = input('Lagging/inductive (0) or leading/capacitive (1)? ');
 %fprintf('\n');
 
-S_ana(busIsLoad,:)=createComplexPower(abs(S_ana(busIsLoad,:)),'M',newPowerFactor,newPowerFactorLeading);
+S_ana(busIsLoad,:)=createComplexPower(abs(S_ana(busIsLoad,:)),'P',newPowerFactor,newPowerFactorLeading);
 fprintf('Power factor for all loads changed to %g',newPowerFactor)
 if newPowerFactorLeading, fprintf(' leading.\n'); else, fprintf(' lagging.\n'); end

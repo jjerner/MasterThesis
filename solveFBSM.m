@@ -23,7 +23,7 @@ function Results = solveFBSM(Z_ser,Y_shu,S_in,U_in,connections,busType,maxIter,c
 %    Results.nIters  = Number of iterations
 
 global Settings;
-if ~exist('MAX_ITER','var'), maxIter  = Settings.defaultMaxIter;   end    % Default value for maximum number of iterations
+if ~exist('maxIter','var'),  maxIter  = Settings.defaultMaxIter;   end    % Default value for maximum number of iterations
 if ~exist('convEps','var'),  convEps  = Settings.defaultConvEps;   end    % Default convergence limit
 if ~exist('doPlot','var'),   doPlot   = Settings.defaultConvPlots; end    % Default value for plot creation
 if ~exist('shuntCap','var'), shuntCap = Settings.defaultShuntCap;  end    % Default value for shunt capacitance

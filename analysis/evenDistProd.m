@@ -126,22 +126,22 @@ end
 doPlot = 1;
 if doPlot == 1
 % Analysera EvenDist
-load = find(loadNumber == EvenDist(end).Critical.maxVoltage.BusNumber);
+critload = find(loadNumber == EvenDist(end).Critical.maxVoltage.BusNumber);
 % Plot av fallet där kritisk spänning uppnåtts samt fallet utan produktion
 % för eventuell jämförelse
 figure;
 sgtitle(['Critical Voltage and Power of bus ', num2str(EvenDist(end).Critical.maxVoltage.BusNumber)])
 subplot(2,2,1)
-plot(timeLine, abs(EvenDist(end).Results.U_hist(load,:)))
+plot(timeLine, abs(EvenDist(end).Results.U_hist(critload,:)))
 title('U_{crit}')
 subplot(2,2,3)
-plot(timeLine, real(EvenDist(end).Results.S_hist(load,:)))
+plot(timeLine, real(EvenDist(end).Results.S_hist(critload,:)))
 title('S_{crit}')
 subplot(2,2,2)
-plot(timeLine, abs(EvenDist(1).Results.U_hist(load,:)))
+plot(timeLine, abs(EvenDist(1).Results.U_hist(critload,:)))
 title('U_{0}')
 subplot(2,2,4)
-plot(timeLine, real(EvenDist(1).Results.S_hist(load,:)))
+plot(timeLine, real(EvenDist(1).Results.S_hist(critload,:)))
 title('S_{0}')
 
 
@@ -163,10 +163,10 @@ end
 for iBus = 1:size(crit_unique,1)
     bus = crit_unique(iBus, 1);
     time = crit_unique(iBus, 2);
-    load = find(loadNumber == bus);
+    critload = find(loadNumber == bus);
     
     for qwe = 1:length(EvenDist)
-        voltage(qwe) = abs(EvenDist(qwe).Results.U_hist(load,time)*TransformerData.U_sec_base/sqrt(3));
+        voltage(qwe) = abs(EvenDist(qwe).Results.U_hist(critload,time)*TransformerData.U_sec_base/sqrt(3));
         prod(qwe) = EvenDist(qwe).PvPowerPerLoad(1,time)*(TransformerData.S_base/1000);
     end
     

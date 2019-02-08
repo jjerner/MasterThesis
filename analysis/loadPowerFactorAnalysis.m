@@ -11,7 +11,7 @@ resultSet_def=doSweepCalcs(Z_ser,Y_shu,S_ana,U_bus,connectionBuses,busType,timeL
 S_ana(busIsLoad,:)=createComplexPower(abs(S_bus(busIsLoad,:)),'P',0.8,0);
 resultSet_lagg=doSweepCalcs(Z_ser,Y_shu,S_ana,U_bus,connectionBuses,busType,timeLine);
 
-% Test with power factor 0.8 lagging
+% Test with power factor 0.8 leading
 S_ana(busIsLoad,:)=createComplexPower(abs(S_bus(busIsLoad,:)),'P',0.8,1);
 resultSet_lead=doSweepCalcs(Z_ser,Y_shu,S_ana,U_bus,connectionBuses,busType,timeLine);
 

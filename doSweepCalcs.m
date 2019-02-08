@@ -1,5 +1,6 @@
-function resultSet=doSweepCalcs(Z_ser,Y_shu,S_ana,U_bus,connectionBuses,busType,timeLine,waitBar)
+function resultSet=doSweepCalcs(Z_ser,Y_shu,S_ana,U_bus,connectionBuses,busType,timeLine,waitBar,shuntCap)
     if ~exist('waitBar','var'), waitBar = true; end    % Default value for waitbar
+    if ~exist('shuntCap','var'), shuntCap = false; end    % Default value for shunt capacitors
     global Settings;
     tic;
     S_hist = zeros(size(S_ana,1), length(timeLine));
@@ -17,7 +18,7 @@ function resultSet=doSweepCalcs(Z_ser,Y_shu,S_ana,U_bus,connectionBuses,busType,
         end
         solverRes = solveFBSM(Z_ser,Y_shu,S_ana(:,timeLine(iTime)),...
             U_bus(:,timeLine(iTime)),connectionBuses,busType,...
-            Settings.defaultMaxIter,Settings.defaultConvEps,0);
+            Settings.defaultMaxIter,Settings.defaultConvEps,0,shuntCap);
         S_hist(:,iTime)  = solverRes.S_out;
         S_loss(:,iTime)  = solverRes.S_loss;
         U_hist(:,iTime)  = solverRes.U_out;

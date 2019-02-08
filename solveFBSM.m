@@ -1,7 +1,7 @@
-function Results = solveFBSM(Z_ser,Y_shu,S_in,U_in,connections,busType,MAX_ITER,eps,doPlot,shuntCap)
+function Results = solveFBSM(Z_ser,Y_shu,S_in,U_in,connections,busType,maxIter,convEps,doPlot,shuntCap)
 % Forward Backward Sweep Method (FBSM) solver for radial power networks
 %
-% Results = solveFBSM(Z_in,S_in,U_in,connections,busType,MAX_ITER,eps,doPlot,shuntCap)
+% Results = solveFBSM(Z_in,S_in,U_in,connections,busType,MAX_ITER,convEps,doPlot,shuntCap)
 %
 % Inputs:
 %    Z_in        = Impedance matrix for all connections (NxN).
@@ -9,10 +9,10 @@ function Results = solveFBSM(Z_ser,Y_shu,S_in,U_in,connections,busType,MAX_ITER,
 %    U_in        = Voltage guess for each bus (specified voltage at slack bus) (Nx1).
 %    connections = Matrix decribing connections between buses (N-1x2).
 %    busType     = Vector with bus types ('SL', 'PV' or 'PQ') (Nx1).
-%    MAX_ITER    = Maximum number of iterations. Default value = 100.
-%    eps         = Convergence criteria. Default value = 1e-6.
-%    doPlot      = Create plots (1x1 logical). Default value = false.
-%    shuntCap    = Include shunt capacitance (1x1 logical). Default value = false.
+%    maxIter     = Maximum number of iterations. Default value from Settings.
+%    convEps     = Convergence criteria. Default value from Settings.
+%    doPlot      = Create plots (1x1 logical). Default value from Settings.
+%    shuntCap    = Include shunt capacitance (1x1 logical). Default value from Settings.
 %
 % Outputs:
 %    Results.S_out   = Power calculation (per bus)
@@ -22,10 +22,11 @@ function Results = solveFBSM(Z_ser,Y_shu,S_in,U_in,connections,busType,MAX_ITER,
 %    Results.I_out   = Current calculation (per connection)
 %    Results.nIters  = Number of iterations
 
-if ~exist('MAX_ITER','var'),    MAX_ITER    = 100;   end    % Default value for maximum number of iterations
-if ~exist('eps', 'var'),        eps         = 1e-6;  end    % Default convergence limit
-if ~exist('doPlot','var'),      doPlot      = false; end    % Default value for plot creation
-if ~exist('shuntCap','var'),    shuntCap    = false; end    % Default value for shunt capacitance
+global Settings;
+if ~exist('MAX_ITER','var'), maxIter  = Settings.defaultMaxIter;   end    % Default value for maximum number of iterations
+if ~exist('convEps','var'),  convEps  = Settings.defaultConvEps;   end    % Default convergence limit
+if ~exist('doPlot','var'),   doPlot   = Settings.defaultConvPlots; end    % Default value for plot creation
+if ~exist('shuntCap','var'), shuntCap = Settings.defaultShuntCap;  end    % Default value for shunt capacitance
 
 iter = 2;               % First calculation is iteration 2
 
@@ -52,9 +53,9 @@ calcDoneFwd = false(size(connections,1),1);
 
 %S_in=conj(S_in);
 
-while iter<=MAX_ITER
+while iter<=maxIter
     
-    if iter == MAX_ITER
+    if iter == maxIter
         warning('No convergence before maximum number of iterations was reached.') 
     end
  
@@ -147,7 +148,7 @@ while iter<=MAX_ITER
         voltageConvCrit = max(abs(U_calc(:,iter-1) - U_calc(:,iter)));      % Voltage convergence criteria
         currentConvCrit = max(abs(I_calc(:,iter-1) - I_calc(:,iter)));      % Current convergence criteria
         
-        if powerConvCrit < eps && voltageConvCrit < eps && currentConvCrit < eps
+        if powerConvCrit < convEps && voltageConvCrit < convEps && currentConvCrit < convEps
             break
         end
     end

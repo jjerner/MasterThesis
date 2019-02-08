@@ -1,7 +1,11 @@
 function resultSet=doSweepCalcs(Z_ser,Y_shu,S_ana,U_bus,connectionBuses,busType,timeLine,waitBar,shuntCap)
-    if ~exist('waitBar','var'), waitBar = true; end    % Default value for waitbar
-    if ~exist('shuntCap','var'), shuntCap = false; end    % Default value for shunt capacitors
     global Settings;
+    maxIter = Settings.defaultMaxIter;    % Default value for maximum number of iterations
+    convEps = Settings.defaultConvEps;    % Default convergence limit
+    doPlot  = Settings.defaultConvPlots;  % Default value for plot creation
+    if ~exist('waitBar','var'),  waitBar  = Settings.defaultWaitBar;   end    % Default value for waitbar
+    if ~exist('shuntCap','var'), shuntCap = Settings.defaultShuntCap;  end    % Default value for shunt capacitance
+    
     tic;
     S_hist = zeros(size(S_ana,1), length(timeLine));
     U_hist = zeros(size(U_bus,1), length(timeLine));
@@ -18,7 +22,7 @@ function resultSet=doSweepCalcs(Z_ser,Y_shu,S_ana,U_bus,connectionBuses,busType,
         end
         solverRes = solveFBSM(Z_ser,Y_shu,S_ana(:,timeLine(iTime)),...
             U_bus(:,timeLine(iTime)),connectionBuses,busType,...
-            Settings.defaultMaxIter,Settings.defaultConvEps,0,shuntCap);
+            maxIter,convEps,doPlot,shuntCap);
         S_hist(:,iTime)  = solverRes.S_out;
         S_loss(:,iTime)  = solverRes.S_loss;
         U_hist(:,iTime)  = solverRes.U_out;
@@ -36,6 +40,7 @@ function resultSet=doSweepCalcs(Z_ser,Y_shu,S_ana,U_bus,connectionBuses,busType,
     resultSet.U_hist=U_hist;
     resultSet.U_delta=U_delta;
     resultSet.S_hist=S_hist;
+    resultSet.S_loss=S_loss;
     resultSet.I_hist=I_hist;
     resultSet.Q_shu1=Q_shu1;
     resultSet.Q_shu2=Q_shu2;

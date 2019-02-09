@@ -6,8 +6,8 @@ P_pv=(1/TransformerData.S_base).*PV_model(1,1,1,3)';    % Get PV power from mode
 pvFactor = 1;
 busNumber = (1:Info.nBuses)';
 loadNumber = busNumber(busIsLoad);
-minAllowed = 0.9;
-maxAllowed = 1.1;
+minAllowed = 230*0.9 / (TransformerData.U_sec_base/sqrt(3));
+maxAllowed = 230*1.1 / (TransformerData.U_sec_base/sqrt(3));
 minV = 1;
 maxV = 1;
 iPv = 0;
@@ -29,7 +29,7 @@ while withinVoltageLimit
                                                               % distributed on all loads
     % %pvPerLoad = totalPV ./ length(loadNumber);
     
-    pvPerLoad = P_pv*iPv*(1/10);
+    pvPerLoad = P_pv*iPv*(1/20);
     
     S_ana(busIsLoad,:) = S_ana(busIsLoad,:) - pvPerLoad; % Added PV power to busses
     

@@ -1,6 +1,7 @@
 
 function limitPlot(plotStruct, Info, TransformerData, busIsLoad)
 
+    structName = inputname(1);
     buses = 1:Info.nBuses;
     loadNumbers = buses(busIsLoad);
 
@@ -17,7 +18,7 @@ function limitPlot(plotStruct, Info, TransformerData, busIsLoad)
         Ui = plotStruct(iProd).Results.U_hist;
 
         distToLimit(iProd, :) = sort(min(min((Ulim_u - abs(Ui.*TransformerData.U_sec_base./sqrt(3))), (abs(Ui.*TransformerData.U_sec_base./sqrt(3)) - Ulim_l)),[],1));
-        pvProd(iProd) = max(plotStruct(iProd).PvPowerPerLoad) .* plotStruct(iProd).PvSystemsAdded .*TransformerData.S_base/1000;
+        pvProd(iProd) = max(plotStruct(iProd).PvPowerPerLoad).*TransformerData.S_base/1000;
         numSystems(iProd) = plotStruct(iProd).PvSystemsAdded;
     end
     N = size(distToLimit,2);
@@ -25,16 +26,35 @@ function limitPlot(plotStruct, Info, TransformerData, busIsLoad)
     q10 = ceil(N*0.1);
     q20 = ceil(N*0.2);
     q50 = round(N*0.5);
-    q80 = floor(N*0.8);
+    q90 = floor(N*0.9);
     q100 = N;
-    figure('Position', [200 200 500 300]);
-    plot(numSystems, distToLimit(:,q00), 'k', 'linewidth',2);hold on;
-    plot(numSystems, distToLimit(:,q10), 'r--', 'linewidth',2);hold on;
-    plot(numSystems, distToLimit(:,q20), 'k', 'linewidth',2);hold on;
-    plot(numSystems, distToLimit(:,q50), 'b', 'linewidth',2);hold on;
-    plot(numSystems, distToLimit(:,q80), 'k', 'linewidth',2);hold on;
-    plot(numSystems, distToLimit(:,q100), 'k', 'linewidth',2);hold on;
-    xlim([min(numSystems), max(numSystems)])
+    labels = ({'q00';'q10';'q20';'q50';'q90';'q100'});
+    figure('Position', [200 200 600 350]);
+    
+    if strcmp(structName, 'SelectDist')
+        plot(numSystems, distToLimit(:,q00), 'r--', 'linewidth',2);hold on;
+        plot(numSystems, distToLimit(:,q10), 'b--', 'linewidth',2);hold on;
+        plot(numSystems, distToLimit(:,q20), 'k--', 'linewidth',2);hold on;
+        plot(numSystems, distToLimit(:,q50), 'g', 'linewidth',2);hold on;
+        plot(numSystems, distToLimit(:,q90), 'b', 'linewidth',2);hold on;
+        plot(numSystems, distToLimit(:,q100), 'r', 'linewidth',2);hold on;
+        xlim([min(numSystems), max(numSystems)])
+        ylim([0, max(max(distToLimit)).*1.1])
+        xlabel('Number of PV-systems')
+    else
+        plot(pvProd, distToLimit(:,q00), 'r--', 'linewidth',2);hold on;
+        plot(pvProd, distToLimit(:,q10), 'b--', 'linewidth',2);hold on;
+        plot(pvProd, distToLimit(:,q20), 'k--', 'linewidth',2);hold on;
+        plot(pvProd, distToLimit(:,q50), 'g', 'linewidth',2);hold on;
+        plot(pvProd, distToLimit(:,q90), 'b', 'linewidth',2);hold on;
+        plot(pvProd, distToLimit(:,q100), 'r', 'linewidth',2);hold on;
+        xlim([min(pvProd), max(pvProd)])
+        ylim([0, max(max(distToLimit)).*1.1])
+        xlabel('Maximal PV-production in the system [kW]')
+    end
+    title(['Distance to voltage limit of ', structName])
+    ylabel('Distance to voltage limit [V]')
+    legend(labels,'Location','bestoutside')
     grid on
 
 

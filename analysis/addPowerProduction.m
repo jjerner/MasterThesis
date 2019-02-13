@@ -43,8 +43,8 @@ switch prodCase
         disp('Calculating PV power from model.');
         P_pv=(1/TransformerData.S_base).*PV_model(1,1,1,3)';  % Get PV power from model [p.u.]
             
-        minAllowed = 230*0.9 / (TransformerData.U_sec_base/sqrt(3));
-        maxAllowed = 230*1.1 / (TransformerData.U_sec_base/sqrt(3));
+        minAllowed = 230*0.9 / (TransformerData.U_sec_base/sqrt(3)) .*0.9;
+        maxAllowed = 230*1.1 / (TransformerData.U_sec_base/sqrt(3)) .*1.1;
         minV = 1;
         maxV = 1;
         withinVoltageLimit = maxV<=maxAllowed && minV>=minAllowed;
@@ -63,7 +63,7 @@ switch prodCase
             end
         end
         
-        selectedPlots = 1;
+        selectedPlots = 0;
         if selectedPlots == 1
             selectedDistPlot;
         end

@@ -82,11 +82,12 @@ saveas(gcf,'analysis/fig/shuntCapAnalysis_Q_tot.png');
 saveas(gcf,'analysis/fig/shuntCapAnalysis_Q_tot','epsc');
 
 % Total reactive power from shunt capacitors (sum of all connections)
+plotTimeLine=90:135;
 figure;
 hold on;
-plot(plotTimeLine,TransformerData.S_base.*imag(sum(resultSet_shunt_def.Q_shu1(:,plotTimeLine)+resultSet_shunt_def.Q_shu2(:,plotTimeLine),1)));
-plot(plotTimeLine,TransformerData.S_base.*imag(sum(resultSet_shunt_lagg.Q_shu1(:,plotTimeLine)+resultSet_shunt_lagg.Q_shu2(:,plotTimeLine),1)));
-plot(plotTimeLine,TransformerData.S_base.*imag(sum(resultSet_shunt_lead.Q_shu1(:,plotTimeLine)+resultSet_shunt_lead.Q_shu2(:,plotTimeLine),1)));
+plot(plotTimeLine,TransformerData.S_base.*imag(sum(resultSet_shunt_def.S_shu1(:,plotTimeLine)+resultSet_shunt_def.S_shu2(:,plotTimeLine),1)));
+plot(plotTimeLine,TransformerData.S_base.*imag(sum(resultSet_shunt_lagg.S_shu1(:,plotTimeLine)+resultSet_shunt_lagg.S_shu2(:,plotTimeLine),1)));
+plot(plotTimeLine,TransformerData.S_base.*imag(sum(resultSet_shunt_lead.S_shu1(:,plotTimeLine)+resultSet_shunt_lead.S_shu2(:,plotTimeLine),1)));
 title('Reactive power from shunt capacitors');
 xlabel('Timeline');
 ylabel('Reactive power [VAr]');

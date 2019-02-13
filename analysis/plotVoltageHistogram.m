@@ -21,8 +21,8 @@ monthsStart2End=[1      744;...
 for iMonth = 12:-1:1
     monthStart=monthsStart2End(iMonth,1);   % Month start
     monthEnd=monthsStart2End(iMonth,2);     % Month end
-    [vHistCount,vHistEdges]= histcounts(abs(resultSet.U_hist(histBusNr,...
-        timeLine>=monthStart & timeLine<=monthEnd)));
+    [vHistCount,vHistEdges] = histcounts(abs(resultSet.U_hist(histBusNr,...
+        timeLine>=monthStart & timeLine<=monthEnd)*(TransformerData.U_sec_base/sqrt(3))));
     vHistCount(vHistCount == 0) = NaN;      % Ignore zero values
     vHistCenters=vHistEdges(1:end-1)+diff(vHistEdges)./2;
     plot(vHistCenters,vHistCount/100 + 12-iMonth+1,'LineWidth',2);hold on;
@@ -31,15 +31,15 @@ for iMonth = 12:-1:1
 end
 title(['Voltage histogram at bus ' num2str(histBusNr)]);
 ylabel('Month');
-xlabel('Voltage [p.u.]');
-set(gca,'Xtick',min(minV)-0.1:2*mean(diff(vHistEdges)):max(maxV)+0.1,...
-    'Ytick',1:12,'YTickLabel',...
+xlabel('Voltage (line-to-neutral) [V]');
+xAxisTicks=round(min(minV)):2*mean(diff(vHistEdges)):round(max(maxV))+1;
+set(gca,'Xtick',xAxisTicks,'Ytick',1:12,'Xlim',[round(min(minV)) round(max(maxV))+1],'YTickLabel',...
     fliplr({'January','February','March','April',...
     'May','June','July','August',...
     'September','October','November','December'}));
 xtickangle(45);
 % Draw limit lines
-%line(0.95*[1 1],[0 13], 'Color', 'r');  % Lower limit line
-%line(1.00*[1 1],[0 13], 'Color', 'r');  % Upper limit line
+%line(1.1*[230 230],[0 13], 'Color', 'r');  % Lower limit line
+%line(0.9*[230 230],[0 13], 'Color', 'r');  % Upper limit line
 grid on;
 clear histBusNr monthsBeginAt vHistCount vHistEdges vHistCenters minV maxV iMonth;

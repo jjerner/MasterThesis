@@ -16,9 +16,12 @@ maxCableCurrents=cell2mat({CableData.Imax})';
 cableLoadLevels=100*cableCurrents./maxCableCurrents;
 
 % Plot
-plot(resultSet.timeLine,cableLoadLevels);
+plot(resultSet.timeLine,[max(cableLoadLevels); mean(cableLoadLevels)]);
+legend('Max line load','Mean line load');
 title('Line load in percent');
 xlabel('Timeline');
 ylabel('Load level (I/I_{max}) [%]');
+%saveas(gcf,'analysis/fig/loadLevel.png');
+%saveas(gcf,'analysis/fig/loadLevel','epsc');
 
 clear connectionLevel_mod

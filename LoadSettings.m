@@ -18,7 +18,7 @@ Settings.U_j_guess              = 1.00;                     % Initial joint conn
 Settings.U_l_guess              = 0.99;                     % Initial load voltage guess
 Settings.defaultMaxIter         = 100;                      % Default number for maximum number of iterations
 Settings.defaultConvEps         = 1e-4;                     % Default value for convergence limit
-Settings.defaultShuntCap        = false;                    % Default value for shunt capacitors (true = enabled)
+Settings.defaultShuntCap        = true;                    % Default value for shunt capacitors (true = enabled)
 Settings.defaultConvPlots       = false;                    % Default value for convergence plots in solveFBSM (true = enabled)
 Settings.defaultWaitBar         = true;                     % Default value for waitbar in doSweepCalcs (true = enabled)
 

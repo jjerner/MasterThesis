@@ -1,7 +1,7 @@
 %% Minisys verification
 
 %% Quick checks
-sign(real(S_out)).*abs(S_out./(sqrt(3)*U_out))
+S_ver=sqrt(3)*U_out.*conj([I_out(1); I_out])
 I_out(1)-(I_out(2)+I_out(3))
 
 %% Minisys_complex_3p

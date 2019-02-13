@@ -28,8 +28,8 @@ function resultSet=doSweepCalcs(Z_ser,Y_shu,S_ana,U_bus,connectionBuses,busType,
         U_hist(:,iTime)  = solverRes.U_out;
         U_delta(:,iTime) = solverRes.U_delta;
         I_hist(:,iTime)  = solverRes.I_out;
-        Q_shu1(:,iTime)  = solverRes.Q_shu1;
-        Q_shu2(:,iTime)  = solverRes.Q_shu2;
+        S_shu1(:,iTime)  = solverRes.S_shu1;
+        S_shu2(:,iTime)  = solverRes.S_shu2;
         nItersVec(iTime) = solverRes.nIters;
     end
     if waitBar
@@ -42,8 +42,8 @@ function resultSet=doSweepCalcs(Z_ser,Y_shu,S_ana,U_bus,connectionBuses,busType,
     resultSet.S_hist=S_hist;
     resultSet.S_loss=S_loss;
     resultSet.I_hist=I_hist;
-    resultSet.Q_shu1=Q_shu1;
-    resultSet.Q_shu2=Q_shu2;
+    resultSet.S_shu1=S_shu1;
+    resultSet.S_shu2=S_shu2;
     resultSet.nItersVec=nItersVec;
     resultSet.timeLine=timeLine;
     resultSet.calcTime=calcTime;

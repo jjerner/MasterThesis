@@ -1,8 +1,8 @@
 % Find cable load levels in percent (I/I_max)
 
 % Cable currents (transformer removed)
-cableCurrents_pu=[resultSet.I_hist(1:Info.addedTransformerBusAtIndex(1)-1,:);
-                  resultSet.I_hist(Info.addedTransformerBusAtIndex(1)+1:end,:)]; % [p.u.]
+cableCurrents_pu=[abs(resultSet.I_hist(1:Info.addedTransformerBusAtIndex(1)-1,:));
+                  abs(resultSet.I_hist(Info.addedTransformerBusAtIndex(1)+1:end,:))]; % [p.u.]
 connectionLevel_mod=[connectionLevel(1:Info.addedTransformerBusAtIndex(1)-1);
                      connectionLevel(Info.addedTransformerBusAtIndex(1)+1:end)];
 cableCurrents=zeros(size(cableCurrents_pu));

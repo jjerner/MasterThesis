@@ -96,8 +96,8 @@ while iter<=maxIter
                 
                 if shuntCap
                     % Include reaction power generation in shunt capacitors
-                    S_shu1(iConnB,iter) = 3*((U_calc(startBus,iter-1)/sqrt(3))^2*conj(Y_shu(startBus,endBus))/2);
-                    S_shu2(iConnB,iter) = 3*((U_calc(endBus,iter-1)/sqrt(3))^2*conj(Y_shu(startBus,endBus))/2);
+                    S_shu1(iConnB,iter) = 3*(abs(U_calc(startBus,iter-1)/sqrt(3))^2*conj(Y_shu(startBus,endBus))/2);
+                    S_shu2(iConnB,iter) = 3*(abs(U_calc(endBus,iter-1)/sqrt(3))^2*conj(Y_shu(startBus,endBus))/2);
                     S_loss(iConnB,iter) = S_loss(iConnB,iter)+S_shu1(iConnB,iter)+S_shu2(iConnB,iter);
                 end
                     

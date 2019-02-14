@@ -5,7 +5,7 @@ addpath('..');
 maxIter  = 100;       % Maximum number of iterations
 convEps  = 1e-3;      % Convergence limit
 doPlot   = false;     % Plot convergence
-shuntCap = false;     % Include shunt capacitance
+shuntCap = true;     % Include shunt capacitance
 
 for iConnection = 1:size(connectionBuses,1)
     startBus = connectionBuses(iConnection,1);

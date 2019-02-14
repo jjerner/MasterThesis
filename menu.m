@@ -1,7 +1,6 @@
 clear menuCase;
-loopMenu=true;
 
-while loopMenu
+while true
     % Select case
     caseList={'xxx','=== BASIC SETUP ===';...
               'main','Main setup (includes children)';...

@@ -8,7 +8,7 @@ function Results = solveFBSM(Z_ser,Y_shu,S_in,U_in,connections,busType,maxIter,c
 %    S_in        = Power consumption (3-phase) at load buses (others 0) (Nx1).
 %    U_in        = Voltage guess for each bus (specified voltage at slack bus) (Nx1).
 %    connections = Matrix decribing connections between buses (N-1x2).
-%    busType     = Vector with bus types ('SL', 'PV' or 'PQ') (Nx1).
+%    busType     = Not in use - reserved for future useage.
 %    maxIter     = Maximum number of iterations. Default value from Settings.
 %    convEps     = Convergence criteria. Default value from Settings.
 %    doPlot      = Create plots (1x1 logical). Default value from Settings.
@@ -81,7 +81,6 @@ while iter<=maxIter
                 
                 % Find three-phase current through connection
                 
-                %I_calc(iConnB,iter) = S_calc(endBus,iter)/(sqrt(3)*U_calc(endBus,iter-1));
                 if connectionToLoad
                     % If connection to load, use load power
                     I_calc(iConnB,iter) = S_calc(endBus,iter)/(sqrt(3)*U_calc(endBus,iter-1));
@@ -99,9 +98,17 @@ while iter<=maxIter
                     S_shu1(iConnB,iter) = 3*(abs(U_calc(startBus,iter-1)/sqrt(3))^2*conj(Y_shu(startBus,endBus))/2);
                     S_shu2(iConnB,iter) = 3*(abs(U_calc(endBus,iter-1)/sqrt(3))^2*conj(Y_shu(startBus,endBus))/2);
                     S_loss(iConnB,iter) = S_loss(iConnB,iter)+S_shu1(iConnB,iter)+S_shu2(iConnB,iter);
-                end
                     
-                S_conn(iConnB,iter) = S_calc(endBus,iter)+S_loss(iConnB,iter);          % Total power through connection including losses
+                    % Total power through connection including losses and shunts
+                    S_conn(iConnB,iter) = S_calc(endBus,iter)+S_loss(iConnB,iter);
+                    
+                    % Update current
+                    %I_calc(iConnB,iter) = S_calc(endBus,iter)/(sqrt(3)*U_calc(endBus,iter-1));
+                    %I_calc(iConnB,iter) = conj(I_calc(iConnB,iter));
+                else
+                    % Total power through connection including losses
+                    S_conn(iConnB,iter) = S_calc(endBus,iter)+S_loss(iConnB,iter);
+                end
                 
                 % Update startpoints only
                 S_calc(startBus,iter) = S_calc(startBus,iter)+S_conn(iConnB,iter);      % Three-phase power in bus
@@ -188,7 +195,6 @@ Results.S_loss  = S_loss(:,end);      % Power loss calculation (per connection)
 Results.U_out   = U_calc(:,end);      % Voltage calculation (per bus)
 Results.U_delta = U_delta(:,end);     % Voltage loss calculation (per connection)
 Results.I_out   = I_calc(:,end);      % Current calculation (per connection)
-%Results.I_test  = I_test(:,end);
 Results.S_shu1  = S_shu1(:,end);      % Shunt capacitor reactive power generation at start bus (per connection)
 Results.S_shu2  = S_shu2(:,end);      % Shunt capacitor reactive power generation at end bus (per connection)
 Results.nIters  = iter;               % Output number of iterations

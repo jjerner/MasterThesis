@@ -13,6 +13,7 @@ function Results = solveFBSM(Z_ser,Y_shu,S_in,U_in,connections,busType,maxIter,c
 %    convEps     = Convergence criteria. Default value from Settings.
 %    doPlot      = Create plots (1x1 logical). Default value from Settings.
 %    shuntCap    = Include shunt capacitance (1x1 logical). Default value from Settings.
+%                  EXPERIMENTAL, USE WITH CAUTION
 %
 % Outputs:
 %    Results.S_out   = Power calculation (per bus)
@@ -65,7 +66,6 @@ while iter<=maxIter
         S_loss(:,iter) = zeros(size(connections,1),1);
         S_conn(:,iter) = zeros(size(connections,1),1);
         I_calc(:,iter) = zeros(size(connections,1),1);
-        I_calc(:,iter) = zeros(size(connections,1),1);
         
         for iConnB = size(connections,1):-1:1
             startBus = connections(iConnB,1);       % Start bus for connection
@@ -93,7 +93,7 @@ while iter<=maxIter
                 S_loss(iConnB,iter) = 3*I_calc(iConnB,iter)*conj(I_calc(iConnB,iter))...
                     *Z_ser(startBus,endBus);	% Three-phase power loss through connection (always positive)
                 
-                if shuntCap
+                if shuntCap    % EXPERIMENTAL, USE WITH CAUTION
                     % Include reaction power generation in shunt capacitors
                     S_shu1(iConnB,iter) = 3*(abs(U_calc(startBus,iter-1)/sqrt(3))^2*conj(Y_shu(startBus,endBus))/2);
                     S_shu2(iConnB,iter) = 3*(abs(U_calc(endBus,iter-1)/sqrt(3))^2*conj(Y_shu(startBus,endBus))/2);
@@ -103,8 +103,8 @@ while iter<=maxIter
                     S_conn(iConnB,iter) = S_calc(endBus,iter)+S_loss(iConnB,iter);
                     
                     % Update current
-                    %I_calc(iConnB,iter) = S_calc(endBus,iter)/(sqrt(3)*U_calc(endBus,iter-1));
-                    %I_calc(iConnB,iter) = conj(I_calc(iConnB,iter));
+                    I_calc(iConnB,iter) = S_calc(endBus,iter)/(sqrt(3)*U_calc(endBus,iter-1));
+                    I_calc(iConnB,iter) = conj(I_calc(iConnB,iter));
                 else
                     % Total power through connection including losses
                     S_conn(iConnB,iter) = S_calc(endBus,iter)+S_loss(iConnB,iter);

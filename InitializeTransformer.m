@@ -39,6 +39,8 @@ TransformerData.Z_sec_base  = (TransformerData.U_sec_base)/(sqrt(3)*TransformerD
 TransformerData.Z2k_pu      = TransformerData.Z2k/100;
 TransformerData.R2k_pu      = TransformerData.R2k/100;
 
-TransformerData.R0_pu       = TransformerData.R0;
-TransformerData.Z0_pu       = TransformerData.Z0;
-
+if TransformerData.I0 ~= 0
+    TransformerData.Z0_pu   = (TransformerData.P0/TransformerData.S_base)/(TransformerData.I0/100)^2;
+else
+    TransformerData.Z0_pu   = 0;
+end

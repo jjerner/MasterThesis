@@ -38,6 +38,17 @@ switch prodCase
         
     case 3 % pv-prod at selected loads
         
+        reverseOrder = 0;
+        disp('Select Order of production')
+        disp('   Weakest to Strongest - 1')
+        disp('   Strongest to Weakest - 2')
+        while reverseOrder ~= 1 || reverseOrder ~= 2
+            reverseOrder = input('Select Order:');
+            if reverseOrder == 1 || reverseOrder == 2
+                break
+            end
+        end
+        
         % Set selected loads, in the form of their busnumber
         % // code here//
         disp('Calculating PV power from model.');
@@ -51,7 +62,11 @@ switch prodCase
         
         % load results from greedy search and add production in the order
         % busses appear in vector 'addedPvPowerAt'
-        load 'greedySearch_addedPvPowerAt.mat'
+        load 'greedySearch_results.mat'
+        
+        if reverseOrder == 2
+           addedPvPowerAt = flipud(addedPvPowerAt);
+        end
      
         for iter = 1:length(addedPvPowerAt)
             selectedLoads = addedPvPowerAt(1:iter);

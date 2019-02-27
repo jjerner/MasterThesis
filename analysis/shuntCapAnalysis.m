@@ -1,7 +1,7 @@
 % Shunt capacitor analysis
 
 main;
-timeLine=1:744;
+timeLine=1:8760;
 
 %% Without shunt capacitors
 
@@ -33,8 +33,8 @@ resultSet_shunt_lead=doSweepCalcs(Z_ser,Y_shu,S_ana,U_bus,connectionBuses,busTyp
 
 %% Plots
 
-busesToPlot=1;
-plotTimeLine=90:135;
+busesToPlot=114;
+plotTimeLine=1:8760;
 
 figure;
 hold on;
@@ -82,7 +82,7 @@ saveas(gcf,'analysis/fig/shuntCapAnalysis_Q_tot.png');
 saveas(gcf,'analysis/fig/shuntCapAnalysis_Q_tot','epsc');
 
 % Total reactive power from shunt capacitors (sum of all connections)
-plotTimeLine=90:135;
+plotTimeLine=1:8760;
 figure;
 hold on;
 plot(plotTimeLine,TransformerData.S_base.*imag(sum(resultSet_shunt_def.S_shu1(:,plotTimeLine)+resultSet_shunt_def.S_shu2(:,plotTimeLine),1)));

@@ -1,4 +1,4 @@
-function Results = solveFBSM(Z_ser,Y_shu,S_in,U_in,connections,busType,maxIter,convEps,doPlot,shuntCap)
+function Results = solveFBSMold(Z_ser,Y_shu,S_in,U_in,connections,busType,maxIter,convEps,doPlot,shuntCap)
 % Forward Backward Sweep Method (FBSM) solver for radial power networks
 %
 % Results = solveFBSM(Z_in,S_in,U_in,connections,busType,MAX_ITER,convEps,doPlot,shuntCap)
@@ -8,12 +8,11 @@ function Results = solveFBSM(Z_ser,Y_shu,S_in,U_in,connections,busType,maxIter,c
 %    S_in        = Power consumption (3-phase) at load buses (others 0) (Nx1).
 %    U_in        = Voltage guess for each bus (specified voltage at slack bus) (Nx1).
 %    connections = Matrix decribing connections between buses (N-1x2).
-%    busType     = Not in use - reserved for future useage.
+%    busType     = Vector with bus types ('SL', 'PV' or 'PQ') (Nx1).
 %    maxIter     = Maximum number of iterations. Default value from Settings.
 %    convEps     = Convergence criteria. Default value from Settings.
 %    doPlot      = Create plots (1x1 logical). Default value from Settings.
 %    shuntCap    = Include shunt capacitance (1x1 logical). Default value from Settings.
-%                  EXPERIMENTAL, USE WITH CAUTION
 %
 % Outputs:
 %    Results.S_out   = Power calculation (per bus)
@@ -52,6 +51,8 @@ U_delta(:,1) = zeros(size(connections,1),1);
 calcDoneBwd = false(size(connections,1),1);
 calcDoneFwd = false(size(connections,1),1);
 
+%S_in=conj(S_in);
+
 while iter<=maxIter
     
     if iter == maxIter
@@ -65,6 +66,7 @@ while iter<=maxIter
         % Matrix preallocations
         S_loss(:,iter) = zeros(size(connections,1),1);
         S_conn(:,iter) = zeros(size(connections,1),1);
+        I_calc(:,iter) = zeros(size(connections,1),1);
         I_calc(:,iter) = zeros(size(connections,1),1);
         
         for iConnB = size(connections,1):-1:1
@@ -80,49 +82,48 @@ while iter<=maxIter
             if upstreamCheck && downstreamCheck   
                 
                 % Find three-phase current through connection
-                
                 if connectionToLoad
                     % If connection to load, use load power
-                    I_calc(iConnB,iter) = S_calc(endBus,iter)/(sqrt(3)*U_calc(endBus,iter-1));
-                    I_calc(iConnB,iter) = conj(I_calc(iConnB,iter));
+                    I_calc(iConnB,iter) = (1/sqrt(3))*abs(S_calc(endBus,iter))...
+                        /abs(U_calc(endBus,iter-1));   
+                    % Set correct sign of current
+                    I_calc(iConnB,iter) = sign(real(S_calc(endBus,iter)))*I_calc(iConnB,iter);
                 else
-                    % If connection to other connection(s), use sum of incoming currents
-                    I_calc(iConnB,iter) = sum(I_calc(connections(:,1)==endBus,iter));
+                    % If connection to other connection(s), use sum of
+                    % incoming currents with regard to power factor
+                    I_calc(iConnB,iter) = abs(sum(abs(I_calc(connections(:,1)==endBus,iter))...
+                        .*S_calc(connections(connections(:,1)==endBus,2),iter)...
+                        ./abs(S_calc(connections(connections(:,1)==endBus,2),iter)),'omitnan'));
                 end
+                  
+                S_loss(iConnB,iter) = 3*I_calc(iConnB,iter)^2*Z_ser(startBus,endBus);	% Three-phase power loss through connection (always positive)
                 
-                S_loss(iConnB,iter) = 3*I_calc(iConnB,iter)*conj(I_calc(iConnB,iter))...
-                    *Z_ser(startBus,endBus);	% Three-phase power loss through connection (always positive)
-                
-                if shuntCap    % EXPERIMENTAL, USE WITH CAUTION
+                if shuntCap
                     % Include reaction power generation in shunt capacitors
-                    S_shu1(iConnB,iter) = 3*(abs(U_calc(startBus,iter-1)/sqrt(3))^2*conj(Y_shu(startBus,endBus))/2);
-                    S_shu2(iConnB,iter) = 3*(abs(U_calc(endBus,iter-1)/sqrt(3))^2*conj(Y_shu(startBus,endBus))/2);
+                    S_shu1(iConnB,iter) = -3j*(abs(U_calc(startBus,iter-1)/sqrt(3))^2*imag(Y_shu(startBus,endBus))/2);
+                    S_shu2(iConnB,iter) = -3j*(abs(U_calc(endBus,iter-1)/sqrt(3))^2*imag(Y_shu(startBus,endBus))/2);
                     S_loss(iConnB,iter) = S_loss(iConnB,iter)+S_shu1(iConnB,iter)+S_shu2(iConnB,iter);
-                    
-                    % Total power through connection including losses and shunts
-                    S_conn(iConnB,iter) = S_calc(endBus,iter)+S_loss(iConnB,iter);
-                    
-                    % Update current
-                    I_calc(iConnB,iter) = S_calc(endBus,iter)/(sqrt(3)*U_calc(endBus,iter-1));
-                    I_calc(iConnB,iter) = conj(I_calc(iConnB,iter));
-                else
-                    % Total power through connection including losses
-                    S_conn(iConnB,iter) = S_calc(endBus,iter)+S_loss(iConnB,iter);
                 end
+                    
+                S_conn(iConnB,iter) = S_calc(endBus,iter)+S_loss(iConnB,iter);          % Total power through connection including losses
                 
                 % Update startpoints only
                 S_calc(startBus,iter) = S_calc(startBus,iter)+S_conn(iConnB,iter);      % Three-phase power in bus
-                
                 calcDoneBwd(iConnB)   = true;                                           % Mark connection calculation as done
             end
         end
     end
     
-    U_calc(:,iter)=U_in;                                % Input voltages (guesses)
-    U_delta(:,iter) = zeros(size(connections,1),1);     % Matrix preallocation
+    % Update slack bus voltage angle but keep magnitude
+    isSlackBus=busType(:,1)=='S' & busType(:,2)=='L';               % Find slack bus
+    U_calc(isSlackBus,iter)=abs(U_calc(isSlackBus,iter-1))...
+        *S_calc(isSlackBus,iter)/abs(S_calc(isSlackBus,iter));      % At slack bus, voltage angle = power angle
     
     % Forward sweep to calculate voltages
     while ~all(calcDoneFwd)
+        % Matrix preallocation
+        U_delta(:,iter) = zeros(size(connections,1),1);
+
         for iConnF = 1:size(connections,1)
             startBus = connections(iConnF,1);   % Start bus for connection
             endBus   = connections(iConnF,2);   % End bus for connection
@@ -133,18 +134,20 @@ while iter<=maxIter
             upstreamCheck   = all(calcDoneFwd(find(existsParentsUS)));
 
             if upstreamCheck && downstreamCheck
-                U_delta(iConnF,iter) = -sqrt(3)*(I_calc(iConnF,iter))*Z_ser(startBus,endBus); % Voltage loss over connection
-                U_calc(endBus,iter)  = U_calc(startBus,iter)+U_delta(iConnF,iter);            % Voltage at end bus
-                calcDoneFwd(iConnF)  = true;                                                  % Mark connection calculation as done
+                U_delta(iConnF,iter) = -sqrt(3)*I_calc(iConnF,iter)*Z_ser(startBus,endBus); % Voltage loss over line                
+                U_calc(endBus,iter) = U_calc(startBus,iter)+U_delta(iConnF,iter);           % Voltage at end bus
+                %U_calc(endBus,iter)=abs(U_calc(endBus,iter))...
+                %    *S_calc(endBus,iter)/abs(S_calc(endBus,iter));                          % Update voltage angle but keep magnitude
+                calcDoneFwd(iConnF) = true;                                                 % Mark connection calculation as done
             end
         end
     end
     
     % Convergence criteria
     if iter > 2
-        powerConvCrit   = max(abs(S_calc(:,iter-1) - S_calc(:,iter)));      % Power convergence criterion
-        voltageConvCrit = max(abs(U_calc(:,iter-1) - U_calc(:,iter)));      % Voltage convergence criterion
-        currentConvCrit = max(abs(I_calc(:,iter-1) - I_calc(:,iter)));      % Current convergence criterion
+        powerConvCrit   = max(abs(S_calc(:,iter-1) - S_calc(:,iter)));      % Power convergence criteria
+        voltageConvCrit = max(abs(U_calc(:,iter-1) - U_calc(:,iter)));      % Voltage convergence criteria
+        currentConvCrit = max(abs(I_calc(:,iter-1) - I_calc(:,iter)));      % Current convergence criteria
         
         if powerConvCrit < convEps && voltageConvCrit < convEps && currentConvCrit < convEps
             break
@@ -167,25 +170,25 @@ if doPlot
     plot(abs(U_calc'));
     title('Voltage convergence');
     xlabel('Number of iterations');
-    ylabel('Voltage');
+    ylabel('Voltage [p.u.]');
     legend(legendLabelsU);
     figure;
     plot(real(S_calc'));
     title('Active power convergence');
     xlabel('Number of iterations');
-    ylabel('Active power');
+    ylabel('Active power [p.u.]');
     legend(legendLabelsP);
     figure;
     plot(imag(S_calc'));
     title('Reactive power convergence');
     xlabel('Number of iterations');
-    ylabel('Reactive power');
+    ylabel('Reactive power [p.u.]');
     legend(legendLabelsQ);
     figure;
     plot(abs(I_calc'));
     title('Current convergence');
     xlabel('Number of iterations');
-    ylabel('Current');
+    ylabel('Current [p.u.]');
     legend(legendLabelsI);
 end
 
@@ -197,6 +200,6 @@ Results.U_delta = U_delta(:,end);     % Voltage loss calculation (per connection
 Results.I_out   = I_calc(:,end);      % Current calculation (per connection)
 Results.S_shu1  = S_shu1(:,end);      % Shunt capacitor reactive power generation at start bus (per connection)
 Results.S_shu2  = S_shu2(:,end);      % Shunt capacitor reactive power generation at end bus (per connection)
-Results.nIters  = iter;               % Number of iterations
+Results.nIters  = iter;               % Output number of iterations
 
 end

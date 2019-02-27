@@ -6,8 +6,8 @@ P_pv=(1/TransformerData.S_base).*PV_model(1,1,1,3)';    % Get PV power from mode
 pvFactor = 1;
 busNumber = (1:Info.nBuses)';
 loadNumber = busNumber(busIsLoad);
-minAllowed = 230*0.9 / (TransformerData.U_sec_base/sqrt(3)) .* 0.9;
-maxAllowed = 230*1.1 / (TransformerData.U_sec_base/sqrt(3)) .* 1.1;
+minAllowed = 230*0.9 / (TransformerData.U_sec_base/sqrt(3)) .* 0.95;
+maxAllowed = 230*1.1 / (TransformerData.U_sec_base/sqrt(3)) .* 1.05;
 minV = 1;
 maxV = 1;
 iPv = 0;
@@ -114,78 +114,6 @@ while withinVoltageLimit
     end
     
 end
-
-
-
-
-doPlot = 1;
-if doPlot == 1
-% Analysera EvenDist
-critload = find(loadNumber == EvenDist(end).Critical.maxVoltage.BusNumber);
-% Plot av fallet där kritisk spänning uppnåtts samt fallet utan produktion
-% för eventuell jämförelse
-figure;
-sgtitle(['Critical Voltage and Power of bus ', num2str(EvenDist(end).Critical.maxVoltage.BusNumber)])
-subplot(2,2,1)
-plot(timeLine, abs(EvenDist(end).Results.U_hist(critload,:)))
-title('U_{crit}')
-subplot(2,2,3)
-plot(timeLine, real(EvenDist(end).Results.S_hist(critload,:)))
-title('S_{crit}')
-subplot(2,2,2)
-plot(timeLine, abs(EvenDist(1).Results.U_hist(critload,:)))
-title('U_{0}')
-subplot(2,2,4)
-plot(timeLine, real(EvenDist(1).Results.S_hist(critload,:)))
-title('S_{0}')
-
-
-% Hitta unika kritiska bussar och sedan plotta spänningsökningen i extrempunkten
-for asd = 2:length(EvenDist) % börja på 2 för att plats 1 är utan prod.
-    criticalBuses(asd-1,1) = EvenDist(asd).Critical.maxVoltage.BusNumber;
-    critTime(asd-1,1) = EvenDist(asd).Critical.maxVoltage.TimeStamp;
-end
-
-crit = [criticalBuses, critTime];
-
-crit_unique = crit(1,:);
-for asd = 1:size(crit,1)
-    if ~ismember(crit(asd,:),crit_unique,'rows')
-        crit_unique(end+1,:) = crit(asd,:);
-    end
-end
-
-for iBus = 1:size(crit_unique,1)
-    bus = crit_unique(iBus, 1);
-    time = crit_unique(iBus, 2);
-    critload = find(loadNumber == bus);
-    
-    for qwe = 1:length(EvenDist)
-        voltage(qwe) = abs(EvenDist(qwe).Results.U_hist(critload,time)*TransformerData.U_sec_base/sqrt(3));
-        prod(qwe) = EvenDist(qwe).PvPowerPerLoad(1,time)*(TransformerData.S_base/1000);
-    end
-    
-    figure
-    plot(prod, voltage)
-    title(['Bus', num2str(bus), ' at time: ', num2str(time)])
-    xlabel('PV-production [kW]')
-    ylabel('Voltage [V]')
-    
-end
-
-
-
-end
-
-
-
-
-
-
-
-
-
-
 
 
 

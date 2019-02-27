@@ -1,4 +1,6 @@
 function critPlot(plotStruct, Info, TransformerData, busIsLoad, atIter)
+% 
+% atIter not needed
 
 busNumber = (1:Info.nBuses)';
 loadNumber = busNumber(busIsLoad);
@@ -14,24 +16,40 @@ monthTick2 = [0, 1417, 2881, 4345, 5833, 7297];
 
 % Analysera plotStruct
 if ~exist('atIter','var')
-    atIter  = 30;   
+    structName = inputname(1);
+    if strcmp(structName ,'EvenDist')     
+        atIter = 17; % 17 nås gräns
+        % atIter = 26; % 26 är exakt 1 panel per hus
+        
+        str = 'Even Dist.';        
+        prodkW = max(plotStruct(atIter).PvPowerPerLoad).*TransformerData.S_base./1000;
+        prodkW = prodkW * length(loadNumber);
+    elseif strcmp(structName, 'SelectDist')
+        % atIter = 28; % 28 nås gräns
+        atIter = 43; % 43 samma total prod som iter 17 i EvenDist (ish)
+        
+        str = 'Selected Dist.';
+        prodkW = max(plotStruct(atIter).PvPowerPerLoad).*TransformerData.S_base./1000;
+        prodkW = prodkW * plotStruct(atIter).PvSystemsAdded;
+    else
+        atIter  = 22;  %random
+    end
 end
 
-
-
 critload = find(loadNumber == plotStruct(atIter).Critical.maxVoltage.BusNumber);
-prodkW = max(plotStruct(atIter).PvPowerPerLoad).*TransformerData.S_base./1000;
+fprintf('Crit bus = %d \n', loadNumber(critload))
 
 
 % Plot av fallet där kritisk spänning uppnåtts samt fallet utan produktion
 % för eventuell jämförelse
-figure;
-sgtitle(['Bus ', num2str(plotStruct(atIter).Critical.maxVoltage.BusNumber),...
-        '   Produced Power: ', num2str(prodkW), ' kW'])
+figure('Position', [170, 180, 1350, 800]);
+% sgtitle(['Critical Bus, ', num2str(plotStruct(atIter).Critical.maxVoltage.BusNumber),...
+%        ' Produced Power: ', num2str(prodkW), ' kW'])
+sgtitle(['Critical Bus during ', str, ', ', ' Total Power Production: ', num2str(prodkW), ' kW'])
 subplot(2,2,2)
 plot(timeLine, abs(plotStruct(atIter).Results.U_hist(critload,:)).*TransformerData.U_sec_base./sqrt(3))
 hold on
-plot(timeLine, ones(length(timeLine),1).*257)
+plot(timeLine, ones(length(timeLine),1).*230*1.1,'r')
 xlim([0,timeLine(end)]);
 set(gca,'xtick',monthTick2,'xticklabel',months2)
 grid on
@@ -47,7 +65,7 @@ ylabel('Power [kW]')
 subplot(2,2,1)
 plot(timeLine, abs(plotStruct(1).Results.U_hist(critload,:)).*TransformerData.U_sec_base./sqrt(3))
 hold on
-plot(timeLine, ones(length(timeLine),1).*257)
+plot(timeLine, ones(length(timeLine),1).*230*1.1,'r')
 xlim([0,timeLine(end)]);
 set(gca,'xtick',monthTick2,'xticklabel',months2)
 grid on

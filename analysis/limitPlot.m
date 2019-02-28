@@ -37,7 +37,7 @@ function limitPlot(plotStruct, Info, TransformerData, busIsLoad)
         plot(numSystems, distToLimit(:,q20), 'k--', 'linewidth',2);hold on;
         plot(numSystems, distToLimit(:,q50), 'g', 'linewidth',2);hold on;
         plot(numSystems, distToLimit(:,q90), 'b', 'linewidth',2);hold on;
-        %plot(numSystems, distToLimit(:,q100), 'r', 'linewidth',2);hold on;
+        plot(numSystems, distToLimit(:,q100), 'r', 'linewidth',2);hold on;
         xlim([min(numSystems), max(numSystems)])
         xlabel('Number of PV systems')
     else
@@ -46,7 +46,7 @@ function limitPlot(plotStruct, Info, TransformerData, busIsLoad)
         plot(pvProd, distToLimit(:,q20), 'k--', 'linewidth',2);hold on;
         plot(pvProd, distToLimit(:,q50), 'g', 'linewidth',2);hold on;
         plot(pvProd, distToLimit(:,q90), 'b', 'linewidth',2);hold on;
-        %plot(pvProd, distToLimit(:,q100), 'r', 'linewidth',2);hold on;
+        plot(pvProd, distToLimit(:,q100), 'r', 'linewidth',2);hold on;
         xlim([min(pvProd), max(pvProd)])
         xlabel('Maximum PV production per system [kW]')
     end

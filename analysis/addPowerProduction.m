@@ -80,7 +80,7 @@ switch prodCase
         
         selectedPlots = 0;
         if selectedPlots == 1
-            selectedDistPlot;
+            selectedDistPlot; % funkar inte
         end
         
     otherwise

@@ -14,6 +14,7 @@ disp('Select production case: ')
 disp('1. Relative to consumption')
 disp('2. Even distribution')
 disp('3. Selected distribution')
+disp('4. X nr of PV systems per load')
 prodCase = input('Enter case:');
 
 
@@ -30,7 +31,7 @@ switch prodCase
         P_pv=(1/TransformerData.S_base)*PV_model(1,1,1,3)';     % Get PV power from model [p.u.]
         P_pv=P_pv(timeLine);                                    % Set correct timeline
         relLoadSize=S_ana(busIsLoad)./mean(S_ana(busIsLoad));   % Load size relative to mean load
-        S_ana(busIsLoad,timeLine)=S_ana(busIsLoad,timeLine)-0.1*relLoadSize.*repmat(P_pv,[size(S_ana(busIsLoad),1) 1]);
+        S_ana(busIsLoad,timeLine)=S_ana(busIsLoad,timeLine)-0.3*relLoadSize.*repmat(P_pv,[size(S_ana(busIsLoad),1) 1]);
 
     case 2 % evenly distributed
         
@@ -82,6 +83,13 @@ switch prodCase
         if selectedPlots == 1
             selectedDistPlot; % funkar inte
         end
+        
+    case 4  % X nr of PV systems per load
+        pvSystemsPerLoad=input('Number of PV systems per load: ');
+        disp('Calculating PV power from model.');
+        P_pv=(1/TransformerData.S_base)*PV_model(1,1,1,3)';     % Get PV power from model [p.u.]
+        P_pv=P_pv(timeLine);
+        S_ana(busIsLoad,timeLine)=S_ana(busIsLoad,timeLine)-pvSystemsPerLoad*repmat(P_pv,[size(S_ana(busIsLoad),1) 1]);
         
     otherwise
         warning('Not valid case')

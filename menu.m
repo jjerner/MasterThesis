@@ -99,7 +99,7 @@ while true
             % Run sweep calculation with energy storage
             if ~exist('timeLine','var'), disp('Error: Set timeline first'); break; end
             if ~exist('S_ana','var'), S_ana = S_bus; end
-            resultSet=doSweepCalcsStor(Z_ser,Y_shu,S_ana,U_bus,connectionBuses,busType,timeLine);
+            resultSet=doSweepCalcsStor(Z_ser,Y_shu,S_ana,U_bus,connectionBuses,busType,timeLine,1,[],busIsLoad,TransformerData);
 
         case 'plotall'
             % Plot all

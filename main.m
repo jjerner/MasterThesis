@@ -8,3 +8,6 @@ SetupArrays;                    % Match cable parameters and connections to matr
 % END Set up system ===
 ReadInputTXT;                   % Read input data from .txt files
 SetupProblem;                   % Set up solver input matrices
+
+% Set default timeline
+timeLine=1:8760;

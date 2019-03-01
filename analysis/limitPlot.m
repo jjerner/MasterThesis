@@ -18,7 +18,7 @@ function limitPlot(plotStruct, Info, TransformerData, busIsLoad)
         Ui = plotStruct(iProd).Results.U_hist;
 
         distToLimit(iProd, :) = sort(min(min((Ulim_u - abs(Ui.*TransformerData.U_sec_base./sqrt(3))), (abs(Ui.*TransformerData.U_sec_base./sqrt(3)) - Ulim_l)),[],1));
-        pvProd(iProd) = max(plotStruct(iProd).PvPowerPerLoad).*TransformerData.S_base/1000;
+        pvProd(iProd) = max(abs(plotStruct(iProd).PvPowerPerLoad)).*TransformerData.S_base/1000;
         numSystems(iProd) = plotStruct(iProd).PvSystemsAdded;
     end
     N = size(distToLimit,2);

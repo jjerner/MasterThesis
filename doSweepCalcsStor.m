@@ -13,18 +13,21 @@ function resultSet=doSweepCalcsStor(Z_ser,Y_shu,S_ana,U_bus,connections,busType,
     loadBusNumbers=busNumbers(busIsLoad);
     
     % Settings for each energy storage
-
-    % One small energy storage at each load
-    storageBusNr=loadBusNumbers;                            % Place storage at bus number(s)
-    storageSize=ones(size(loadBusNumbers))*20e3;            % Size of energy storage [Wh]
-    storageDefChgPower=ones(size(loadBusNumbers))*1e3;      % Charging power of energy storage [W]
-    storageInitialSoC=ones(size(loadBusNumbers))*0;         % Initial energy storage state of charge [-]
-    
-% One large energy storage at the transformer
-%     storageBusNr=2;               % Place storage at bus number(s)
-%     storageSize=500e3;            % Size of energy storage [Wh]
-%     storageDefChgPower=20e3;      % Charging power of energy storage [W]
-%     storageInitialSoC=0;          % Initial energy storage state of charge [-]
+    storageMode=2;
+    switch storageMode
+        case 1
+            % One small energy storage at each load
+            storageBusNr=loadBusNumbers;                            % Place storage at bus number(s)
+            storageSize=ones(size(loadBusNumbers))*20e3;            % Size of energy storage [Wh]
+            storageDefChgPower=ones(size(loadBusNumbers))*1e3;      % Charging power of energy storage [W]
+            storageInitialSoC=ones(size(loadBusNumbers))*0;         % Initial energy storage state of charge [-]
+        case 2
+            % One large energy storage (almost) at the transformer
+            storageBusNr=120;             % Place storage at bus number(s)
+            storageSize=500e3;            % Size of energy storage [Wh]
+            storageDefChgPower=67e3;      % Charging power of energy storage [W]
+            storageInitialSoC=0;          % Initial energy storage state of charge [-]
+    end
     
     % Preallocation
     storageCharging=false(length(storageBusNr),length(timeLine));
@@ -91,7 +94,6 @@ function resultSet=doSweepCalcsStor(Z_ser,Y_shu,S_ana,U_bus,connections,busType,
             % Change S_ana if current storage should charge at current time step
             if storageCharging(iStor,iTime)
                 fprintf('Storage at bus %d charging at time %d (voltage %.1f V).\n',storageBusNr(iStor),timeLine(iTime),abs(U_hist(storageBusNr(iStor),iTime))*TransformerData.U_sec_base/sqrt(3));
-                S_ana(storageBusNr(iStor),iTime)=S_ana(storageBusNr(iStor),timeLine(iTime))+storageDefChgPower(iStor)/TransformerData.S_base;
                 if iTime == 1
                     storageMaxChgPower(iStor,iTime)=storageSize(iStor)*(1-storageSoC(iStor,iTime));
                     if storageMaxChgPower(iStor,iTime) < storageDefChgPower(iStor)
@@ -115,6 +117,7 @@ function resultSet=doSweepCalcsStor(Z_ser,Y_shu,S_ana,U_bus,connections,busType,
                 storageMaxChgPower(iStor,iTime)=0;
                 storageActualChgPower(iStor,iTime)=0;
             end
+            S_ana(storageBusNr(iStor),iTime)=S_ana(storageBusNr(iStor),timeLine(iTime))+storageActualChgPower(iStor,iTime)/TransformerData.S_base;
         end
         
         if any(storageCharging(:,iTime))

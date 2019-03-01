@@ -55,21 +55,21 @@ function seasonVoltagePlot(resultSet,TransformerData,buses)
         U_min(4) U_mean(4) U_max(4)].*TransformerData.U_sec_base/sqrt(3);
 
     hB=figure;
-    hB=bar(barMat,'BaseValue',225);
+    hB=bar(barMat,'BaseValue',220);
     hAx=gca;            % get a variable for the current axes handle
     str={'Winter','Spring','Summer','Fall'};
     labels = {'min' 'avg' 'max' 'min' 'avg' 'max' 'min' 'avg' 'max' 'min' 'avg' 'max'};
     hAx.XTickLabel=str; % label the ticks
     hT=[];              % placeholder for text object handles
-    for i=1:length(hB)  % iterate over number of bar objects
-      hT=[hT,text(hB(i).XData+hB(i).XOffset,hB(i).YData,labels(:,i), ...
+    for iText=1:length(hB)  % iterate over number of bar objects
+      hT=[hT,text(hB(iText).XData+hB(iText).XOffset,hB(iText).YData,labels(:,iText), ...
               'VerticalAlignment','bottom','horizontalalign','center')];
     end
     hAx.YMinorGrid = 'on';
-    title('Voltage min, average and max values');
+    title('Voltages per season');
     ylabel('Voltage (line-to-neutral) [V]');
     xlabel('Season');
-    ylim([225 265]);
+    ylim([220 255]);
     %legend('Min','Avg','Max','Location','bestoutside');
     hold on
     xlim=get(gca,'xlim');

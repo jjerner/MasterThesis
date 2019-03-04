@@ -22,7 +22,7 @@ for iStep=1:length(loadBuses)
         S_greedy(pvBusesInSweep,timeLine)=S_greedy(pvBusesInSweep,timeLine)...
             -repmat(pvPower,size(pvBusesInSweep,1),1);
         ResultTemp=doSweepCalcs(Z_ser,Y_shu,S_greedy,U_bus,connectionBuses,busType,timeLine,false);
-        diffU=abs(ResultTemp.U_hist(busesToTest,:))-abs(ResultNoProd.U_hist(busesToTest,:));
+        diffU=abs(abs(ResultTemp.U_hist(busesToTest,:))-abs(ResultNoProd.U_hist(busesToTest,:)));
         [rowMaxDiff, timeMaxDiff] = find(diffU == max(max(diffU)));
         maxDiffUAtBus(iOption) = busesToTest(rowMaxDiff(1));
         maxDiffU(iOption) = max(max(diffU));

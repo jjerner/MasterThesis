@@ -49,7 +49,8 @@ function limitPlot(plotStruct, Info, TransformerData, busIsLoad)
         plot(pvProd, distToLimit(:,q90), 'b', 'linewidth',2);hold on;
         plot(pvProd, distToLimit(:,q100), 'r', 'linewidth',2);hold on;
         plot(pvProd, zeros(length(pvProd),1), 'r-')
-        xlim([min(pvProd), max(pvProd)])
+        xlim([min(pvProd), max(pvProd)]) % use default
+        % xlim([0 16]) % specific limits
         xlabel('Maximum PV production per system [kW]')
     end
     title('Margin to voltage limit of any bus')

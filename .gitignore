@@ -6,6 +6,7 @@ test/test.fig
 EvenDist_fullYear.mat
 EvenDist_fullYear_full.mat
 EvenDist_changepowerfactor.mat
+EvenDist_changepowerfactor_keepactive.mat
 SelectDist_fullYear.mat
 SelectDist_fullYear_long.mat
 SelectDist_fullYear_strong.mat

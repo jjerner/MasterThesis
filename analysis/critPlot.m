@@ -25,8 +25,8 @@ if ~exist('atIter','var')
         prodkW = max(plotStruct(atIter).PvPowerPerLoad).*TransformerData.S_base./1000;
         prodkW = prodkW * length(loadNumber);
     elseif strcmp(structName, 'SelectDist')
-        % atIter = 28; % 28 nås gräns
-        atIter = 43; % 43 samma total prod som iter 17 i EvenDist (ish)
+        atIter = 40; % 28 nås gräns i weak || 40 nås gräns i strong
+        % atIter = 43; % 43 samma total prod som iter 17 i EvenDist (ish)
         
         str = 'Selected Dist.';
         prodkW = max(plotStruct(atIter).PvPowerPerLoad).*TransformerData.S_base./1000;

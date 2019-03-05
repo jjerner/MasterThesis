@@ -13,4 +13,5 @@ treeXpos = treeXpos';
 treeYpos = treeYpos';
 text(treeXpos(:,1),treeYpos(:,1),cellstr(num2str((1:size(busParents,2))')), 'VerticalAlignment','bottom','HorizontalAlignment','right')
 title(['Grid plot of ' Settings.location]);
+axis off;
 clear treeXpos treeYpos iBus

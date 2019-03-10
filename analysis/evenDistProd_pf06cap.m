@@ -33,7 +33,8 @@ while withinVoltageLimit
     
     pvPerLoad = P_pv*iPv*(1/25);
     
-    S_ana(busIsLoad,:) = S_ana(busIsLoad,:) - pvPerLoad; % Added PV power to busses
+    % Note that only P should change sign for production, not Q (thus conj)
+    S_ana(busIsLoad,:) = S_ana(busIsLoad,:) - conj(pvPerLoad); % Added PV power to busses
     
     %run sweepcalc
     res = doSweepCalcs(Z_ser,Y_shu,S_ana,U_ana,connectionBuses,busType,timeLine);    % run solver

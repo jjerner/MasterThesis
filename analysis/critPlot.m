@@ -18,8 +18,8 @@ monthTick2 = [0, 1417, 2881, 4345, 5833, 7297];
 if ~exist('atIter','var')
     structName = inputname(1);
     if strcmp(structName ,'EvenDist')     
-        %atIter = 17; % 17 nås gräns
-        atIter = 26; % 26 är exakt 1 panel per hus
+        atIter = 17; % 17 nås gräns
+        %atIter = 26; % 26 är exakt 1 panel per hus
         
         str = 'Even Dist.';        
         prodkW = max(plotStruct(atIter).PvPowerPerLoad).*TransformerData.S_base./1000;

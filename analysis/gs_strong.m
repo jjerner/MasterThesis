@@ -27,10 +27,10 @@ for iStep=1:length(loadBuses)
         minDiffUAtBus(iOption) = busesToTest(rowMinDiff(1));
         minDiffU(iOption) = min(min(diffU));
     end
-    [minDiffUChoice,minDiffUAtBusChoice]=max(minDiffU);
+    [minDiffUChoice,minDiffUAtBusChoice]=min(minDiffU);
     chosenBus=minDiffUAtBus(minDiffUAtBusChoice);
     busesToTest(find(busesToTest==chosenBus))=[];
     addedPvPowerAt(iStep,1)=chosenBus;
-    clear maxDiffUAtBus maxDiffU;
+    clear minDiffUAtBus minDiffU;
     fprintf('Greedy search: Step %d finished. Chose bus %d.\n',iStep,chosenBus);
 end

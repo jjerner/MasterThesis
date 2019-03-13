@@ -31,10 +31,10 @@ while withinVoltageLimit
                                                               % distributed on all loads
     % %pvPerLoad = totalPV ./ length(loadNumber);
     
-    pvPerLoad = P_pv*iPv*(1/25);
+    pvPerLoad = P_pv*iPv*(1/5);
     
     % Note that only P should change sign for production, not Q (thus conj)
-    S_ana(busIsLoad,:) = S_ana(busIsLoad,:) - conj(pvPerLoad); % Added PV power to busses
+    S_ana(busIsLoad,:) = S_ana(busIsLoad,:) - real(pvPerLoad) + imag(pvPerLoad); % Added PV power to busses
     
     %run sweepcalc
     res = doSweepCalcs(Z_ser,Y_shu,S_ana,U_ana,connectionBuses,busType,timeLine);    % run solver
@@ -96,9 +96,9 @@ while withinVoltageLimit
         [rowMaxDiff, timeMaxDiff] = find(diffU == max(max(diffU)));
         iMaxDiff = loadNumber(rowMaxDiff);
         
-        EvenDist_pf06ind(iPv+1).Critical.deltaV.Voltage = abs(diffU(rowMaxDiff, timeMaxDiff));
-        EvenDist_pf06ind(iPv+1).Critical.deltaV.TimeStamp = timeMaxDiff;
-        EvenDist_pf06ind(iPv+1).Critical.deltaV.BusNumber = iMaxDiff;
+        EvenDist_pf06ind(iPv+1).Critical.deltaV.Voltage = abs(diffU(rowMaxDiff(1), timeMaxDiff(1)));
+        EvenDist_pf06ind(iPv+1).Critical.deltaV.TimeStamp = timeMaxDiff(1);
+        EvenDist_pf06ind(iPv+1).Critical.deltaV.BusNumber = iMaxDiff(1);
     end
     
     if whileLoop

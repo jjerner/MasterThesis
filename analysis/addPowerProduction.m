@@ -61,12 +61,12 @@ switch prodCase
         maxV = 1;
         withinVoltageLimit = maxV<=maxAllowed && minV>=minAllowed;
         
-        % load results from greedy search and add production in the order
-        % busses appear in vector 'addedPvPowerAt'
-        load 'greedySearch_results.mat'
-        
+        % load results from greedy search
+      
         if reverseOrder == 2
-           addedPvPowerAt = flipud(addedPvPowerAt);
+           load('D:\Exjobb\Matlab\MasterThesisCode\analysis\greedysearch_strong.mat');
+        else
+           load('D:\Exjobb\Matlab\MasterThesisCode\analysis\greedysearch_weak.mat');
         end
      
         for iter = 1:length(addedPvPowerAt)

@@ -18,7 +18,7 @@ structName = inputname(1);
 if strcmp(structName ,'EvenDist')     
     atIter = 17; % 17 nås gräns
     %atIter = 26; % 26 är exakt 1 panel per hus
-    atIter = 1;
+    atIter = 14;
     
     str = 'Even Dist.';        
     prodkW = max(plotStruct(atIter).PvPowerPerLoad).*TransformerData.S_base./1000;
@@ -45,11 +45,11 @@ fprintf('max bus = %d \n', loadNumber(critloadmax))
 
 % Plot av fallet där kritisk spänning uppnåtts samt fallet utan produktion
 % för eventuell jämförelse
-figure('Position', [170, 180, 1200, 400]);
+figure('Position', [170, 180, 1000, 500]);
 % sgtitle(['Critical Bus, ', num2str(plotStruct(atIter).Critical.maxVoltage.BusNumber),...
 %        ' Produced Power: ', num2str(prodkW), ' kW'])
 sgtitle(['Highest mean Bus: ', num2str(loadNumber(critloadmax)), ', Lowest mean Bus: ', num2str(loadNumber(critloadmin))])
-subplot(1,2,1)
+subplot(2,1,1)
 plot(timeLine, abs(plotStruct(atIter).Results.U_hist(critloadmax,:)).*TransformerData.U_sec_base./sqrt(3),'b')
 hold on
 %plot(timeLine, abs(plotStruct(1).Results.U_hist(critloadmax,:)).*TransformerData.U_sec_base./sqrt(3),'g')
@@ -63,7 +63,7 @@ title('Highest mean Bus Voltage')
 ylabel('Voltage (line-to-neutral) [V]')
 legend({'with production';'no production'},'Location', 'southeast')
 
-subplot(1,2,2)
+subplot(2,1,2)
 plot(timeLine, abs(plotStruct(atIter).Results.U_hist(critloadmin,:)).*TransformerData.U_sec_base./sqrt(3),'b')
 hold on
 %plot(timeLine, abs(plotStruct(1).Results.U_hist(critloadmin,:)).*TransformerData.U_sec_base./sqrt(3),'g')

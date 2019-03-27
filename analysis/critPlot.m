@@ -31,7 +31,7 @@ if ~exist('atIter','var')
         prodkW = max(plotStruct(atIter).PvPowerPerLoad).*TransformerData.S_base./1000;
         prodkW = prodkW * plotStruct(atIter).PvSystemsAdded;
     else
-        atIter  = 2;  %random
+        atIter  = 11;  %random
         
         str = 'Even Dist.'; 
         prodkW = max(plotStruct(atIter).PvPowerPerLoad).*TransformerData.S_base./1000;

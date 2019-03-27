@@ -45,7 +45,7 @@ fprintf('max bus = %d \n', loadNumber(critloadmax))
 
 % Plot av fallet där kritisk spänning uppnåtts samt fallet utan produktion
 % för eventuell jämförelse
-figure('Position', [170, 180, 1000, 500]);
+figure('Position', [170, 180, 1000, 620]);
 % sgtitle(['Critical Bus, ', num2str(plotStruct(atIter).Critical.maxVoltage.BusNumber),...
 %        ' Produced Power: ', num2str(prodkW), ' kW'])
 sgtitle(['Highest mean Bus: ', num2str(loadNumber(critloadmax)), ', Lowest mean Bus: ', num2str(loadNumber(critloadmin))])
@@ -61,7 +61,7 @@ set(gca,'xtick',monthTick2,'xticklabel',months2)
 grid on
 title('Highest mean Bus Voltage')
 ylabel('Voltage (line-to-neutral) [V]')
-legend({'with production';'no production'},'Location', 'southeast')
+%legend({'with production';'no production'},'Location', 'southeast')
 
 subplot(2,1,2)
 plot(timeLine, abs(plotStruct(atIter).Results.U_hist(critloadmin,:)).*TransformerData.U_sec_base./sqrt(3),'b')
@@ -75,7 +75,7 @@ set(gca,'xtick',monthTick2,'xticklabel',months2)
 grid on
 title('Lowest mean Bus Voltage')
 ylabel('Voltage (line-to-neutral) [V]')
-legend({'with production';'no production'},'Location', 'southeast')
+%legend({'with production';'no production'},'Location', 'southeast')
 
 
 % subplot(2,2,1)
